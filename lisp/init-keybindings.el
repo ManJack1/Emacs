@@ -102,6 +102,7 @@
     "fr" 'consult-recent-file
     "fs" 'save-buffer
     "fS" 'write-file
+     "fb" 'consult-buffer
     
     ;; Buffers
     "sb" 'consult-buffer
