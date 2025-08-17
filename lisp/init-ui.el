@@ -263,6 +263,7 @@
   :ensure t
   :config
   ;; Leader key 设置（SPC）
+  (general-evil-setup t)
   (general-create-definer my-leader-def
     :keymaps 'override
     :states '(normal visual insert emacs)

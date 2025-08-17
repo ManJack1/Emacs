@@ -96,6 +96,7 @@
 (with-eval-after-load 'evil
   (my/leader-keys
     ;; Files
+    "fc" 'open-config-file
     "ff" 'find-file
     "fn" 'find-file
     "fr" 'consult-recent-file
@@ -103,10 +104,10 @@
     "fS" 'write-file
     
     ;; Buffers
-    "bb" 'consult-buffer
+    "sb" 'consult-buffer
     "bd" 'kill-current-buffer
-    "bD" 'kill-buffer
-    "bn" 'next-buffer
+    "rD" 'kill-buffer
+    "rn" 'next-buffer
     "bp" 'previous-buffer
     "br" 'revert-buffer
     "bs" 'scratch-buffer

@@ -4,7 +4,10 @@
 ;; Enhance default behaviors here
 
 (global-auto-revert-mode 1)
-
+;; 完全关闭自动备份
+(setq make-backup-files nil)
+;; 关闭自动保存文件 (#filename#)
+(setq auto-save-default nil)
 (setq ring-bell-function nil)
 
 (fset 'yes-or-no-p 'y-or-n-p)

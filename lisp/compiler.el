@@ -803,31 +803,6 @@ Opens telescope picker with compilation options."
       (compiler-quick-build-and-run))))
 
 ;; Evil mode 键绑定设置
-;;;###autoload
-(defun compiler-setup-evil-keybindings ()
-  "Setup Evil mode keybindings for compiler."
-  (interactive)
-  (when (fboundp 'evil-define-key)
-    ;; 在 normal state 绑定 SPC-r-r 为智能运行
-    (evil-define-key 'normal 'global (kbd "SPC r r") 'compiler-smart-run)
-    
-    ;; 额外的便捷键绑定
-    (evil-define-key 'normal 'global (kbd "SPC r o") 'compiler-open)       ; 打开编译器选择
-    (evil-define-key 'normal 'global (kbd "SPC r R") 'compiler-redo)       ; 强制重做
-    (evil-define-key 'normal 'global (kbd "SPC r t") 'compiler-toggle-results) ; 切换结果
-    (evil-define-key 'normal 'global (kbd "SPC r s") 'compiler-stop)       ; 停止编译
-    (evil-define-key 'normal 'global (kbd "SPC r c") 'compiler-clean-output-now) ; 清理输出
-    
-    ;; 更快的单键绑定（可选）
-    (evil-define-key 'normal 'global (kbd "SPC c c") 'compiler-smart-run)       ; 快速运行
-    (evil-define-key 'normal 'global (kbd "SPC c r") 'compiler-redo)           ; 重做
-    
-    (message "✅ Evil compiler keybindings setup complete!")
-    (message "💡 Use 'SPC r r' or 'gR' to smart run, 'SPC r R' or 'g R' to redo")))
-
-;; 自动设置（如果检测到 evil-mode）
-(eval-after-load 'evil
-  '(compiler-setup-evil-keybindings))
 
 ;; 手动设置函数（如果需要）
 ;;;###autoload  
@@ -835,7 +810,6 @@ Opens telescope picker with compilation options."
   "Setup compiler with Evil mode integration."
   (interactive)
   (compiler-setup)  ; 原有的设置
-  (compiler-setup-evil-keybindings)  ; Evil 键绑定
   (message "🎯 Compiler with Evil mode setup complete!"))
 
 ;; 使用说明注释：

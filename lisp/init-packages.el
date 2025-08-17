@@ -246,9 +246,13 @@
   :pin melpa
   :ensure t)
 
+;; 添加 NonGNU ELPA 源
+(add-to-list 'package-archives 
+             '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
+
+;; 安装 org-contrib
 (use-package org-contrib
   :ensure t
-  )
-
+  :after org)
 (provide 'init-packages)
 ;;; init-packages.el ends here

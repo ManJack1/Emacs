@@ -104,7 +104,7 @@
     "fS" 'write-file
     
     ;; Buffers
-    "bb" 'consult-buffer
+    "sb" 'consult-buffer
     "bd" 'kill-current-buffer
     "bD" 'kill-buffer
     "bn" 'next-buffer
@@ -187,6 +187,16 @@
     "ot" 'vterm
     "od" 'dired
     
+   ;;compiler
+    "rr" 'compiler-smart-run
+    "ro" 'compiler-open
+    "rR" 'compiler-redo
+    "rt" 'compiler-toggle-results
+    "rs" 'compiler-stop
+    "rc" 'compiler-clean-output-now
+    "cc" 'compiler-smart-run
+    "cr" 'compiler-redo
+
     ;; LSP/Diagnostics
     "xx" 'consult-lsp-diagnostics
     "xn" 'flymake-goto-next-error
