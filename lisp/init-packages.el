@@ -180,19 +180,35 @@
   :ensure t
   :after yasnippet)
 
+(use-package consult-yasnippet
+  :ensure t)
 
+(with-eval-after-load 'yasnippet
+  ;; 让yasnippet更宽松地匹配
+  (setq yas-key-syntaxes '("w_" "w_." "w_.()" "^ "))
+  (setq yas-fallback-behavior 'return-nil)
+  (setq yas-triggers-in-field t))
 
-
-
-;; 让 company 用 lsp-mode 的补全
-(use-package company-capf
-  :ensure nil
-  :after (company lsp-mode)
-  :init
+(with-eval-after-load 'company
+  (defun my/company-backend-with-yas (backends)
+    "将yasnippet添加到现有后端中"
+    (if (and (listp backends) (memq 'company-capf backends))
+        (append backends '(:with company-yasnippet))
+      backends))
+  
+  ;; 智能组合后端
   (setq company-backends
-      '((company-capf :with company-yasnippet) ; 先 LSP + snippet
-        company-files                           ; 然后文件名
-        company-dabbrev)))                       ; 最后缓冲区文字)
+        '((company-capf :with company-yasnippet)  ; LSP + snippet
+          company-dabbrev-code
+          company-keywords  
+          company-files
+          company-dabbrev))
+  
+  ;; 设置company参数
+  (setq company-minimum-prefix-length 1
+        company-idle-delay 0.1
+        company-selection-wrap-around t))
+
 
 (use-package recentf
   :ensure t

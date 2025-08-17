@@ -88,13 +88,25 @@
   (setq org-superstar-headline-bullets-list '("◉" "○" "✸" "✤")))
 
 
-;; 设置使用 XeLaTeX 编译器
-(setq org-latex-compiler "xelatex")
-(setq org-latex-default-class "ctexart")
+;; 显示详细编译过程的配置
+;; 确保 tcolorbox 包可用
+(setq org-latex-listings t
+      org-latex-src-block-backend 'listings)
 
-;; 设置 LaTeX 编译过程
-(setq org-latex-pdf-process
-      '("xelatex -interaction nonstopmode -output-directory %o %f"
-        "xelatex -interaction nonstopmode -output-directory %o %f"))
+;; 使用 XeLaTeX
+(setq org-latex-pdf-process 
+      '("latexmk -xelatex -f -interaction=nonstopmode %f"))
+
+(add-to-list 'org-latex-packages-alist '("" "minted" nil))
+(setq org-latex-src-block-backend 'minted)
+
+
+;; 显示编译缓冲区
+(setq org-latex-remove-logfiles t)           ; 保留日志文件
+(setq compilation-scroll-output t)             ; 自动滚动输出
+(setq compilation-always-kill t)               ; 总是结束之前的编译
+(setq compilation-ask-about-save nil)          ; 编译前自动保存
+
+
 (provide 'init-org)
 ;;; init-org.el ends here

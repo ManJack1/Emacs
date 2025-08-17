@@ -98,12 +98,15 @@
     ;; Files
     "fc" 'open-config-file
     "ff" 'find-file
-    "fn" 'find-file
     "fr" 'consult-recent-file
     "fs" 'save-buffer
     "fS" 'write-file
-     "fb" 'consult-buffer
-    
+    "fb" 'consult-buffer
+    "fp" 'consult-project-buffer
+    "fP" 'project-switch-project
+    "fd" 'project-find-dir
+   
+
     ;; Buffers
     "sb" 'consult-buffer
     "bd" 'kill-current-buffer
@@ -114,12 +117,11 @@
     "bs" 'scratch-buffer
     
     ;; Search
+    "sn" 'consult-yasnippet
     "sb" 'consult-line
     "sB" 'consult-line-multi
     "sg" 'consult-ripgrep
     "sG" 'consult-git-grep
-    "ss" 'consult-lsp-file-symbols
-    "sS" 'consult-lsp-symbols
     "sy" 'consult-yank-pop
     "sd" 'consult-lsp-diagnostics
     "ss" 'consult-imenu
@@ -127,7 +129,7 @@
     "sf" 'consult-find
     "sl" 'consult-locate
     "st" 'consult-todo
-    "sT" 'consult-todo-all
+    "sT" 'consult-todo-project
     "sk" 'embark-bindings
     
     ;; Windows
@@ -219,9 +221,14 @@
   (evil-define-key 'normal 'global (kbd "]d") 'flymake-goto-next-error)
   
   ;; 快速注释
-  (evil-define-key '(normal visual) 'global (kbd "gc") 'comment-line)
-  (evil-define-key 'visual 'global (kbd "gc") 'comment-region))
+  (evil-define-key '(normal visual) 'global (kbd "gc") 'comment-or-uncomment-lines)
+  (evil-define-key 'visual 'global (kbd "gc") 'comment-or-uncomment-region)
+  )
+;; 方案一：完全解绑 M-c（推荐）
+(global-unset-key (kbd "M-c"))
 
+
+(global-unset-key (kbd "M-c"))
 ;; 窗口调整
 (global-set-key (kbd "C-<up>") 'enlarge-window)
 (global-set-key (kbd "C-<down>") 'shrink-window)
