@@ -1,0 +1,15 @@
+# 忽略所有文件
+/*
+
+# 保留 .gitignore 文件本身（否则 Git 连规则都看不到）
+!.gitignore
+
+# 保留 init.el
+!init.el
+
+# 保留 lisp/ 文件夹及其内容
+!lisp/
+!lisp/**
+
+!snippets/
+!snippets/**

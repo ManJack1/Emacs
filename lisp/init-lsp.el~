@@ -1,0 +1,67 @@
+
+(use-package lsp-mode
+  :ensure t
+  :hook ((c++-mode . lsp)
+	 (c++-ts-mode . lsp)
+	 (c-ts-mode . lsp)  ; 修复：添加缺少的空格
+         (c-mode . lsp))
+  :commands lsp
+  :config
+  ;; 使用 clangd 作为 C/C++ 语言服务器
+  (setq lsp-clients-clangd-executable "clangd")
+  (setq lsp-prefer-flymake nil) ; 不用内置 flymake
+  (setq lsp-enable-symbol-highlighting t)
+  (setq lsp-headerline-breadcrumb-enable t)
+  (setq lsp-idle-delay 0.5)
+)  ; 修复：添加缺少的右括号
+
+;;; init-lsp-ui.el --- Minimal lsp-ui setup -*- lexical-binding: t; -*-
+;;; Commentary:
+;; Minimal configuration for lsp-ui to enhance lsp-mode UI.
+;;; Code:
+(use-package lsp-ui
+  :ensure t
+  :hook (lsp-mode . lsp-ui-mode)
+  :config
+  ;; 悬浮文档
+  (setq lsp-ui-doc-enable t)          ; 开启悬浮文档
+  (setq lsp-ui-doc-delay 0.2)         ; 显示延迟
+  (setq lsp-ui-doc-position 'at-point); 在光标处显示
+  (setq lsp-ui-doc-use-childframe t)  ; 使用 child frame
+  ;; 边栏提示
+  (setq lsp-ui-sideline-enable t)          ; 开启边栏
+  (setq lsp-ui-sideline-show-hover t)      ; 悬浮提示
+  (setq lsp-ui-sideline-show-diagnostics t); 显示错误信息
+  (setq lsp-ui-sideline-show-code-actions t); 显示可用操作
+  ;; 绑定常用功能
+  (setq lsp-ui-doc-show-with-cursor nil)
+  ;; 常用按键绑定
+  (evil-define-key 'normal lsp-ui-mode-map
+    (kbd "gd") 'lsp-ui-peek-find-definitions
+    (kbd "gr") 'lsp-ui-peek-find-references
+    (kbd "K")  'lsp-ui-doc-glance
+    (kbd "gi") 'lsp-ui-peek-find-implementation
+    (kbd "gy") 'lsp-ui-peek-find-type-definition))
+
+;; Evil 模式集成
+(with-eval-after-load 'evil
+  (defun my/evil-write-with-format ()
+    "Evil write with clang-format."
+    (interactive)
+    (when (derived-mode-p 'c++-mode 'c-mode)
+      (if (fboundp 'lsp-format-buffer)
+          (lsp-format-buffer)
+        (my/clang-format-buffer-manual)))
+    (evil-write nil nil nil nil nil))
+  
+  (evil-ex-define-cmd "w[rite]" 'my/evil-write-with-format)
+  (evil-ex-define-cmd "W[rite]" 'my/evil-write-with-format))
+
+
+
+
+(use-package nerd-icons
+  :ensure t)
+
+(provide 'init-lsp)
+;;; init-lsp.el ends here
