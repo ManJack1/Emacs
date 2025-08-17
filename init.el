@@ -7,16 +7,6 @@
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 
 
-
-(let ((start-time (current-time)))
-  ;; 你的模块配置
-  (use-package some-package
-    :ensure t
-    ;; ...
-    )
-  (message "Loaded some-package in %.2f seconds"
-           (float-time (time-since start-time))))
-
 ;; Load modules
 (require 'init-packages)
 (require 'init-ui)
