@@ -31,7 +31,7 @@
 (use-package doom-themes
   :ensure t
   :config
-  (load-theme 'modus-operandi t))
+  (load-theme 'doom-gruvbox-light t))
 
 ;; 图标支持
 (use-package nerd-icons

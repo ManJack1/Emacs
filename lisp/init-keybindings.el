@@ -128,6 +128,7 @@
     "sl" 'consult-locate
     "st" 'consult-todo
     "sT" 'consult-todo-all
+    "sk" 'embark-bindings
     
     ;; Windows
     "w-" 'split-window-below
@@ -252,8 +253,6 @@
   "Switch to scratch buffer."
   (interactive)
   (switch-to-buffer "*scratch*"))
-
-
 
 (provide 'init-keybindings)
 ;;; init-keybindings.el ends here
