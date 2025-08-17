@@ -122,8 +122,8 @@
     "sS" 'consult-lsp-symbols
     "sy" 'consult-yank-pop
     "sd" 'consult-lsp-diagnostics
-    "si" 'consult-imenu
-    "sI" 'consult-imenu-multi
+    "ss" 'consult-imenu
+    "sS" 'imenu
     "sf" 'consult-find
     "sl" 'consult-locate
     "st" 'consult-todo
