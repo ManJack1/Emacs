@@ -101,7 +101,7 @@
   :demand
   :config
   (centaur-tabs-mode t)
-
+  
   ;; 自定义 buffer 分组
   (defun my/centaur-tabs-buffer-groups ()
     "Custom buffer grouping for centaur-tabs"
@@ -112,23 +112,27 @@
       ((buffer-file-name) "Files")
       ((memq major-mode '(dired-mode)) "Dired")
       (t "Common"))))
+  
   (setq centaur-tabs-buffer-groups-function #'my/centaur-tabs-buffer-groups)
-
+  
   ;; Cycle 范围
   (setq centaur-tabs-cycle-scope 'tabs)
-
-  ;; 标签字体颜色设置（亮紫色选中，白色未选中）
+  
+  ;; 标签字体颜色设置（修复 background 警告）
   (set-face-attribute 'centaur-tabs-selected nil
                       :foreground "#DDA0DD"  ;; 亮紫色
-                      :background nil
+                      :background 'unspecified  ;; 使用 unspecified 而不是 nil
                       :weight 'bold)
+  
   (set-face-attribute 'centaur-tabs-unselected nil
                       :foreground "#FFFFFF"  ;; 白色
-                      :background nil
+                      :background 'unspecified  ;; 使用 unspecified 而不是 nil
                       :weight 'normal)
+  
   (set-face-attribute 'centaur-tabs-default nil
                       :foreground "#FFFFFF"
-                      :background nil))
+                      :background 'unspecified))  ;; 使用 unspecified 而不是 nil
+
 (defun my/update-centaur-tabs-mode ()
   "Enable centaur-tabs only if more than 1 buffer."
   (if (> (length (cl-remove-if-not #'buffer-file-name (buffer-list))) 1)
@@ -136,7 +140,6 @@
     (centaur-tabs-mode -1)))
 
 (add-hook 'buffer-list-update-hook #'my/update-centaur-tabs-mode)
-
 
 (use-package avy
   :ensure t
