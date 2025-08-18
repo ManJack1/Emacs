@@ -50,9 +50,7 @@
   (define-key evil-normal-state-map "gsr" 'evil-surround-change))
 
 (use-package doom-themes
-  :ensure t
-  :config
-  (load-theme 'modus-operandi t))
+  :ensure t)
 
 ;; 图标支持
 (use-package nerd-icons

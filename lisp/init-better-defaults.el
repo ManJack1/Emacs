@@ -20,5 +20,8 @@
 (add-hook 'org-mode-hook 'visual-line-mode)
 (add-hook 'markdown-mode-hook 'visual-line-mode)
 
+;; 主题加载
+(load-theme 'modus-operandi-tinted t)
+
 (provide 'init-better-defaults)
 ;;; init-better-defaults.el ends here

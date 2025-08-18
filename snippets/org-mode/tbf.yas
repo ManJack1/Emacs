@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: Bold text
+# key: tbf
+# --
+ *$1* $0 

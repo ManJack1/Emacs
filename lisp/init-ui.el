@@ -377,5 +377,10 @@
   (setq doc-view-continuous t))
 
 
+(use-package modus-themes
+  :ensure t)
+
+
+
 (provide 'init-ui)
 ;;; init-ui.el ends here

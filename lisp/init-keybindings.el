@@ -106,6 +106,8 @@
     "fP" 'project-switch-project
     "fd" 'project-find-dir
    
+    ;;ui
+    "us" 'my/modus
 
     ;; Buffers
     "sb" 'consult-buffer
@@ -260,6 +262,29 @@
   "Switch to scratch buffer."
   (interactive)
   (switch-to-buffer "*scratch*"))
+
+
+
+;; 默认加载 modus-operandi-tinted
+(load-theme 'modus-operandi-tinted t)
+
+(defun my/modus ()
+  "swift the dark theme and light theme of modus"
+  (interactive)
+  (let ((current (car custom-enabled-themes)))
+    (cond
+     ((eq current 'modus-operandi-tinted)
+      (disable-theme 'modus-operandi-tinted)
+      (load-theme 'modus-vivendi-tinted t)
+      (message "切换到深色主题"))
+     ((eq current 'modus-vivendi-tinted)
+      (disable-theme 'modus-vivendi-tinted)
+      (load-theme 'modus-operandi-tinted t)
+      (message "切换到浅色主题"))
+     (t
+      (mapc #'disable-theme custom-enabled-themes)
+      (load-theme 'modus-operandi-tinted t)
+      (message "切换到 tinted 主题")))))
 
 (provide 'init-keybindings)
 ;;; init-keybindings.el ends here
