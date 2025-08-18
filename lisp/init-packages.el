@@ -22,11 +22,31 @@
   :config
   (evil-mode 1))
 
-(use-package evil-collection
-  :after evil
+(use-package evil-surround
   :ensure t
+  :after evil
   :config
-  (evil-collection-init))
+  (global-evil-surround-mode 1)
+
+    ;; gsa 直接对当前单词添加包围
+  (defun my/surround-add-word ()
+    "Add surround to current word directly"
+    (interactive)
+    (let ((char (read-char "Surround word with: ")))
+      (save-excursion
+        (unless (looking-at "\\<")  ; 如果不在单词开头，移动到单词开头
+          (backward-word))
+        (let ((start (point)))
+          (forward-word)
+          (evil-surround-region start (point) 'exclusive char)))))
+  
+  (define-key evil-normal-state-map "gsa" 'my/surround-add-word)
+  (define-key evil-normal-state-map "gsd" 'evil-surround-delete)
+  (define-key evil-normal-state-map "gsr" 'evil-surround-change)
+  
+  ;; Visual 模式下的 gsa
+  (define-key evil-visual-state-map "gsa" 'evil-surround-region))
+
 
 (use-package doom-themes
   :ensure t
@@ -125,12 +145,12 @@
                       :weight 'bold)
   
   (set-face-attribute 'centaur-tabs-unselected nil
-                      :foreground "#FFFFFF"  ;; 白色
+                      :foreground "#000000"  ;; 白色
                       :background 'unspecified  ;; 使用 unspecified 而不是 nil
                       :weight 'normal)
   
   (set-face-attribute 'centaur-tabs-default nil
-                      :foreground "#FFFFFF"
+                      :foreground "#000000"
                       :background 'unspecified))  ;; 使用 unspecified 而不是 nil
 
 (defun my/update-centaur-tabs-mode ()
