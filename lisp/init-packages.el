@@ -292,5 +292,53 @@
 (use-package org-contrib
   :ensure t
   :after org)
+
+;;; SIS (Smart Input Source) cross-platform configuration
+;;; Supports macOS and Linux
+
+;;; SIS (Smart Input Source) cross-platform configuration
+;;; Supports macOS and Linux
+
+;;; SIS (Smart Input Source) cross-platform configuration
+;;; Supports macOS and Linux
+
+(use-package sis
+  :config
+  ;; Cross-platform input source configuration
+  (cond
+   ;; macOS configuration
+   ((eq system-type 'darwin)
+    (sis-ism-lazyman-config
+     "com.apple.keylayout.ABC"
+     "com.apple.inputmethod.SCIM.ITABC"))
+   
+   ;; Linux fcitx5 configuration
+   ((eq system-type 'gnu/linux)
+    (sis-ism-lazyman-config "1" "2" 'fcitx5)))
+  
+  ;; Enable all modes
+  (sis-global-cursor-color-mode t)
+  (sis-global-respect-mode t)
+  (sis-global-context-mode t)
+  (sis-global-inline-mode t)
+  
+  ;; Evil integration for insert mode switching
+  (defvar sis--saved-input-source nil)
+  
+  (defun sis--evil-insert-enter ()
+    "Restore input source when entering evil insert state."
+    (when sis--saved-input-source
+      (sis-set sis--saved-input-source)))
+  
+  (defun sis--evil-insert-exit ()
+    "Save current input source and switch to English when leaving evil insert state."
+    (setq sis--saved-input-source (sis-get))
+    (sis-set-english))
+  
+  ;; Hook into evil state changes
+  (with-eval-after-load 'evil
+    (add-hook 'evil-insert-state-entry-hook #'sis--evil-insert-enter)
+    (add-hook 'evil-insert-state-exit-hook #'sis--evil-insert-exit)))
+
 (provide 'init-packages)
 ;;; init-packages.el ends here
