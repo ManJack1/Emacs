@@ -104,123 +104,6 @@
 
 (pixel-scroll-precision-mode t) 
 
-;;; Treemacs NeoTree-style Configuration (Improved)
-;;; 让 Treemacs 表现得像 NeoTree 一样
-
-;; === 基本包安装 ===
-(use-package treemacs
-  :ensure t
-  :defer t
-  :init
-  (with-eval-after-load 'winum
-    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
-  :config
-  (progn
-    ;; === NeoTree 风格的基本设置 ===
-    
-    ;; 设置窗口宽度（类似 NeoTree 默认宽度）
-    (setq treemacs-width 30)
-    
-    ;; 设置在左侧显示
-    (setq treemacs-position 'left)
-    
-    ;; 跟随当前文件（类似 NeoTree 的 neo-auto-indent-point）
-    (setq treemacs-follow-after-init t)
-    
-    ;; 当切换 buffer 时自动跟随文件
-    (treemacs-follow-mode t)
-    
-    ;; 自动刷新文件树
-    (treemacs-filewatch-mode t)
-    
-    ;; 启用 fringe 指示器
-    (treemacs-fringe-indicator-mode 'always)
-    
-    ;; Git 模式设置
-    (when treemacs-python-executable
-      (treemacs-git-mode 'deferred))
-    
-    ;; === NeoTree 风格的显示设置 ===
-    
-    ;; 隐藏 dotfiles（类似 NeoTree 的 neo-show-hidden-files）
-    (setq treemacs-show-hidden-files nil)
-    
-    ;; 排序方式：目录优先
-    (setq treemacs-sorting 'alphabetic-asc)
-    
-    ;; 文件夹图标设置
-    (setq treemacs-collapse-dirs 3) ; 折叠空目录
-    
-    ;; === NeoTree 风格的交互行为 ===
-    
-    ;; 当打开文件时不关闭 treemacs（类似 NeoTree 行为）
-    (setq treemacs-is-never-other-window t)
-    
-    ;; 设置缩进
-    (setq treemacs-indentation 2)
-    
-    ;; 不保存状态到文件
-    (setq treemacs-persist-file nil)
-    
-    ;; 当没有项目时显示用户目录
-    (setq treemacs-project-follow-cleanup t)
-    
-    ;; === 简化的函数 ===
-    ;; 移除自定义的 toggle 函数，直接使用 treemacs 原生命令
-    
-    (defun my-treemacs-focus ()
-      "聚焦到 treemacs 窗口，如果不存在则打开"
-      (interactive)
-      (let ((treemacs-window (treemacs-get-local-window)))
-        (if treemacs-window
-            ;; 如果存在，就切换到 treemacs 窗口
-            (treemacs-select-window)
-          ;; 如果不存在，就打开 treemacs
-          (treemacs))))
-
-
-    
-    (defun my-treemacs-find-file ()
-      "Find current file in treemacs and focus on it (like NeoTree's find)."
-      (interactive)
-      (let ((treemacs-window (treemacs-get-local-window)))
-        (if treemacs-window
-            (progn
-              (treemacs-find-file)
-              (treemacs-select-window))
-          (progn
-            (treemacs)
-            (when (treemacs-get-local-window)
-              (treemacs-find-file))))))
-
-    
-    ;; === NeoTree 风格的快捷键映射 ===
-    (treemacs-define-RET-action 'file-node-open #'treemacs-visit-node-in-most-recently-used-window)
-    (treemacs-define-RET-action 'file-node-closed #'treemacs-visit-node-in-most-recently-used-window)
-    
-    ;; 在 treemacs 内部的快捷键（类似 NeoTree）
-    (define-key treemacs-mode-map (kbd "TAB") #'treemacs-TAB-action)
-    (define-key treemacs-mode-map (kbd "o") #'treemacs-visit-node-in-most-recently-used-window)
-    (define-key treemacs-mode-map (kbd "RET") #'treemacs-RET-action)
-    (define-key treemacs-mode-map (kbd "q") #'treemacs-quit)
-    (define-key treemacs-mode-map (kbd "R") #'treemacs-refresh)
-    (define-key treemacs-mode-map (kbd "r") #'treemacs-rename-file)
-    (define-key treemacs-mode-map (kbd "d") #'treemacs-delete-file)
-    (define-key treemacs-mode-map (kbd "c") #'treemacs-copy-file)
-    (define-key treemacs-mode-map (kbd "m") #'treemacs-move-file)
-    (define-key treemacs-mode-map (kbd "a") #'treemacs-create-file)
-    (define-key treemacs-mode-map (kbd "A") #'treemacs-create-dir)
-    (define-key treemacs-mode-map (kbd "C-c C-r") #'treemacs-rename-file)
-    (define-key treemacs-mode-map (kbd "C-c C-d") #'treemacs-delete-file)
-    (define-key treemacs-mode-map (kbd "H") #'treemacs-toggle-show-dotfiles)
-    
-    ;; 项目和工作区切换
-    (define-key treemacs-mode-map (kbd "C-p") #'treemacs-switch-workspace)
-    (define-key treemacs-mode-map (kbd "p") #'treemacs-add-project-to-workspace)
-    
-    ;; 窗口管理
-    (define-key treemacs-mode-map (kbd "C-c o") #'my-treemacs-close-other-windows)
-    ))
 
 ;; === 可选：Evil 模式支持 ===
 (use-package treemacs-evil
@@ -381,6 +264,60 @@
   :ensure t)
 
 
+;; Dashboard with Evil mode integration - Simplified
+
+(use-package dashboard
+  :ensure t
+  :config
+  (add-hook 'elpaca-after-init-hook #'dashboard-insert-startupify-lists)
+  (add-hook 'elpaca-after-init-hook #'dashboard-initialize)
+  (dashboard-setup-startup-hook)
+  
+  ;; Configuration
+  (setq dashboard-startup-banner 'logo
+        dashboard-center-content t
+        dashboard-show-shortcuts t
+        dashboard-items '((recents . 5) (bookmarks . 5) (projects . 5) (agenda . 5) (registers . 5))
+        dashboard-footer-messages '("Quick Navigation: [r]Recent [b]Bookmarks [p]Projects [a]Agenda [R]Registers | [j/k] navigate | [f]Find [d]Dired [s]Scratch")
+        dashboard-item-names '(("Recent Files:" . "Recent Files: [r]")
+                              ("Bookmarks:" . "Bookmarks: [b]") 
+                              ("Projects:" . "Projects: [p]")
+                              ("Agenda for today:" . "Agenda: [a]")
+                              ("Agenda for the coming week:" . "Agenda: [a]")
+                              ("Agenda:" . "Agenda: [a]")
+                              ("Registers:" . "Registers: [R]"))
+        dashboard-navigator-buttons
+        `(((,(if (display-graphic-p) "📁" "f") "Find File" "Open file" (lambda (&rest _) (find-file (read-file-name "Find file: "))))
+           (,(if (display-graphic-p) "📂" "d") "Dired" "File manager" (lambda (&rest _) (dired ".")))
+           (,(if (display-graphic-p) "📋" "s") "Scratch" "Scratch buffer" (lambda (&rest _) (scratch-buffer))))
+          ((,(if (display-graphic-p) "🔄" "g") "Refresh" "Refresh dashboard" (lambda (&rest _) (dashboard-refresh-buffer)))
+           (,(if (display-graphic-p) "⚙️" "c") "Config" "Open config" (lambda (&rest _) (find-file user-init-file)))
+           (,(if (display-graphic-p) "❌" "q") "Quit" "Quit dashboard" (lambda (&rest _) (quit-window))))))
+  
+  ;; Evil integration
+  (with-eval-after-load 'evil
+    (evil-set-initial-state 'dashboard-mode 'normal)
+    (evil-define-key 'normal dashboard-mode-map
+      "j" 'dashboard-next-line "k" 'dashboard-previous-line
+      "h" 'dashboard-previous-line "l" 'dashboard-next-line
+      (kbd "TAB") 'widget-forward (kbd "S-TAB") 'widget-backward
+      (kbd "RET") 'dashboard-return (kbd "<return>") 'dashboard-return "o" 'dashboard-return
+      "r" 'my-dashboard-goto-recent-files "b" 'my-dashboard-goto-bookmarks 
+      "p" 'my-dashboard-goto-projects "a" 'my-dashboard-goto-agenda "R" 'my-dashboard-goto-registers
+      "f" 'find-file "d" 'dired "s" 'scratch-buffer
+      "P" (lambda () (interactive) (if (fboundp 'projectile-switch-project) (projectile-switch-project) (message "Projectile not available")))
+      "gr" 'dashboard-refresh-buffer "q" 'quit-window "Q" 'save-buffers-kill-terminal
+      "gg" 'beginning-of-buffer "G" 'end-of-buffer)
+    (add-hook 'dashboard-mode-hook (lambda () (setq buffer-read-only t) (setq-local evil-normal-state-cursor 'box)))
+    (when (boundp 'evil-escape-inhibit-functions)
+      (add-hook 'dashboard-mode-hook (lambda () (setq-local evil-escape-inhibit t))))))
+
+;; Section navigation functions
+(defun my-dashboard-goto-recent-files () (interactive) (goto-char (point-min)) (when (search-forward "Recent Files:" nil t) (forward-line 1) (beginning-of-line) (message "Recent Files section")))
+(defun my-dashboard-goto-bookmarks () (interactive) (goto-char (point-min)) (when (search-forward "Bookmarks:" nil t) (forward-line 1) (beginning-of-line) (message "Bookmarks section")))
+(defun my-dashboard-goto-projects () (interactive) (goto-char (point-min)) (when (search-forward "Projects:" nil t) (forward-line 1) (beginning-of-line) (message "Projects section")))
+(defun my-dashboard-goto-agenda () (interactive) (goto-char (point-min)) (when (or (search-forward "Agenda for today:" nil t) (search-forward "Agenda for the coming week:" nil t) (search-forward "Agenda:" nil t)) (forward-line 1) (beginning-of-line) (message "Agenda section")))
+(defun my-dashboard-goto-registers () (interactive) (goto-char (point-min)) (when (search-forward "Registers:" nil t) (forward-line 1) (beginning-of-line) (message "Registers section")))
 
 (provide 'init-ui)
 ;;; init-ui.el ends here

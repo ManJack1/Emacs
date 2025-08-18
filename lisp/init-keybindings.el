@@ -96,7 +96,7 @@
 (with-eval-after-load 'evil
   (my/leader-keys
     ;; Files
-    "fc" 'open-config-file
+    "fc" 'my-find-config-files
     "ff" 'find-file
     "fr" 'consult-recent-file
     "fs" 'save-buffer
@@ -175,6 +175,10 @@
     "cw" 'lsp-workspace-restart
     "cW" 'lsp-workspace-shutdown
     "cs" 'db/lsp-treemacs-symbols-toggle           ; 添加 LSP treemacs symbols
+
+    ;;dirvish
+    "e" 'my-dirvish-toggle 
+
     
     ;; Git
     "gg" 'magit-status
@@ -285,6 +289,326 @@
       (mapc #'disable-theme custom-enabled-themes)
       (load-theme 'modus-operandi-tinted t)
       (message "切换到 tinted 主题")))))
+
+;; Cross-platform ls fix for macOS/BSD and Linux
+(cond
+ ;; macOS/BSD - disable --dired by default, use gls if available
+ ((or (eq system-type 'darwin) (eq system-type 'berkeley-unix))
+  (setq dired-use-ls-dired nil)
+  (when (executable-find "gls")
+    (setq insert-directory-program "gls")
+    (setq dired-use-ls-dired t)))
+ ;; Linux - GNU ls should work fine
+ ((eq system-type 'gnu/linux)
+  (setq dired-use-ls-dired t)))
+
+(use-package dirvish
+  :ensure t
+  :init
+  (dirvish-override-dired-mode)
+  :config
+  ;; Basic settings
+  (setq dirvish-quick-access-entries
+        '(("h" "~/" "Home")
+          ("d" "~/Downloads/" "Downloads")
+          ("D" "~/Desktop/" "Desktop")
+          ("p" "~/Projects/" "Projects")
+          ("e" "~/.emacs.d/" "Emacs config")
+          ("t" "/tmp/" "Temporary files")))
+  
+  ;; Enable useful attributes - order matters
+  (setq dirvish-attributes
+        '(nerd-icons file-time file-size collapse subtree-state vc-state git-msg))
+  
+  ;; Enable mode line info
+  (setq dirvish-mode-line-format
+        '(:left (sort symlink) :right (omit yank index)))
+  
+  ;; Enable header line
+  (setq dirvish-header-line-format
+        '(:left (path) :right (free-space)))
+  
+  ;; Standard preview dispatchers (from official docs)
+  (setq dirvish-preview-dispatchers '(image gif video audio epub pdf archive))
+  
+  ;; Auto preview settings
+  (setq dirvish-preview-policy '(("*" . "*")))  ; Preview all files
+  (setq dirvish-idle-time 0.1)
+  
+  ;; Use fd for faster file searching if available
+  (when (executable-find "fd")
+    (setq dirvish-fd-switches "-H"))
+  
+  ;; Fullscreen settings
+  (setq dirvish-fullscreen-props '((window-width . 0.8)
+                                   (window-height . 0.8)))
+  
+  ;; Enable emerge and side preview
+  (setq dirvish-emerge-groups '("*.png" "*.jpg" "*.jpeg" "*.gif" "*.svg"
+                               "*.mp4" "*.mkv" "*.avi" "*.mov"
+                               "*.pdf" "*.doc" "*.docx" "*.xls" "*.xlsx"
+                               "*.zip" "*.tar" "*.gz" "*.7z"))
+  
+  ;; Optional: Enable side window
+  (setq dirvish-side-width 40)
+  
+  ;; Key bindings for dirvish
+  (define-key dirvish-mode-map (kbd "TAB") 'dirvish-subtree-toggle)
+  (define-key dirvish-mode-map (kbd "M-f") 'dirvish-history-go-forward)
+  (define-key dirvish-mode-map (kbd "M-b") 'dirvish-history-go-backward)
+  (define-key dirvish-mode-map (kbd "M-l") 'dirvish-ls-switches-menu)
+  (define-key dirvish-mode-map (kbd "M-m") 'dirvish-mark-actions-menu)
+  (define-key dirvish-mode-map (kbd "M-t") 'dirvish-layout-toggle)
+  (define-key dirvish-mode-map (kbd "M-s") 'dirvish-setup-menu)
+  (define-key dirvish-mode-map (kbd "M-e") 'dirvish-emerge-menu)
+  (define-key dirvish-mode-map (kbd "M-j") 'dirvish-fd-jump)
+  (define-key dirvish-mode-map (kbd "v") 'dirvish-toggle-preview)
+  
+  ;; Evil mode key bindings
+  (with-eval-after-load 'evil
+    (evil-define-key 'normal dirvish-mode-map
+      (kbd "RET") 'dired-find-file
+      (kbd "<return>") 'dired-find-file
+      "h" 'dired-up-directory
+      "l" 'dired-find-file
+      "j" 'dired-next-line
+      "k" 'dired-previous-line
+      "o" 'dired-find-file-other-window
+      "q" 'dirvish-quit
+      "gg" 'beginning-of-buffer
+      "G" 'end-of-buffer
+      "^" 'dired-up-directory
+      "?" 'dirvish-dispatch
+      "A" 'dirvish-setup-menu              ; Keep original A for dirvish setup
+      "f" 'dirvish-file-info-menu
+      "s" 'dirvish-quicksort
+      "R" 'dirvish-history-jump             ; Move history to R
+      "v" 'dirvish-toggle-preview
+      "gr" 'revert-buffer
+      
+      ;; NeoTree-like file operations
+      "m" 'dired-mark
+      "u" 'dired-unmark
+      "U" 'dired-unmark-all-marks
+      "t" 'dired-toggle-marks
+      
+      ;; File/directory operations (NeoTree style)
+      "a" 'my-dirvish-create-file        ; add file/directory
+      "d" 'my-dirvish-delete             ; delete
+      "r" 'my-dirvish-rename             ; rename
+      "y" 'my-dirvish-copy               ; yank/copy
+      "x" 'my-dirvish-cut                ; cut
+      "p" 'my-dirvish-paste              ; paste
+      
+      ;; Alternative bindings
+      "+" 'my-dirvish-create-directory   ; Still keep + for directory creation
+      "TAB" 'dirvish-subtree-toggle)))
+
+;; Helper functions
+(defun my-dirvish-open-home ()
+  "Open home directory with dirvish."
+  (interactive)
+  (dirvish "~/"))
+
+(defun my-dirvish-open-current ()
+  "Open current directory with dirvish."
+  (interactive)
+  (dirvish default-directory))
+
+(defun my-dirvish-side-toggle ()
+  "Toggle dirvish side window."
+  (interactive)
+  (if (dirvish-side--session-visible-p)
+      (dirvish-side-close)
+    (dirvish-side)))
+
+(defun my-dirvish-fullscreen ()
+  "Open dirvish in fullscreen."
+  (interactive)
+  (dirvish-dwim))
+
+;; NeoTree-like file operations
+(defvar my-dirvish-clipboard nil
+  "Clipboard for cut/copy operations.")
+
+(defvar my-dirvish-clipboard-action nil
+  "Action type: 'copy or 'cut.")
+
+(defun my-dirvish-create-file ()
+  "Create a new file or directory (NeoTree style).
+If path ends with '/', create a directory; otherwise create a file."
+  (interactive)
+  (let* ((current-dir (dired-current-directory))
+         (input (read-string "Create (end with / for directory): " current-dir))
+         (path (expand-file-name input)))
+    (when (and input (not (string-empty-p input)))
+      (if (file-exists-p path)
+          (message "Already exists: %s" (file-name-nondirectory path))
+        (if (string-suffix-p "/" input)
+            ;; Create directory
+            (progn
+              (make-directory path t)
+              (revert-buffer)
+              (dired-goto-file path)
+              (message "Created directory: %s" (file-name-nondirectory (directory-file-name path))))
+          ;; Create file
+          (progn
+            ;; Create parent directories if needed
+            (let ((parent-dir (file-name-directory path)))
+              (when (not (file-exists-p parent-dir))
+                (make-directory parent-dir t)))
+            ;; Create empty file
+            (with-temp-buffer
+              (write-file path))
+            (revert-buffer)
+            (dired-goto-file path)
+            (message "Created file: %s" (file-name-nondirectory path))))))))
+
+(defun my-dirvish-create-directory ()
+  "Create a new directory (NeoTree style)."
+  (interactive)
+  (let* ((current-dir (dired-current-directory))
+         (dirname (read-string "Create directory: " current-dir)))
+    (when (and dirname (not (string-empty-p dirname)))
+      ;; Auto-add trailing slash if not present
+      (unless (string-suffix-p "/" dirname)
+        (setq dirname (concat dirname "/")))
+      (let ((path (expand-file-name dirname)))
+        (if (file-exists-p path)
+            (message "Directory already exists: %s" (file-name-nondirectory (directory-file-name path)))
+          (make-directory path t)
+          (revert-buffer)
+          (dired-goto-file path)
+          (message "Created directory: %s" (file-name-nondirectory (directory-file-name path))))))))
+
+(defun my-dirvish-rename ()
+  "Rename file or directory (NeoTree style)."
+  (interactive)
+  (let* ((file (dired-get-filename))
+         (dir (file-name-directory file))
+         (name (file-name-nondirectory file))
+         (new-name (read-string "Rename to: " name)))
+    (when (and new-name (not (string-empty-p new-name)) (not (string= name new-name)))
+      (let ((new-file (expand-file-name new-name dir)))
+        (if (file-exists-p new-file)
+            (message "File already exists: %s" new-name)
+          (rename-file file new-file)
+          (revert-buffer)
+          (dired-goto-file new-file)
+          (message "Renamed %s to %s" name new-name))))))
+
+(defun my-dirvish-delete ()
+  "Delete file or directory with confirmation (NeoTree style)."
+  (interactive)
+  (let ((file (dired-get-filename)))
+    (when (yes-or-no-p (format "Delete %s? " (file-name-nondirectory file)))
+      (if (file-directory-p file)
+          (delete-directory file t)
+        (delete-file file))
+      (revert-buffer)
+      (message "Deleted: %s" (file-name-nondirectory file)))))
+
+(defun my-dirvish-copy ()
+  "Copy file to clipboard (NeoTree style)."
+  (interactive)
+  (let ((file (dired-get-filename)))
+    (setq my-dirvish-clipboard file
+          my-dirvish-clipboard-action 'copy)
+    (message "Copied: %s" (file-name-nondirectory file))))
+
+(defun my-dirvish-cut ()
+  "Cut file to clipboard (NeoTree style)."
+  (interactive)
+  (let ((file (dired-get-filename)))
+    (setq my-dirvish-clipboard file
+          my-dirvish-clipboard-action 'cut)
+    (message "Cut: %s" (file-name-nondirectory file))))
+
+(defun my-dirvish-paste ()
+  "Paste file from clipboard (NeoTree style)."
+  (interactive)
+  (when my-dirvish-clipboard
+    (let* ((source my-dirvish-clipboard)
+           (target-dir (dired-current-directory))
+           (target (expand-file-name (file-name-nondirectory source) target-dir)))
+      (cond
+       ((eq my-dirvish-clipboard-action 'copy)
+        (if (file-directory-p source)
+            (copy-directory source target)
+          (copy-file source target))
+        (message "Copied %s to %s" (file-name-nondirectory source) target-dir))
+       ((eq my-dirvish-clipboard-action 'cut)
+        (rename-file source target)
+        (setq my-dirvish-clipboard nil
+              my-dirvish-clipboard-action nil)
+        (message "Moved %s to %s" (file-name-nondirectory source) target-dir)))
+      (revert-buffer)
+      (dired-goto-file target))))
+
+
+(defun my-dirvish-toggle ()
+  "Toggle dirvish layout or quit if already in dirvish."
+  (interactive)
+  (let ((current-session (dirvish-curr)))
+    (if current-session
+        ;; If there's an active dirvish session, quit it
+        (progn
+          (dirvish-quit)
+          (message "Dirvish closed"))
+      ;; Otherwise open dirvish
+      (progn
+        (dirvish default-directory)
+        (message "Dirvish opened")))))
+
+;; Find Emacs configuration files
+;; Find Emacs configuration files
+
+(defun my-find-config-files ()
+  "Find and open Emacs configuration files from init.el and lisp/ directory."
+  (interactive)
+  (let* ((config-dir user-emacs-directory)
+         (lisp-dir (expand-file-name "lisp" config-dir))
+         (init-file user-init-file)
+         (files (append
+                ;; Add init.el if it exists
+                (when (file-exists-p init-file)
+                  (list init-file))
+                ;; Add all .el files from lisp/ directory
+                (when (file-directory-p lisp-dir)
+                  (directory-files-recursively lisp-dir "\\.el$"))
+                ;; Add other common config files in emacs.d
+                (cl-remove-if-not #'file-exists-p
+                                  (mapcar (lambda (f) (expand-file-name f config-dir))
+                                          '("early-init.el" "custom.el" "config.el")))))
+         ;; Create relative paths for display
+         (choices (mapcar (lambda (file)
+                           (file-relative-name file config-dir))
+                         files)))
+    (if choices
+        (let* ((selected (completing-read "Open config file: " choices))
+               (full-path (expand-file-name selected config-dir)))
+          (find-file full-path))
+      (message "No configuration files found"))))
+
+(defun my-edit-init ()
+  "Open init.el"
+  (interactive)
+  (find-file user-init-file))
+
+(defun my-browse-emacs-config ()
+  "Browse .emacs.d directory"
+  (interactive)
+  (dired user-emacs-directory))
+
+(defun my-edit-init ()
+  "Open init.el"
+  (interactive)
+  (find-file user-init-file))
+
+(defun my-browse-emacs-config ()
+  "Browse .emacs.d directory"
+  (interactive)
+  (dired user-emacs-directory))
 
 (provide 'init-keybindings)
 ;;; init-keybindings.el ends here
