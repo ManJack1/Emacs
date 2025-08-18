@@ -198,14 +198,12 @@
     "od" 'dired
     
    ;;compiler
-    "rr" 'compiler-smart-run
-    "ro" 'compiler-open
-    "rR" 'compiler-redo
-    "rt" 'compiler-toggle-results
-    "rs" 'compiler-stop
-    "rc" 'compiler-clean-output-now
-    "cc" 'compiler-smart-run
-    "cr" 'compiler-redo
+    "mm" 'compiler-smart-run
+    "mt" 'compiler-open
+    "mr" 'compiler-redo
+    "mt" 'compiler-toggle-results
+    "ms" 'compiler-stop
+    "mc" 'compiler-clean-output-now
 
     ;; LSP/Diagnostics
     "xx" 'consult-lsp-diagnostics
