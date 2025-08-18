@@ -303,6 +303,7 @@
 ;;; Supports macOS and Linux
 
 (use-package sis
+  :ensure t
   :config
   ;; Cross-platform input source configuration
   (cond
