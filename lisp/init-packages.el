@@ -1,4 +1,3 @@
-
 ;;; init-packages.el --- Packages configuration
 
 
@@ -27,26 +26,28 @@
   :after evil
   :config
   (global-evil-surround-mode 1)
-
-    ;; gsa 直接对当前单词添加包围
+  
+  ;; 智能的单词包围函数
   (defun my/surround-add-word ()
-    "Add surround to current word directly"
+    "Add surround to current word, handles edge cases better"
     (interactive)
     (let ((char (read-char "Surround word with: ")))
       (save-excursion
-        (unless (looking-at "\\<")  ; 如果不在单词开头，移动到单词开头
-          (backward-word))
-        (let ((start (point)))
-          (forward-word)
-          (evil-surround-region start (point) 'exclusive char)))))
+        ;; 确保在单词上
+        (unless (looking-at "\\w")
+          (re-search-forward "\\w" nil t)
+          (backward-char))
+        
+        ;; 移动到单词边界
+        (let ((start (progn (backward-word) (point)))
+              (end (progn (forward-word) (point))))
+          (evil-surround-region start end 'exclusive char)))))
   
+  ;; 绑定快捷键
   (define-key evil-normal-state-map "gsa" 'my/surround-add-word)
+  (define-key evil-visual-state-map "gsa" 'evil-surround-region)
   (define-key evil-normal-state-map "gsd" 'evil-surround-delete)
-  (define-key evil-normal-state-map "gsr" 'evil-surround-change)
-  
-  ;; Visual 模式下的 gsa
-  (define-key evil-visual-state-map "gsa" 'evil-surround-region))
-
+  (define-key evil-normal-state-map "gsr" 'evil-surround-change))
 
 (use-package doom-themes
   :ensure t
