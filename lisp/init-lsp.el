@@ -1,10 +1,12 @@
-
 (use-package lsp-mode
   :ensure t
   :hook ((c++-mode . lsp)
 	 (c++-ts-mode . lsp)
 	 (c-ts-mode . lsp)  ; 修复：添加缺少的空格
-         (c-mode . lsp))
+         (c-mode . lsp)
+	 (bash-ts-mode-hook . lsp)
+	 (lua-ts-mode . lsp))
+   
   :commands lsp
   :config
   ;; 使用 clangd 作为 C/C++ 语言服务器

@@ -102,7 +102,7 @@
     "fs" 'save-buffer
     "fS" 'write-file
     "fb" 'consult-buffer
-    "fp" 'consult-project-buffer
+    "fp" 'project-find-file
     "fP" 'project-switch-project
     "fd" 'project-find-dir
    
@@ -169,6 +169,7 @@
     "cd" 'lsp-find-definition
     "cD" 'lsp-find-declaration
     "ci" 'lsp-find-implementation
+    "cl" 'describe-mode
     "ct" 'lsp-find-type-definition
     "cR" 'lsp-find-references
     "ch" 'lsp-describe-thing-at-point
