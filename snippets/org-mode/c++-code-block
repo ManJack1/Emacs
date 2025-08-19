@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: Bold text
+# name: c++-block-code
 # key: cblock
 # --
 #+attr_latex: :options frame=single,basicstyle=\footnotesize

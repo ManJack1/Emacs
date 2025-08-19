@@ -48,24 +48,7 @@
            (other-window -1))))
 
 (use-package consult
-  :ensure t
-  :config
-  ;; 如果你使用 Evil，可以这样设置
- (with-eval-after-load 'evil
-  (evil-set-leader 'normal (kbd "SPC"))
-  
-  ;; File operations
-  (evil-define-key 'normal 'global (kbd "<leader>ff") 'find-file)
-  (evil-define-key 'normal 'global (kbd "<leader>fb") 'consult-buffer)
-  (evil-define-key 'normal 'global (kbd "<leader>fr") 'consult-recent-file)
-  
-  ;; Search operations  
-  (evil-define-key 'normal 'global (kbd "<leader>sb") 'consult-line)
-  (evil-define-key 'normal 'global (kbd "<leader>ss") 'consult-lsp-file-symbols)
-  (evil-define-key 'normal 'global (kbd "<leader>sS") 'consult-lsp-symbols)
-  (evil-define-key 'normal 'global (kbd "<leader>sy") 'consult-yank-pop)
-  (evil-define-key 'normal 'global (kbd "<leader>sd") 'consult-lsp-diagnostics)
-  (evil-define-key 'normal 'global (kbd "<leader>sg") 'consult-ripgrep)))
+  :ensure t)
 
 
 
@@ -125,7 +108,7 @@
     "sg" 'consult-ripgrep
     "sG" 'consult-git-grep
     "sy" 'consult-yank-pop
-    "sd" 'consult-lsp-diagnostics
+    "sd" 'consult-flymake
     "ss" 'consult-imenu
     "sS" 'imenu
     "sf" 'consult-find

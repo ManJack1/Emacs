@@ -79,7 +79,93 @@
     '(("\\[X\\]" . '(:foreground "#4CAF50" :weight bold))
       ("\\[ \\]" . '(:foreground "#BDBDBD")))))
 
-;; 添加org-superstar用于更好的标题符号
+
+(use-package org-download
+  :ensure t
+  :after org)
+
+
+;; 完整的图片插入解决方案
+(defun my/org-image-manager ()
+  "Complete image insertion manager for org-mode."
+  (interactive)
+  (let ((choice (completing-read 
+                 "Insert image: "
+                 '("File" "Screenshot" "Clipboard" "URL")
+                 nil t)))
+    (cond
+     ((string= choice "File")
+      (my/org-insert-image-file))
+     ((string= choice "Screenshot")
+      (if (fboundp 'org-download-screenshot)
+          (org-download-screenshot)
+        (my/simple-screenshot)))
+     ((string= choice "Clipboard")
+      (if (fboundp 'org-download-clipboard)
+          (org-download-clipboard)
+        (my/paste-image-from-clipboard)))
+     ((string= choice "URL")
+      (my/org-insert-image-url)))))
+
+(defun my/org-insert-image-url ()
+  "Insert image from URL."
+  (interactive)
+  (let* ((url (read-string "Image URL: "))
+         (image-dir "./images/")
+         (extension (or (file-name-extension url) "png"))
+         (filename (format "%s.%s" 
+                          (format-time-string "%Y%m%d-%H%M%S")
+                          extension))
+         (local-path (expand-file-name filename image-dir)))
+    
+    (unless (file-exists-p image-dir)
+      (make-directory image-dir t))
+    
+    ;; 下载图片
+    (url-copy-file url local-path)
+    
+    ;; 插入链接
+    (insert (format "[[file:%s]]\n" (file-relative-name local-path)))
+    
+    ;; 显示图片
+    (when (fboundp 'org-display-inline-images)
+      (org-display-inline-images))))
+
+(defun my/simple-screenshot ()
+  "Simple screenshot function."
+  (interactive)
+  (let* ((image-dir "./images/")
+         (filename (format "screenshot_%s.png" 
+                          (format-time-string "%Y%m%d-%H%M%S")))
+         (local-path (expand-file-name filename image-dir))
+         (cmd (cond
+               ((eq system-type 'darwin) 
+                (format "screencapture -i '%s'" local-path))
+               ((eq system-type 'gnu/linux)
+                (format "gnome-screenshot -a -f '%s'" local-path))
+               (t nil))))
+    
+    (when cmd
+      (unless (file-exists-p image-dir)
+        (make-directory image-dir t))
+      
+      (shell-command cmd)
+      
+      (when (file-exists-p local-path)
+        (insert (format "[[file:%s]]\n" (file-relative-name local-path)))
+        (when (fboundp 'org-display-inline-images)
+          (org-display-inline-images))))))
+
+;; 主要按键绑定
+(with-eval-after-load 'org
+  (define-key org-mode-map (kbd "C-c i i") 'my/org-image-manager)
+  (define-key org-mode-map (kbd "C-c i f") 'my/org-insert-image-file)
+  (define-key org-mode-map (kbd "C-c i u") 'my/org-insert-image-url)
+  (define-key org-mode-map (kbd "C-c i s") 'my/simple-screenshot))
+
+
+
+
 (use-package org-superstar
   :ensure t
   :after org
@@ -106,6 +192,7 @@
 (setq compilation-scroll-output t)             ; 自动滚动输出
 (setq compilation-always-kill t)               ; 总是结束之前的编译
 (setq compilation-ask-about-save nil)          ; 编译前自动保存
+
 
 
 (provide 'init-org)
