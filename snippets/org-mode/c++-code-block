@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: Bold text
+# key: cblock
+# --
+#+attr_latex: :options frame=single,basicstyle=\footnotesize
+#+begin_src C++ :includes <iostream> :flags -std=c++11
+$0
+#+end_src

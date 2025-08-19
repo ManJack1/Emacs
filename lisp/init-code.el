@@ -135,20 +135,13 @@
 
 (use-package copilot
   :ensure t
-  :bind (("C-<tab>" . copilot-accept-completion)
-         ("C-TAB" . copilot-accept-completion))
+  :bind (("M-<tab>" . copilot-accept-completion)
+         ("M-TAB" . copilot-accept-completion))
   :config
   ;; 禁用特定的警告
   (setq warning-suppress-log-types '((copilot)))
   ;; 或者只禁用这个特定警告
   (setq warning-suppress-types '((copilot copilot--infer-indentation-offset))))
-
-;; 安装并配置 lsp-pyright
-(use-package lsp-pyright
-  :ensure t
-  :hook (python-mode . (lambda ()
-                         (require 'lsp-pyright)
-                         (lsp))))
 
 
 (provide 'init-code)

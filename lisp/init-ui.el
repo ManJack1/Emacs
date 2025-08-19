@@ -235,30 +235,27 @@
   :config
   (treemacs-load-theme "nerd-icons"))
 
+;; Evil Collection 提供各种 mode 的 Vim 按键绑定
+(use-package evil-collection
+  :ensure t
+  :after evil
+  :config
+  (evil-collection-init))
 
+;; 现在配置 pdf-tools
 (use-package pdf-tools
   :ensure t
   :config
-  ;; 初始化 pdf-tools
   (pdf-tools-install)
-  
-  ;; 启用更多功能
   (setq-default pdf-view-display-size 'fit-width)
   (setq pdf-view-continuous t)
   
-;; 在 pdf-view-mode 中禁用行号
-(add-hook 'pdf-view-mode-hook
-          (lambda ()
-            (display-line-numbers-mode -1)))
-  ;; 自动刷新
+  (add-hook 'pdf-view-mode-hook
+            (lambda ()
+              (display-line-numbers-mode -1)))
   (add-hook 'pdf-view-mode-hook (lambda () (auto-revert-mode)))
   
   :mode ("\\.pdf\\'" . pdf-view-mode))
-
-;; 如果 pdf-tools 安装失败，使用 DocView
-(unless (package-installed-p 'pdf-tools)
-  (setq doc-view-continuous t))
-
 
 (use-package modus-themes
   :ensure t)
