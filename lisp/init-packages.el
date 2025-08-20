@@ -298,12 +298,6 @@
 ;;; SIS (Smart Input Source) cross-platform configuration
 ;;; Supports macOS and Linux
 
-;;; SIS (Smart Input Source) cross-platform configuration
-;;; Supports macOS and Linux
-
-;;; SIS (Smart Input Source) cross-platform configuration
-;;; Supports macOS and Linux
-
 (use-package sis
   :ensure t
   :config
@@ -313,7 +307,8 @@
    ((eq system-type 'darwin)
     (sis-ism-lazyman-config
      "com.apple.keylayout.ABC"
-     "com.apple.inputmethod.SCIM.ITABC"))
+     "com.apple.inputmethod.SCIM.ITABC"
+     ))
    
    ;; Linux fcitx5 configuration
    ((eq system-type 'gnu/linux)
@@ -325,23 +320,25 @@
   (sis-global-context-mode t)
   (sis-global-inline-mode t)
   
-  ;; Evil integration for insert mode switching
+  ;; Evil integration - 修改这部分
   (defvar sis--saved-input-source nil)
   
   (defun sis--evil-insert-enter ()
-    "Restore input source when entering evil insert state."
-    (when sis--saved-input-source
-      (sis-set sis--saved-input-source)))
+    "默认进入英文输入法，除非是在中文环境下"
+    ;; 总是先设置为英文
+    (sis-set-english))
   
   (defun sis--evil-insert-exit ()
-    "Save current input source and switch to English when leaving evil insert state."
+    "离开插入模式时保存当前输入法并切换到英文"
     (setq sis--saved-input-source (sis-get))
     (sis-set-english))
   
   ;; Hook into evil state changes
   (with-eval-after-load 'evil
     (add-hook 'evil-insert-state-entry-hook #'sis--evil-insert-enter)
-    (add-hook 'evil-insert-state-exit-hook #'sis--evil-insert-exit)))
+    (add-hook 'evil-insert-state-exit-hook #'sis--evil-insert-exit)
+    ;; 确保 normal mode 也是英文
+    (add-hook 'evil-normal-state-entry-hook #'sis-set-english)))
 
 (provide 'init-packages)
 ;;; init-packages.el ends here
