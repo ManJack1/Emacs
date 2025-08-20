@@ -16,6 +16,7 @@
 (require 'init-lsp)
 (require 'init-code)
 (require 'compiler)
+(require 'init-ultisnippet)
 ;; Load custom file
 (load custom-file 'noerror)
 

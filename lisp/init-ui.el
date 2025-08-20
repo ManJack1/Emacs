@@ -263,58 +263,16 @@
 
 ;; Dashboard with Evil mode integration - Simplified
 
-(use-package dashboard
+ (use-package dashboard
   :ensure t
   :config
-  (add-hook 'elpaca-after-init-hook #'dashboard-insert-startupify-lists)
-  (add-hook 'elpaca-after-init-hook #'dashboard-initialize)
-  (dashboard-setup-startup-hook)
-  
-  ;; Configuration
-  (setq dashboard-startup-banner 'logo
-        dashboard-center-content t
-        dashboard-show-shortcuts t
-        dashboard-items '((recents . 5) (bookmarks . 5) (projects . 5) (agenda . 5) (registers . 5))
-        dashboard-footer-messages '("Quick Navigation: [r]Recent [b]Bookmarks [p]Projects [a]Agenda [R]Registers | [j/k] navigate | [f]Find [d]Dired [s]Scratch")
-        dashboard-item-names '(("Recent Files:" . "Recent Files: [r]")
-                              ("Bookmarks:" . "Bookmarks: [b]") 
-                              ("Projects:" . "Projects: [p]")
-                              ("Agenda for today:" . "Agenda: [a]")
-                              ("Agenda for the coming week:" . "Agenda: [a]")
-                              ("Agenda:" . "Agenda: [a]")
-                              ("Registers:" . "Registers: [R]"))
-        dashboard-navigator-buttons
-        `(((,(if (display-graphic-p) "📁" "f") "Find File" "Open file" (lambda (&rest _) (find-file (read-file-name "Find file: "))))
-           (,(if (display-graphic-p) "📂" "d") "Dired" "File manager" (lambda (&rest _) (dired ".")))
-           (,(if (display-graphic-p) "📋" "s") "Scratch" "Scratch buffer" (lambda (&rest _) (scratch-buffer))))
-          ((,(if (display-graphic-p) "🔄" "g") "Refresh" "Refresh dashboard" (lambda (&rest _) (dashboard-refresh-buffer)))
-           (,(if (display-graphic-p) "⚙️" "c") "Config" "Open config" (lambda (&rest _) (find-file user-init-file)))
-           (,(if (display-graphic-p) "❌" "q") "Quit" "Quit dashboard" (lambda (&rest _) (quit-window))))))
-  
-  ;; Evil integration
-  (with-eval-after-load 'evil
-    (evil-set-initial-state 'dashboard-mode 'normal)
-    (evil-define-key 'normal dashboard-mode-map
-      "j" 'dashboard-next-line "k" 'dashboard-previous-line
-      "h" 'dashboard-previous-line "l" 'dashboard-next-line
-      (kbd "TAB") 'widget-forward (kbd "S-TAB") 'widget-backward
-      (kbd "RET") 'dashboard-return (kbd "<return>") 'dashboard-return "o" 'dashboard-return
-      "r" 'my-dashboard-goto-recent-files "b" 'my-dashboard-goto-bookmarks 
-      "p" 'my-dashboard-goto-projects "a" 'my-dashboard-goto-agenda "R" 'my-dashboard-goto-registers
-      "f" 'find-file "d" 'dired "s" 'scratch-buffer
-      "P" (lambda () (interactive) (if (fboundp 'projectile-switch-project) (projectile-switch-project) (message "Projectile not available")))
-      "gr" 'dashboard-refresh-buffer "q" 'quit-window "Q" 'save-buffers-kill-terminal
-      "gg" 'beginning-of-buffer "G" 'end-of-buffer)
-    (add-hook 'dashboard-mode-hook (lambda () (setq buffer-read-only t) (setq-local evil-normal-state-cursor 'box)))
-    (when (boundp 'evil-escape-inhibit-functions)
-      (add-hook 'dashboard-mode-hook (lambda () (setq-local evil-escape-inhibit t))))))
-
-;; Section navigation functions
-(defun my-dashboard-goto-recent-files () (interactive) (goto-char (point-min)) (when (search-forward "Recent Files:" nil t) (forward-line 1) (beginning-of-line) (message "Recent Files section")))
-(defun my-dashboard-goto-bookmarks () (interactive) (goto-char (point-min)) (when (search-forward "Bookmarks:" nil t) (forward-line 1) (beginning-of-line) (message "Bookmarks section")))
-(defun my-dashboard-goto-projects () (interactive) (goto-char (point-min)) (when (search-forward "Projects:" nil t) (forward-line 1) (beginning-of-line) (message "Projects section")))
-(defun my-dashboard-goto-agenda () (interactive) (goto-char (point-min)) (when (or (search-forward "Agenda for today:" nil t) (search-forward "Agenda for the coming week:" nil t) (search-forward "Agenda:" nil t)) (forward-line 1) (beginning-of-line) (message "Agenda section")))
-(defun my-dashboard-goto-registers () (interactive) (goto-char (point-min)) (when (search-forward "Registers:" nil t) (forward-line 1) (beginning-of-line) (message "Registers section")))
+  (setq dashboard-banner-logo-title "Welcome to Emacs!") ;; 个性签名，随读者喜好设置
+  ;; (setq dashboard-projects-backend 'projectile) ;; 读者可以暂时注释掉这一行，等安装了 projectile 后再使用
+  (setq dashboard-startup-banner 'official) ;; 也可以自定义图片
+  (setq dashboard-items '((recents  . 5)   ;; 显示多少个最近文件
+			  (bookmarks . 5)  ;; 显示多少个最近书签
+			  (projects . 10))) ;; 显示多少个最近项目
+  (dashboard-setup-startup-hook))
 
 (provide 'init-ui)
 ;;; init-ui.el ends here

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: latex-equation
+# key: dm
+# --
+$$ $0 $$

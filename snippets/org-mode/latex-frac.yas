@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: fraction
+# key: ff
+# condition: (my/in-latex-context-p)
+# --
+\frac{$1}{$2}$0
+
