@@ -66,16 +66,16 @@
          (c-mode . lsp)
 	 (bash-ts-mode-hook . lsp)
 	 (lua-ts-mode . lsp))
-   
   :commands lsp
   :config
+  ;;保存自动formmater
+  (setq lsp-format-buffer-on-save t)
   ;; 使用 clangd 作为 C/C++ 语言服务器
   (setq lsp-clients-clangd-executable "clangd")
   (setq lsp-prefer-flymake nil) ; 不用内置 flymake
   (setq lsp-enable-symbol-highlighting t)
   (setq lsp-headerline-breadcrumb-enable t)
-  (setq lsp-idle-delay 0.5)
-)  ; 修复：添加缺少的右括号
+  (setq lsp-idle-delay 0.5))  ; 修复：添加缺少的右括号
 
 ;;; init-lsp-ui.el --- Minimal lsp-ui setup -*- lexical-binding: t; -*-
 ;;; Commentary:
