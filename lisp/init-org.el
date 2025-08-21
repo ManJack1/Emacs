@@ -512,6 +512,18 @@ POINT defaults to the current `point'."
                     (unless (cdlatex-tab)
                       (yas-expand)))))))
 
+;; 通常 dvipng 是最快的
+(setq org-preview-latex-default-process 'dvipng)
+
+;; dvipng 优化设置
+(setq org-format-latex-options
+      '(:foreground default
+        :background default
+        :scale 1.2
+        :html-foreground "Black"
+        :html-background "Transparent"
+        :html-scale 1.0
+        :matchers ("begin" "$1" "$" "$$" "\\(" "\\[")))
 
 
 

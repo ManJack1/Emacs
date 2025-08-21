@@ -193,6 +193,14 @@
     "xx" 'consult-lsp-diagnostics
     "xn" 'flymake-goto-next-error
     "xp" 'flymake-goto-prev-error
+
+    ;; org/dowload
+    "ip" 'org-download-clipboard
+    "id" 'org-download-delete
+
+    ;;org/edit-code
+    "oc" 'org-edit-src-code
+    "oe" 'org-edit-src-exit
     ))
 
 ;; 非 leader 的直接绑定

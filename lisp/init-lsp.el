@@ -105,6 +105,13 @@
     (kbd "gi") 'lsp-ui-peek-find-implementation
     (kbd "gy") 'lsp-ui-peek-find-type-definition))
 
+;;lsp-treemacs
+(use-package lsp-treemacs
+  :ensure t
+  :after (lsp-mode treemacs)
+  :commands (lsp-treemacs-symbols lsp-treemacs-errors-list))
+
+
 ;; Evil 模式集成
 (with-eval-after-load 'evil
   (defun my/evil-write-with-format ()

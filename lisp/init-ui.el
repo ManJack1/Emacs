@@ -5,7 +5,7 @@
 ;; 设置默认字体为 JetBrains Mono
 (set-face-attribute 'default nil
                     :font "Maple Mono NF"
-                    :height 140) ; 14pt，高度以1/10pt为单位
+                    :height 160) ; 14pt，高度以1/10pt为单位
 
 ;; 设置中文字体为 LXGW WenKai Mono
 (dolist (charset '(kana han symbol cjk-misc bopomofo))
@@ -273,6 +273,11 @@
 			  (bookmarks . 5)  ;; 显示多少个最近书签
 			  (projects . 10))) ;; 显示多少个最近项目
   (dashboard-setup-startup-hook))
+
+(with-eval-after-load 'recentf
+  (add-to-list 'recentf-exclude
+               (lambda (file)
+                 (string-match-p "treemacs-persist" file))))
 
 (provide 'init-ui)
 ;;; init-ui.el ends here

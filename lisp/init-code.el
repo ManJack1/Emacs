@@ -135,8 +135,7 @@
 
 (use-package copilot
   :ensure t
-  :bind (("M-<tab>" . copilot-accept-completion)
-         ("M-TAB" . copilot-accept-completion))
+  :bind ("M-p" . copilot-accept-completion)
   :config
   ;; 禁用特定的警告
   (setq warning-suppress-log-types '((copilot)))
