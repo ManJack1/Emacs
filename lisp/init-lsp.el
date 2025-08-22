@@ -132,10 +132,5 @@
 (use-package nerd-icons
   :ensure t)
 
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((C . t)        ; C/C++ 支持
-   (python . t))) ; 保留之前的 Python 支持
-
 (provide 'init-lsp)
 ;;; init-lsp.el ends here

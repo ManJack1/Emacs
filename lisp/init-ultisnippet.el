@@ -17,10 +17,15 @@
 		    "-oo"  "-\\infty"
                     "O1" "O(1)"
                     "Olog" "O(\\log n)"
+		    ";;" "\&"
+		    "\\" "\\\\"
                     "Olon" "O(n \\log n)"
                     ;; bind to functions!
                     "sum" (lambda () (interactive)
                             (yas-expand-snippet "\\sum\\limits_{$1^{$2} $0"))
+
+                    "bmat" (lambda () (interactive)
+                            (yas-expand-snippet "\\begin{bmatrix} $1 \\end{bmatrix} $0"))
 
                     "lc" (lambda () (interactive)
                             (yas-expand-snippet "\\left( $1 \\right) $0"))
@@ -80,7 +85,7 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
 (defun my/absorb-bb ()
   "黑板体吸取: Abb -> \\mathbb{A}"
   (interactive)
-  (my/simple-absorb "\\([A-Z]\\)bb" "\\mathbb{$s"))
+  (my/simple-absorb "\\([A-Z]\\)bb" "\\mathbbr{$s"))
 
 (defun my/absorb-hat ()
   "帽子吸取: xhat -> \\hat{x}"

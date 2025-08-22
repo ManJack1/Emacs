@@ -1,0 +1,9 @@
+# -*- mode: snippet -*-
+# name: bmatrix
+# key: bmat
+# condition: (my/in-latex-context-p)
+# --
+\begin{bmatrix} $1 \end{bmatrix} $0
+
+
+

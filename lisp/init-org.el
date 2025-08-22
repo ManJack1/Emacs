@@ -391,7 +391,7 @@ POINT defaults to the current `point'."
           (?s "\\mathsf" nil t nil nil)      ; 无衬线
           (?t "\\mathtt" nil t nil nil)      ; 等宽
           (?f "\\mathfrak" nil t nil nil)    ; 哥特体
-          (?B "\\mathbb" nil t nil nil)      ; 黑板粗体
+          (?B "\\mathbbr" nil t nil nil)      ; 黑板粗体
           (?. "\\dot" nil t nil nil)         ; 点
           (?: "\\ddot" nil t nil nil)        ; 双点
           (?~ "\\tilde" nil t nil nil)       ; 波浪线
@@ -513,19 +513,55 @@ POINT defaults to the current `point'."
                       (yas-expand)))))))
 
 ;; 通常 dvipng 是最快的
-(setq org-preview-latex-default-process 'dvipng)
+(setq org-preview-latex-default-process 'imagemagick)
 
 ;; dvipng 优化设置
 (setq org-format-latex-options
-      '(:foreground default
+      `(:foreground default
         :background default
-        :scale 1.2
+        :scale ,(cond ((eq system-type 'darwin) 1.2)      ; macOS
+                      ((eq system-type 'gnu/linux) 2.0)   ; Linux
+                      (t 1.5))                             ; 其他系统默认值
         :html-foreground "Black"
         :html-background "Transparent"
         :html-scale 1.0
         :matchers ("begin" "$1" "$" "$$" "\\(" "\\[")))
+(defun org-insert-matrix ()
+  "Insert a LaTeX matrix template with placeholders"
+  (interactive)
+  (insert "$\\begin{pmatrix}\na & b \\\\\nc & d\n\\end{pmatrix}$")
+  (search-backward "a")
+  (set-mark (point))
+  (forward-char 1))
+
+(define-key org-mode-map (kbd "C-c C-m") 'org-insert-matrix)
+
+(add-to-list 'org-latex-packages-alist '("" "tikz" t))
+
+(eval-after-load "preview"
+  '(add-to-list 'preview-default-preamble
+  "\\PreviewEnvironment{tikzpicture}" t))
 
 
+
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((latex . t)
+   (emacs-lisp . t)
+   ;; 根据需要添加其他语言
+   (python . t)
+   (shell . t)))
+
+
+(add-hook 'org-latex-preview-open-functions
+          (defun +org-latex-preview-uncenter (ov)
+            (overlay-put ov 'justify (overlay-get ov 'before-string))
+            (overlay-put ov 'before-string nil)))
+(add-hook 'org-latex-preview-close-functions
+          (defun +org-latex-preview-recenter (ov)
+            (overlay-put ov 'before-string (overlay-get ov 'justify))
+            (overlay-put ov 'justify nil)))
+(setq org-image-align 'center)
 
 (provide 'init-org)
 ;;; init-org.el ends here
