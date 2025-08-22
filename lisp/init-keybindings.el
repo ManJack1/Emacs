@@ -201,6 +201,7 @@
     ;;org/edit-code
     "oc" 'org-edit-src-code
     "oe" 'org-edit-src-exit
+    "or" 'org-babel-execute-src-block
     ))
 
 ;; 非 leader 的直接绑定

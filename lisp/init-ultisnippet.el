@@ -4,7 +4,7 @@
 (use-package laas
   :ensure t
   :hook (LaTeX-mode . laas-mode)
-  :config ; do whatever here
+  :config
   (aas-set-snippets 'laas-mode
                     ;; set condition!
                     :cond #'texmathp ; expand only while in math
@@ -20,13 +20,22 @@
                     "Olon" "O(n \\log n)"
                     ;; bind to functions!
                     "sum" (lambda () (interactive)
-                            (yas-expand-snippet "\\sum_{$1^{$2} $0"))
+                            (yas-expand-snippet "\\sum\\limits_{$1^{$2} $0"))
 
+                    "lc" (lambda () (interactive)
+                            (yas-expand-snippet "\\left( $1 \\right) $0"))
+
+                    "xsp" (lambda () (interactive)
+                            (yas-expand-snippet "$1^{$2} + $1^{2 $2} + \\dots + $1^{n $2}"))
+
+                    "xas" (lambda () (interactive)
+                            (yas-expand-snippet "$1_{1}$2_{1} + $1_{2}$2_{2} + \\dots + $1_{$3}$2_{$3}"))
                     "ff" (lambda () (interactive)
                             (yas-expand-snippet "\\frac{$1{$2} $0"))
 
-                    "Span" (lambda () (interactive)
-                             (yas-expand-snippet "\\Span($1)$0"))
+                    "prod" (lambda () (interactive)
+                            (yas-expand-snippet "\\prod\\limits_{${1:i}^{${2:n}}${0:x}"))
+
                     ;; add accent snippets
                     :cond #'laas-object-on-left-condition
                     "qq" (lambda () (interactive) (laas-wrap-previous-object "sqrt"))))
@@ -62,6 +71,12 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   (interactive)
   (my/simple-absorb "\\([a-zA-Z]+\\)pow" "%s^{$1$0"))
 
+
+(defun my/absorb-brace ()
+  "xbc -> x() 支持跳转"
+  (interactive)
+  (my/simple-absorb "\\([a-zA-Z]+\\)bc" "%s($0"))
+
 (defun my/absorb-bb ()
   "黑板体吸取: Abb -> \\mathbb{A}"
   (interactive)
@@ -79,7 +94,9 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
     "sub" #'my/absorb-sub
     "bb" #'my/absorb-bb
     "pow" #'my/absorb-pow
-    "hat" #'my/absorb-hat))
+    "hat" #'my/absorb-hat
+    "bc" #'my/absorb-brace))
+
 
 
 (provide 'init-ultisnippet)
