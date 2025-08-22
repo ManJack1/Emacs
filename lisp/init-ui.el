@@ -5,7 +5,7 @@
 ;; 设置默认字体为 JetBrains Mono
 (set-face-attribute 'default nil
                     :font "Maple Mono NF"
-                    :height 160) ; 14pt，高度以1/10pt为单位
+                    :height 150) ; 14pt，高度以1/10pt为单位
 
 ;; 设置中文字体为 LXGW WenKai Mono
 (dolist (charset '(kana han symbol cjk-misc bopomofo))
