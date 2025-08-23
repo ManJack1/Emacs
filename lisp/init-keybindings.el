@@ -19,15 +19,18 @@
 (evil-define-key 'insert 'global (kbd "C-l") 'forward-char)
 
 (use-package embark
+  :straight t
   :bind (("C-." . embark-act)
          ("C-;" . embark-act)
          ("C-c C-e" . embark-export)) ; 全局绑定
   :config
   (setq prefix-help-command 'embark-prefix-help-command))
 
-(use-package consult)
+(use-package consult
+  :straight t)
 
 (use-package avy
+  :straight t
   :after evil  ; 确保在 evil 加载后才加载 avy
   :config
   ;; Evil 模式绑定
@@ -44,6 +47,7 @@
            (other-window -1))))
 
 (use-package general
+  :straight t
   :config
   (general-create-definer my/leader-keys
     :states '(normal visual)
@@ -271,6 +275,7 @@
   (setq dired-use-ls-dired t)))
 
 (use-package dirvish
+  :straight t
   :init
   (dirvish-override-dired-mode)
   :config

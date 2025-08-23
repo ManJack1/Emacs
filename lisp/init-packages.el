@@ -1,4 +1,4 @@
-;;; init-packages.el --- Packages configuration with straight.el
+;; init-packages.el --- Packages configuration with straight.el
 
 ;; ===============================================
 ;; straight.el 初始化
@@ -36,6 +36,7 @@
 ;; ===============================================
 
 (use-package evil
+  :straight t
   :init
   (setq evil-want-integration t)
   (setq evil-want-keybinding nil)
@@ -43,6 +44,7 @@
   (evil-mode 1))
 
 (use-package evil-surround
+  :straight t
   :after evil
   :config
   (global-evil-surround-mode 1)
@@ -69,13 +71,16 @@
   (define-key evil-normal-state-map "gsd" 'evil-surround-delete)
   (define-key evil-normal-state-map "gsr" 'evil-surround-change))
 
-(use-package doom-themes)
+(use-package doom-themes
+  :straight t)
 
 ;; 图标支持
-(use-package nerd-icons)
+(use-package nerd-icons
+  :straight t)
 
 ;; 为补全添加图标
 (use-package nerd-icons-completion
+  :straight t
   :after marginalia
   :config
   (nerd-icons-completion-mode)
@@ -83,6 +88,7 @@
 
 ;; Marginalia - 丰富的注释
 (use-package marginalia
+  :straight t
   :init
   (marginalia-mode))
 
@@ -96,6 +102,7 @@
   (vertico-mode))
 
 (use-package orderless
+  :straight t
   :config
   (setq completion-styles '(orderless)))
 
@@ -104,26 +111,36 @@
 ;;   :config
 ;;   (marginalia-mode))
 
-(use-package embark)
 
-(use-package consult)
+(use-package embark-consult
+  :straight t
+  :after (embark consult))
+
+
+(use-package consult
+  :straight t)
+
+
+(use-package embark
+  :straight t)
+
 
 (use-package wgrep
+  :straight t
   :defer t
   :config
   (setq wgrep-auto-save-buffer t))
 
-(use-package embark-consult
-  :after (embark consult)
-  :hook (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package treesit-auto
+  :straight t
   :config
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode)
   (setq treesit-auto-install t))
 
 (use-package centaur-tabs
+  :straight t
   :demand
   :config
   (centaur-tabs-mode t)
@@ -168,6 +185,7 @@
 (add-hook 'buffer-list-update-hook #'my/update-centaur-tabs-mode)
 
 (use-package avy
+  :straight t
   :config
   (setq avy-background t)
   (setq avy-background-alpha 0.3)
@@ -175,6 +193,7 @@
   (setq avy-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
 (use-package company
+  :straight t
   :init (global-company-mode)
   :config
   (setq company-minimum-prefix-length 1)
@@ -194,15 +213,18 @@
 
 ;; 安装 yasnippet
 (use-package yasnippet
+  :straight t
   :hook (prog-mode . yas-minor-mode)
   :config
   (yas-reload-all))
 
 ;; 安装官方 snippet 集
 (use-package yasnippet-snippets
+  :straight t
   :after yasnippet)
 
-(use-package consult-yasnippet)
+(use-package consult-yasnippet
+   :straight t)
 
 (with-eval-after-load 'yasnippet
   ;; 让yasnippet更宽松地匹配
@@ -245,20 +267,23 @@
 
 ;;modeline上显示我的所有的按键和执行的命令
 (use-package keycast
+  :straight t
   :config
   (add-to-list 'global-mode-string '("" keycast-mode-line))
   (keycast-mode-line-mode t))
 
 ;; 这里的执行顺序非常重要，doom-modeline-mode 的激活时机一定要在设置global-mode-string 之后
 (use-package doom-modeline
+  :straight t
   :init
   (doom-modeline-mode t))
 
 (use-package consult-todo
+  :straight t
   :after (consult keycast))
 
 (use-package savehist
-  :straight nil  ; 使用 Emacs 内置版本
+  :straight t
   :hook (after-init . savehist-mode)
   :init (setq enable-recursive-minibuffers t ; Allow commands in minibuffers
               history-length 1000
@@ -270,21 +295,22 @@
               savehist-autosave-interval 300))
 
 (use-package saveplace
-  :straight nil  ; 使用 Emacs 内置版本
+  :straight t
   :hook (after-init . save-place-mode))
 
+
 ;; 使用 straight.el 安装最新版本的 org
-(use-package org
-  :straight (:host github :repo "emacs-mirror/emacs" :files ("lisp/org/*.el")))
 
 ;; 安装 org-contrib
 (use-package org-contrib
+  :straight t
   :after org)
 
 ;;; SIS (Smart Input Source) cross-platform configuration
 ;;; Supports macOS and Linux
 
 (use-package sis
+  :straight t
   :config
   ;; Cross-platform input source configuration
   (cond

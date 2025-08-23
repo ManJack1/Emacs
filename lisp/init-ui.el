@@ -47,6 +47,7 @@
 
 ;; Highlight indent guides
 (use-package highlight-indent-guides
+  :straight t
   :diminish highlight-indent-guides-mode
   :hook (prog-mode . my/enable-indent-guides-with-colors)
   :config
@@ -105,10 +106,12 @@
               (lambda (&rest _) (my/update-all-indent-guides-colors))))
 
 ;; Modus themes
-(use-package modus-themes)
+(use-package modus-themes
+  :straight t)
 
 ;; Treemacs 及其扩展
 (use-package treemacs
+  :straight t
   :config
   ;; 基本设置
   (setq treemacs-width 35
@@ -138,12 +141,14 @@
 
 ;; Treemacs nerd icons
 (use-package treemacs-nerd-icons
+  :straight t
   :after treemacs
   :config
   (treemacs-load-theme "nerd-icons"))
 
 ;; Evil mode 支持
 (use-package treemacs-evil
+  :straight t
   :after (treemacs evil)
   :config
   ;; Evil 模式下的额外快捷键
@@ -155,19 +160,23 @@
 
 ;; Projectile 集成
 (use-package treemacs-projectile
+  :straight t
   :after (treemacs projectile))
 
 ;; Magit 集成
 (use-package treemacs-magit
+  :straight t
   :after (treemacs magit))
 
 ;; Perspective 集成
 (use-package treemacs-perspective
+  :straight t
   :after (treemacs perspective)
   :config (treemacs-set-scope-type 'Perspectives))
 
 ;; Tab Bar 集成
 (use-package treemacs-tab-bar
+  :straight t
   :after treemacs
   :config (treemacs-set-scope-type 'Tabs))
 
@@ -186,6 +195,7 @@
 
 ;; 使用 winum 进行窗口切换（官方推荐）
 (use-package winum
+  :straight t
   :config
   (winum-mode)
   ;; M-0 切换到 treemacs（官方推荐绑定）
@@ -198,12 +208,14 @@
 
 ;; Evil Collection 提供各种 mode 的 Vim 按键绑定
 (use-package evil-collection
+  :straight t
   :after evil
   :config
   (evil-collection-init))
 
 ;; PDF Tools
 (use-package pdf-tools
+  :straight t
   :config
   (pdf-tools-install)
   (setq-default pdf-view-display-size 'fit-width)
@@ -218,6 +230,7 @@
 
 ;; Dashboard with Evil mode integration - Simplified
 (use-package dashboard
+  :straight t
   :config
   (setq dashboard-banner-logo-title "Welcome to Emacs!") ;; 个性签名，随读者喜好设置
   ;; (setq dashboard-projects-backend 'projectile) ;; 读者可以暂时注释掉这一行，等安装了 projectile 后再使用

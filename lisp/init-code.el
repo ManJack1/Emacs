@@ -1,6 +1,7 @@
 ;;; init-code.el --- Code-related packages configuration with straight.el
 
 (use-package hl-todo
+  :straight t
   :hook (prog-mode . hl-todo-mode)
   :config
   (setq hl-todo-keyword-faces
@@ -10,6 +11,7 @@
           ("BUG"    . "#FF1493"))))
 
 (use-package smartparens
+  :straight t
   :hook ((prog-mode text-mode markdown-mode) . smartparens-mode)
   :config
   ;; load default config
@@ -115,6 +117,7 @@
     (define-key org-mode-map (kbd "<backtab>") 'my/tab-back)))
 
 (use-package which-key
+  :straight t
   :init (which-key-mode)
   :diminish which-key-mode
   :config

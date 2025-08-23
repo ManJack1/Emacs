@@ -4,7 +4,7 @@
 ;;; Code:
 ;; Core Org mode configuration
 (use-package org
-  :straight (:host github :repo "emacs-mirror/emacs" :files ("lisp/org/*.el"))
+  :straight t
   :hook ((org-mode . visual-line-mode)
          (org-mode . yas-minor-mode)
          (org-mode . laas-mode)
@@ -23,9 +23,12 @@
               ("C-c i s" . my/simple-screenshot)
               ("C-c C-m" . org-insert-matrix))
   :config
-  ;; 启用 org-tempo (easy template)
-  (require 'org-tempo)
-  (require 'ob-tangle)
+
+  (use-package org-tempo
+     :straight t)
+
+  (use-package org-tangle
+    :straight t)
   
   ;; 基本外观设置
   (setq org-startup-indented t
@@ -124,6 +127,7 @@
 
 ;; Org superstar for beautiful headlines
 (use-package org-superstar
+  :straight t
   :after org
   :hook (org-mode . org-superstar-mode)
   :custom
@@ -138,6 +142,7 @@
 
 ;; Org download for image handling
 (use-package org-download
+  :straight t
   :after org
   :custom
   (org-download-method 'directory)
@@ -151,11 +156,13 @@
 
 ;; LaTeX fragment toggle
 (use-package org-fragtog
+  :straight t
   :after org
   :hook (org-mode . org-fragtog-mode))
 
 ;; CDLaTeX 完整配置
 (use-package cdlatex
+  :straight t
   :hook ((LaTeX-mode . turn-on-cdlatex)
          (latex-mode . turn-on-cdlatex)
          (org-mode . turn-on-org-cdlatex))

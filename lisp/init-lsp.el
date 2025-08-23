@@ -1,7 +1,7 @@
 ;;; init-lsp.el --- LSP configuration with straight.el -*- lexical-binding: t; -*-
 
 (use-package flymake
-  :straight nil  ; 使用 Emacs 内置版本
+  :straight t
   :hook (prog-mode . flymake-mode)
   :config
   ;; 基本设置
@@ -47,15 +47,18 @@
  '(flymake-note ((t (:underline (:color "blue" :style wave))))))
 
 (use-package sideline
+  :straight t
   :hook (flymake-mode . sideline-mode)
   :config
   (setq sideline-flymake-display-mode 'line)  ; 'point, 'line, or 'all
   (setq sideline-backends-right '(sideline-flymake)))
 
 (use-package sideline-flymake
+  :straight t
   :hook (flymake-mode . sideline-mode))
 
 (use-package lsp-mode
+  :straight t
   :hook ((c++-mode . lsp)
          (c++-ts-mode . lsp)
          (c-ts-mode . lsp)
@@ -75,6 +78,7 @@
 
 ;;; LSP UI 配置
 (use-package lsp-ui
+  :straight t
   :hook (lsp-mode . lsp-ui-mode)
   :config
   ;; 悬浮文档
@@ -100,6 +104,7 @@
 
 ;; lsp-treemacs
 (use-package lsp-treemacs
+  :straight t
   :after (lsp-mode treemacs)
   :commands (lsp-treemacs-symbols lsp-treemacs-errors-list))
 
@@ -118,7 +123,8 @@
   (evil-ex-define-cmd "W[rite]" 'my/evil-write-with-format))
 
 ;; nerd-icons（如果其他地方没有配置的话）
-(use-package nerd-icons)
+(use-package nerd-icons
+  :straight t)
 
 ;; 辅助函数（如果需要的话）
 (defun my/clang-format-buffer-manual ()

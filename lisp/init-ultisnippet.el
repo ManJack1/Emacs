@@ -2,7 +2,7 @@
 
 ;; 支持跳转的简单 LAAS 配置
 (use-package laas
-  :straight (:host github :repo "tecosaur/LaTeX-auto-activating-snippets")
+  :straight t
   :hook (LaTeX-mode . laas-mode)
   :config
   (aas-set-snippets 'laas-mode
@@ -128,7 +128,7 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
 ;; 额外的数学符号快速输入
 (with-eval-after-load 'laas
   (aas-set-snippets 'laas-mode
-    :cond #'laas-org-in-math-p
+    :cond #'texmathp
     ;; 希腊字母
     "alpha" "\\alpha"
     "beta" "\\beta"
