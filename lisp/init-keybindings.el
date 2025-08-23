@@ -1,5 +1,4 @@
-
-;;; init-keybindings.el --- Keybindings configuration
+;;; init-keybindings.el --- Keybindings configuration with straight.el
 
 ;; 设置 Ctrl+, 快捷键打开配置文件
 (defun open-config-file ()
@@ -20,18 +19,15 @@
 (evil-define-key 'insert 'global (kbd "C-l") 'forward-char)
 
 (use-package embark
-  :ensure t
   :bind (("C-." . embark-act)
          ("C-;" . embark-act)
          ("C-c C-e" . embark-export)) ; 全局绑定
   :config
   (setq prefix-help-command 'embark-prefix-help-command))
 
-(use-package consult
-  :ensure t)
+(use-package consult)
 
 (use-package avy
-  :ensure t
   :after evil  ; 确保在 evil 加载后才加载 avy
   :config
   ;; Evil 模式绑定
@@ -47,23 +43,7 @@
     (progn (lsp-treemacs-symbols)
            (other-window -1))))
 
-(use-package consult
-  :ensure t)
-
-
-
-
-;; 自定义 LSP treemacs symbols toggle 函数
-(defun db/lsp-treemacs-symbols-toggle ()
-  "Toggle the lsp-treemacs-symbols buffer."
-  (interactive)
-  (if (get-buffer "*LSP Symbols List*")
-      (kill-buffer "*LSP Symbols List*")
-    (progn (lsp-treemacs-symbols)
-           (other-window -1))))
-
 (use-package general
-  :ensure t
   :config
   (general-create-definer my/leader-keys
     :states '(normal visual)
@@ -224,7 +204,6 @@
 ;; 方案一：完全解绑 M-c（推荐）
 (global-unset-key (kbd "M-c"))
 
-
 (global-unset-key (kbd "M-c"))
 ;; 窗口调整
 (global-set-key (kbd "C-<up>") 'enlarge-window)
@@ -257,8 +236,6 @@
   "Switch to scratch buffer."
   (interactive)
   (switch-to-buffer "*scratch*"))
-
-
 
 ;; 默认加载 modus-operandi-tinted
 (load-theme 'modus-operandi-tinted t)
@@ -294,7 +271,6 @@
   (setq dired-use-ls-dired t)))
 
 (use-package dirvish
-  :ensure t
   :init
   (dirvish-override-dired-mode)
   :config
@@ -536,7 +512,6 @@ If path ends with '/', create a directory; otherwise create a file."
       (revert-buffer)
       (dired-goto-file target))))
 
-
 (defun my-dirvish-toggle ()
   "Toggle dirvish layout or quit if already in dirvish."
   (interactive)
@@ -552,8 +527,6 @@ If path ends with '/', create a directory; otherwise create a file."
         (message "Dirvish opened")))))
 
 ;; Find Emacs configuration files
-;; Find Emacs configuration files
-
 (defun my-find-config-files ()
   "Find and open Emacs configuration files from init.el and lisp/ directory."
   (interactive)
@@ -580,16 +553,6 @@ If path ends with '/', create a directory; otherwise create a file."
                (full-path (expand-file-name selected config-dir)))
           (find-file full-path))
       (message "No configuration files found"))))
-
-(defun my-edit-init ()
-  "Open init.el"
-  (interactive)
-  (find-file user-init-file))
-
-(defun my-browse-emacs-config ()
-  "Browse .emacs.d directory"
-  (interactive)
-  (dired user-emacs-directory))
 
 (defun my-edit-init ()
   "Open init.el"

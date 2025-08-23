@@ -1,5 +1,7 @@
+;;; init-lsp.el --- LSP configuration with straight.el -*- lexical-binding: t; -*-
+
 (use-package flymake
-  :ensure t
+  :straight nil  ; 使用 Emacs 内置版本
   :hook (prog-mode . flymake-mode)
   :config
   ;; 基本设置
@@ -44,45 +46,35 @@
  '(flymake-warning ((t (:underline (:color "orange" :style wave)))))
  '(flymake-note ((t (:underline (:color "blue" :style wave))))))
 
-
-
 (use-package sideline
-  :ensure t
   :hook (flymake-mode . sideline-mode)
   :config
   (setq sideline-flymake-display-mode 'line)  ; 'point, 'line, or 'all
   (setq sideline-backends-right '(sideline-flymake)))
 
 (use-package sideline-flymake
-  :ensure t
   :hook (flymake-mode . sideline-mode))
 
-
 (use-package lsp-mode
-  :ensure t
   :hook ((c++-mode . lsp)
-	 (c++-ts-mode . lsp)
-	 (c-ts-mode . lsp)  ; 修复：添加缺少的空格
+         (c++-ts-mode . lsp)
+         (c-ts-mode . lsp)
          (c-mode . lsp)
-	 (bash-ts-mode-hook . lsp)
-	 (lua-ts-mode . lsp))
+         (bash-ts-mode . lsp)  ; 修复：移除多余的 -hook
+         (lua-ts-mode . lsp))
   :commands lsp
   :config
-  ;;保存自动formmater
+  ;; 保存自动 formatter
   (setq lsp-format-buffer-on-save t)
   ;; 使用 clangd 作为 C/C++ 语言服务器
   (setq lsp-clients-clangd-executable "clangd")
   (setq lsp-prefer-flymake nil) ; 不用内置 flymake
   (setq lsp-enable-symbol-highlighting t)
   (setq lsp-headerline-breadcrumb-enable t)
-  (setq lsp-idle-delay 0.5))  ; 修复：添加缺少的右括号
+  (setq lsp-idle-delay 0.5))
 
-;;; init-lsp-ui.el --- Minimal lsp-ui setup -*- lexical-binding: t; -*-
-;;; Commentary:
-;; Minimal configuration for lsp-ui to enhance lsp-mode UI.
-;;; Code:
+;;; LSP UI 配置
 (use-package lsp-ui
-  :ensure t
   :hook (lsp-mode . lsp-ui-mode)
   :config
   ;; 悬浮文档
@@ -98,19 +90,18 @@
   ;; 绑定常用功能
   (setq lsp-ui-doc-show-with-cursor nil)
   ;; 常用按键绑定
-  (evil-define-key 'normal lsp-ui-mode-map
-    (kbd "gd") 'lsp-ui-peek-find-definitions
-    (kbd "gr") 'lsp-ui-peek-find-references
-    (kbd "K")  'lsp-ui-doc-glance
-    (kbd "gi") 'lsp-ui-peek-find-implementation
-    (kbd "gy") 'lsp-ui-peek-find-type-definition))
+  (with-eval-after-load 'evil
+    (evil-define-key 'normal lsp-ui-mode-map
+      (kbd "gd") 'lsp-ui-peek-find-definitions
+      (kbd "gr") 'lsp-ui-peek-find-references
+      (kbd "K")  'lsp-ui-doc-glance
+      (kbd "gi") 'lsp-ui-peek-find-implementation
+      (kbd "gy") 'lsp-ui-peek-find-type-definition)))
 
-;;lsp-treemacs
+;; lsp-treemacs
 (use-package lsp-treemacs
-  :ensure t
   :after (lsp-mode treemacs)
   :commands (lsp-treemacs-symbols lsp-treemacs-errors-list))
-
 
 ;; Evil 模式集成
 (with-eval-after-load 'evil
@@ -126,11 +117,16 @@
   (evil-ex-define-cmd "w[rite]" 'my/evil-write-with-format)
   (evil-ex-define-cmd "W[rite]" 'my/evil-write-with-format))
 
+;; nerd-icons（如果其他地方没有配置的话）
+(use-package nerd-icons)
 
-
-
-(use-package nerd-icons
-  :ensure t)
+;; 辅助函数（如果需要的话）
+(defun my/clang-format-buffer-manual ()
+  "Manual clang-format buffer if available."
+  (when (executable-find "clang-format")
+    (shell-command-on-region (point-min) (point-max) 
+                             "clang-format" 
+                             (current-buffer) t)))
 
 (provide 'init-lsp)
 ;;; init-lsp.el ends here

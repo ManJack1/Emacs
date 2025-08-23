@@ -1,13 +1,13 @@
-;;; init-org.el --- Org mode configuration
+;;; init-org.el --- Org mode configuration with straight.el
 ;; All Org mode settings go here
 
 ;;; Code:
 ;; Core Org mode configuration
 (use-package org
-  :ensure t
+  :straight (:host github :repo "emacs-mirror/emacs" :files ("lisp/org/*.el"))
   :hook ((org-mode . visual-line-mode)
          (org-mode . yas-minor-mode)
-	 (org-mode . laas-mode)
+         (org-mode . laas-mode)
          ;; 只在 org-mode 中禁用左尖括号自动配对
          (org-mode . (lambda ()
                        (setq-local electric-pair-inhibit-predicate
@@ -20,7 +20,8 @@
               ("C-c i i" . my/org-image-manager)
               ("C-c i f" . my/org-insert-image-file)
               ("C-c i u" . my/org-insert-image-url)
-              ("C-c i s" . my/simple-screenshot))
+              ("C-c i s" . my/simple-screenshot)
+              ("C-c C-m" . org-insert-matrix))
   :config
   ;; 启用 org-tempo (easy template)
   (require 'org-tempo)
@@ -28,11 +29,12 @@
   
   ;; 基本外观设置
   (setq org-startup-indented t
-        org-pretty-entities t
+        org-pretty-entities nil  ; 禁用 Unicode 替换
         org-hide-emphasis-markers t
         org-startup-with-inline-images t
         org-image-actual-width '(400)
-        org-ellipsis " ▾")
+        org-ellipsis " ▾"
+        org-image-align 'center)
   
   ;; TODO 关键词
   (setq org-todo-keywords
@@ -47,7 +49,8 @@
    'org-babel-load-languages
    '((emacs-lisp . t)
      (python . t)
-     (shell . t)))
+     (shell . t)
+     (latex . t)))
   
   ;; 标题大小设置 - 针对 Modus theme 优化
   (add-hook 'org-mode-hook
@@ -63,10 +66,13 @@
   
   ;; LaTeX预览设置
   (setq org-startup-with-latex-preview t
+        org-preview-latex-default-process 'imagemagick
         org-format-latex-options
-        '(:foreground default
+        `(:foreground default
           :background default
-          :scale 1.2
+          :scale ,(cond ((eq system-type 'darwin) 1.2)      ; macOS
+                        ((eq system-type 'gnu/linux) 2.0)   ; Linux
+                        (t 1.5))                             ; 其他系统默认值
           :html-foreground "Black"
           :html-background "Transparent"
           :html-scale 1.0
@@ -87,6 +93,7 @@
         compilation-ask-about-save nil)
   
   (add-to-list 'org-latex-packages-alist '("" "minted" nil))
+  (add-to-list 'org-latex-packages-alist '("" "tikz" t))
   
   ;; 列表美化 - 替换 org-modern 的列表样式
   (font-lock-add-keywords 'org-mode
@@ -103,11 +110,20 @@
   (font-lock-add-keywords 'org-mode
     '(("\\[X\\]" . '(:foreground "#4CAF50" :weight bold))
       ("\\[ \\]" . '(:foreground "#BDBDBD"))
-      ("\\[-\\]" . '(:foreground "#FFA726" :weight bold)))))
+      ("\\[-\\]" . '(:foreground "#FFA726" :weight bold))))
+  
+  ;; LaTeX 预览居中和对齐设置
+  (add-hook 'org-latex-preview-open-functions
+            (defun +org-latex-preview-uncenter (ov)
+              (overlay-put ov 'justify (overlay-get ov 'before-string))
+              (overlay-put ov 'before-string nil)))
+  (add-hook 'org-latex-preview-close-functions
+            (defun +org-latex-preview-recenter (ov)
+              (overlay-put ov 'before-string (overlay-get ov 'justify))
+              (overlay-put ov 'justify nil))))
 
 ;; Org superstar for beautiful headlines
 (use-package org-superstar
-  :ensure t
   :after org
   :hook (org-mode . org-superstar-mode)
   :custom
@@ -122,7 +138,6 @@
 
 ;; Org download for image handling
 (use-package org-download
-  :ensure t
   :after org
   :custom
   (org-download-method 'directory)
@@ -136,9 +151,195 @@
 
 ;; LaTeX fragment toggle
 (use-package org-fragtog
-  :ensure t
   :after org
   :hook (org-mode . org-fragtog-mode))
+
+;; CDLaTeX 完整配置
+(use-package cdlatex
+  :hook ((LaTeX-mode . turn-on-cdlatex)
+         (latex-mode . turn-on-cdlatex)
+         (org-mode . turn-on-org-cdlatex))
+  :config
+  
+  ;; =================================
+  ;; 基本设置
+  ;; =================================
+  
+  ;; 启用数学模式快速输入
+  (setq cdlatex-math-symbol-alist
+        '(
+          ;; 希腊字母 (使用 ` 触发)
+          (?a ("\\alpha" "\\aleph"))
+          (?b ("\\beta" "\\beth"))
+          (?g ("\\gamma" "\\Gamma"))
+          (?d ("\\delta" "\\Delta"))
+          (?e ("\\epsilon" "\\varepsilon"))
+          (?z ("\\zeta"))
+          (?h ("\\eta" "\\hbar"))
+          (?q ("\\theta" "\\Theta" "\\vartheta"))
+          (?i ("\\iota" "\\in"))
+          (?k ("\\kappa"))
+          (?l ("\\lambda" "\\Lambda"))
+          (?m ("\\mu"))
+          (?n ("\\nu" "\\nabla"))
+          (?x ("\\xi" "\\Xi"))
+          (?p ("\\pi" "\\Pi" "\\varpi"))
+          (?r ("\\rho" "\\varrho"))
+          (?s ("\\sigma" "\\Sigma" "\\varsigma"))
+          (?t ("\\tau"))
+          (?u ("\\upsilon" "\\Upsilon"))
+          (?f ("\\phi" "\\Phi" "\\varphi"))
+          (?c ("\\chi"))
+          (?y ("\\psi" "\\Psi"))
+          (?o ("\\omega" "\\Omega"))
+          
+          ;; 数学符号
+          (?< ("\\leftarrow" "\\Leftarrow" "\\longleftarrow"))
+          (?> ("\\rightarrow" "\\Rightarrow" "\\longrightarrow"))
+          (?= ("\\Leftrightarrow" "\\Longleftrightarrow"))
+          (?. ("\\cdot" "\\circ"))
+          (?* ("\\times" "\\star"))
+          (?+ ("\\cup" "\\uplus"))
+          (?- ("\\cap" "\\setminus"))
+          (?8 ("\\infty"))
+          (?0 ("\\emptyset" "\\varnothing"))
+          (?6 ("\\partial"))
+          (?& ("\\wedge" "\\bigwedge"))
+          (?v ("\\vee" "\\bigvee"))
+          (?^ ("\\uparrow" "\\Uparrow"))
+          (?_ ("\\downarrow" "\\Downarrow"))
+          ))
+  
+  ;; 数学修饰符 (使用 ' 触发)
+  (setq cdlatex-math-modify-alist
+        '(
+          (?b "\\mathbf" nil t nil nil)      ; 粗体
+          (?c "\\mathcal" nil t nil nil)     ; 花体
+          (?r "\\mathrm" nil t nil nil)      ; 正体
+          (?i "\\mathit" nil t nil nil)      ; 斜体
+          (?s "\\mathsf" nil t nil nil)      ; 无衬线
+          (?t "\\mathtt" nil t nil nil)      ; 等宽
+          (?f "\\mathfrak" nil t nil nil)    ; 哥特体
+          (?B "\\mathbb" nil t nil nil)      ; 黑板粗体
+          (?. "\\dot" nil t nil nil)         ; 点
+          (?: "\\ddot" nil t nil nil)        ; 双点
+          (?~ "\\tilde" nil t nil nil)       ; 波浪线
+          (?^ "\\hat" nil t nil nil)         ; 帽子
+          (?v "\\vec" nil t nil nil)         ; 向量
+          (?- "\\bar" nil t nil nil)         ; 横线
+          (?_ "\\underline" nil t nil nil)   ; 下划线
+          ))
+  
+  ;; 环境快速插入
+  (setq cdlatex-env-alist
+        '(
+          ("equation" "\\begin{equation}\n?\n\\end{equation}\n" nil)
+          ("align" "\\begin{align}\n?\n\\end{align}\n" nil)
+          ("gather" "\\begin{gather}\n?\n\\end{gather}\n" nil)
+          ("matrix" "\\begin{pmatrix}\n?\n\\end{pmatrix}" nil)
+          ("cases" "\\begin{cases}\n?\n\\end{cases}" nil)
+          ("split" "\\begin{split}\n?\n\\end{split}" nil)
+          ))
+  
+  ;; 命令快速插入
+  (setq cdlatex-command-alist
+        '(
+          ;; 分数和根式
+          ("frac" "Insert fraction" "\\frac{?}{}" cdlatex-position-cursor nil nil nil)
+          ("sqrt" "Insert square root" "\\sqrt{?}" cdlatex-position-cursor nil nil nil)
+          ("nrt" "Insert nth root" "\\sqrt[?]{}" cdlatex-position-cursor nil nil nil)
+          
+          ;; 积分、求和、极限
+          ("int" "Insert integral" "\\int_{?}^{} " cdlatex-position-cursor nil nil nil)
+          ("oint" "Insert contour integral" "\\oint_{?}^{} " cdlatex-position-cursor nil nil nil)
+          ("sum" "Insert sum" "\\sum_{?}^{}" cdlatex-position-cursor nil nil nil)
+          ("prod" "Insert product" "\\prod_{?}^{}" cdlatex-position-cursor nil nil nil)
+          ("lim" "Insert limit" "\\lim_{? \\to }" cdlatex-position-cursor nil nil nil)
+          ("limsup" "Insert limsup" "\\limsup_{? \\to }" cdlatex-position-cursor nil nil nil)
+          ("liminf" "Insert liminf" "\\liminf_{? \\to }" cdlatex-position-cursor nil nil nil)
+          
+          ;; 括号
+          ("lr(" "Insert left-right parentheses" "\\left( ? \\right)" cdlatex-position-cursor nil nil nil)
+          ("lr[" "Insert left-right brackets" "\\left[ ? \\right]" cdlatex-position-cursor nil nil nil)
+          ("lr{" "Insert left-right braces" "\\left\\{ ? \\right\\}" cdlatex-position-cursor nil nil nil)
+          ("lr|" "Insert left-right bars" "\\left| ? \\right|" cdlatex-position-cursor nil nil nil)
+          ("lra" "Insert left-right angle brackets" "\\left\\langle ? \\right\\rangle" cdlatex-position-cursor nil nil nil)
+          
+          ;; 二项式和组合
+          ("binom" "Insert binomial" "\\binom{?}{}" cdlatex-position-cursor nil nil nil)
+          ("choose" "Insert choose" "{? \\choose }" cdlatex-position-cursor nil nil nil)
+          
+          ;; 文本
+          ("text" "Insert text" "\\text{?}" cdlatex-position-cursor nil nil nil)
+          ("mbox" "Insert mbox" "\\mbox{?}" cdlatex-position-cursor nil nil nil)
+          ))
+  
+  ;; =================================
+  ;; Org-mode 专用设置
+  ;; =================================
+  
+  ;; 在 org-mode 中的特殊配置
+  (add-hook 'org-mode-hook
+            (lambda ()
+              ;; 设置 CDLaTeX 只在 LaTeX 片段中工作
+              (setq-local cdlatex-takeover-subsuperscript nil)
+              (setq-local cdlatex-takeover-parenthesis nil)
+              
+              ;; 自定义快捷键
+              (local-set-key (kbd "C-c {") 'cdlatex-environment)
+              (local-set-key (kbd "C-c m") 'cdlatex-math-symbol)
+              (local-set-key (kbd "C-c '") 'cdlatex-math-modify)
+              
+              ;; 在 LaTeX 环境中启用 TAB 补全
+              (when (fboundp 'my/in-latex-context-p)
+                (local-set-key (kbd "TAB")
+                               (lambda ()
+                                 (interactive)
+                                 (if (my/in-latex-context-p)
+                                     (cdlatex-tab)
+                                   (org-cycle)))))))
+  
+  ;; =================================
+  ;; 自定义函数增强
+  ;; =================================
+  
+  ;; 智能上下标
+  (defun my/cdlatex-smart-subscript ()
+    "智能下标输入"
+    (interactive)
+    (if (my/in-latex-context-p)
+        (cdlatex-sub-superscript ?_)
+      (insert "_")))
+  
+  (defun my/cdlatex-smart-superscript ()
+    "智能上标输入"
+    (interactive)
+    (if (my/in-latex-context-p)
+        (cdlatex-sub-superscript ?^)
+      (insert "^")))
+  
+  ;; 绑定智能上下标
+  (global-set-key (kbd "C-c _") 'my/cdlatex-smart-subscript)
+  (global-set-key (kbd "C-c ^") 'my/cdlatex-smart-superscript)
+  
+  ;; =================================
+  ;; 与其他包的集成
+  ;; =================================
+  
+  ;; 与 LaTeX-auto-activating-snippets 协同工作
+  (when (featurep 'laas)
+    ;; 设置优先级，让 LAAS 先处理简单情况
+    (setq cdlatex-takeover-dollar nil)
+    (setq cdlatex-paired-parens nil))
+  
+  ;; 与 YASnippet 协同工作
+  (when (featurep 'yasnippet)
+    ;; 在 CDLaTeX 失败时回退到 YASnippet
+    (advice-add 'cdlatex-tab :after
+                (lambda ()
+                  (when (and (boundp 'yas-minor-mode) yas-minor-mode)
+                    (unless (cdlatex-tab)
+                      (yas-expand)))))))
 
 ;;; Custom Functions
 
@@ -314,218 +515,7 @@ POINT defaults to the current `point'."
 
 (add-hook 'org-mode-hook 'my/org-mode-setup)
 
-;; Org agenda configuration (if needed)
-(setq org-agenda-files '("~/org/"))  ; 根据需要调整路径
-
-
-;; 最简配置 - 禁用所有Unicode替换
-(setq org-pretty-entities nil)
-(global-prettify-symbols-mode -1)
-(add-hook 'org-mode-hook (lambda () (prettify-symbols-mode -1)))
-
-;; CDLaTeX 完整配置
-
-(use-package cdlatex
-  :ensure t
-  :hook ((LaTeX-mode . turn-on-cdlatex)
-         (latex-mode . turn-on-cdlatex)
-         (org-mode . turn-on-org-cdlatex))
-  :config
-  
-  ;; =================================
-  ;; 基本设置
-  ;; =================================
-  
-  ;; 启用数学模式快速输入
-  (setq cdlatex-math-symbol-alist
-        '(
-          ;; 希腊字母 (使用 ` 触发)
-          (?a ("\\alpha" "\\aleph"))
-          (?b ("\\beta" "\\beth"))
-          (?g ("\\gamma" "\\Gamma"))
-          (?d ("\\delta" "\\Delta"))
-          (?e ("\\epsilon" "\\varepsilon"))
-          (?z ("\\zeta"))
-          (?h ("\\eta" "\\hbar"))
-          (?q ("\\theta" "\\Theta" "\\vartheta"))
-          (?i ("\\iota" "\\in"))
-          (?k ("\\kappa"))
-          (?l ("\\lambda" "\\Lambda"))
-          (?m ("\\mu"))
-          (?n ("\\nu" "\\nabla"))
-          (?x ("\\xi" "\\Xi"))
-          (?p ("\\pi" "\\Pi" "\\varpi"))
-          (?r ("\\rho" "\\varrho"))
-          (?s ("\\sigma" "\\Sigma" "\\varsigma"))
-          (?t ("\\tau"))
-          (?u ("\\upsilon" "\\Upsilon"))
-          (?f ("\\phi" "\\Phi" "\\varphi"))
-          (?c ("\\chi"))
-          (?y ("\\psi" "\\Psi"))
-          (?o ("\\omega" "\\Omega"))
-          
-          ;; 数学符号
-          (?< ("\\leftarrow" "\\Leftarrow" "\\longleftarrow"))
-          (?> ("\\rightarrow" "\\Rightarrow" "\\longrightarrow"))
-          (?= ("\\Leftrightarrow" "\\Longleftrightarrow"))
-          (?. ("\\cdot" "\\circ"))
-          (?* ("\\times" "\\star"))
-          (?+ ("\\cup" "\\uplus"))
-          (?- ("\\cap" "\\setminus"))
-          (?8 ("\\infty"))
-          (?0 ("\\emptyset" "\\varnothing"))
-          (?6 ("\\partial"))
-          (?& ("\\wedge" "\\bigwedge"))
-          (?v ("\\vee" "\\bigvee"))
-          (?^ ("\\uparrow" "\\Uparrow"))
-          (?_ ("\\downarrow" "\\Downarrow"))
-          ))
-  
-  ;; 数学修饰符 (使用 ' 触发)
-  (setq cdlatex-math-modify-alist
-        '(
-          (?b "\\mathbf" nil t nil nil)      ; 粗体
-          (?c "\\mathcal" nil t nil nil)     ; 花体
-          (?r "\\mathrm" nil t nil nil)      ; 正体
-          (?i "\\mathit" nil t nil nil)      ; 斜体
-          (?s "\\mathsf" nil t nil nil)      ; 无衬线
-          (?t "\\mathtt" nil t nil nil)      ; 等宽
-          (?f "\\mathfrak" nil t nil nil)    ; 哥特体
-          (?B "\\mathbbr" nil t nil nil)      ; 黑板粗体
-          (?. "\\dot" nil t nil nil)         ; 点
-          (?: "\\ddot" nil t nil nil)        ; 双点
-          (?~ "\\tilde" nil t nil nil)       ; 波浪线
-          (?^ "\\hat" nil t nil nil)         ; 帽子
-          (?v "\\vec" nil t nil nil)         ; 向量
-          (?- "\\bar" nil t nil nil)         ; 横线
-          (?_ "\\underline" nil t nil nil)   ; 下划线
-          ))
-  
-  ;; 环境快速插入
-  (setq cdlatex-env-alist
-        '(
-          ("equation" "\\begin{equation}\n?\n\\end{equation}\n" nil)
-          ("align" "\\begin{align}\n?\n\\end{align}\n" nil)
-          ("gather" "\\begin{gather}\n?\n\\end{gather}\n" nil)
-          ("matrix" "\\begin{pmatrix}\n?\n\\end{pmatrix}" nil)
-          ("cases" "\\begin{cases}\n?\n\\end{cases}" nil)
-          ("split" "\\begin{split}\n?\n\\end{split}" nil)
-          ))
-  
-  ;; 命令快速插入
-  (setq cdlatex-command-alist
-        '(
-          ;; 分数和根式
-          ("frac" "Insert fraction" "\\frac{?}{}" cdlatex-position-cursor nil nil nil)
-          ("sqrt" "Insert square root" "\\sqrt{?}" cdlatex-position-cursor nil nil nil)
-          ("nrt" "Insert nth root" "\\sqrt[?]{}" cdlatex-position-cursor nil nil nil)
-          
-          ;; 积分、求和、极限
-          ("int" "Insert integral" "\\int_{?}^{} " cdlatex-position-cursor nil nil nil)
-          ("oint" "Insert contour integral" "\\oint_{?}^{} " cdlatex-position-cursor nil nil nil)
-          ("sum" "Insert sum" "\\sum_{?}^{}" cdlatex-position-cursor nil nil nil)
-          ("prod" "Insert product" "\\prod_{?}^{}" cdlatex-position-cursor nil nil nil)
-          ("lim" "Insert limit" "\\lim_{? \\to }" cdlatex-position-cursor nil nil nil)
-          ("limsup" "Insert limsup" "\\limsup_{? \\to }" cdlatex-position-cursor nil nil nil)
-          ("liminf" "Insert liminf" "\\liminf_{? \\to }" cdlatex-position-cursor nil nil nil)
-          
-          ;; 括号
-          ("lr(" "Insert left-right parentheses" "\\left( ? \\right)" cdlatex-position-cursor nil nil nil)
-          ("lr[" "Insert left-right brackets" "\\left[ ? \\right]" cdlatex-position-cursor nil nil nil)
-          ("lr{" "Insert left-right braces" "\\left\\{ ? \\right\\}" cdlatex-position-cursor nil nil nil)
-          ("lr|" "Insert left-right bars" "\\left| ? \\right|" cdlatex-position-cursor nil nil nil)
-          ("lra" "Insert left-right angle brackets" "\\left\\langle ? \\right\\rangle" cdlatex-position-cursor nil nil nil)
-          
-          ;; 二项式和组合
-          ("binom" "Insert binomial" "\\binom{?}{}" cdlatex-position-cursor nil nil nil)
-          ("choose" "Insert choose" "{? \\choose }" cdlatex-position-cursor nil nil nil)
-          
-          ;; 文本
-          ("text" "Insert text" "\\text{?}" cdlatex-position-cursor nil nil nil)
-          ("mbox" "Insert mbox" "\\mbox{?}" cdlatex-position-cursor nil nil nil)
-          ))
-  
-  ;; =================================
-  ;; Org-mode 专用设置
-  ;; =================================
-  
-  ;; 在 org-mode 中的特殊配置
-  (add-hook 'org-mode-hook
-            (lambda ()
-              ;; 设置 CDLaTeX 只在 LaTeX 片段中工作
-              (setq-local cdlatex-takeover-subsuperscript nil)
-              (setq-local cdlatex-takeover-parenthesis nil)
-              
-              ;; 自定义快捷键
-              (local-set-key (kbd "C-c {") 'cdlatex-environment)
-              (local-set-key (kbd "C-c m") 'cdlatex-math-symbol)
-              (local-set-key (kbd "C-c '") 'cdlatex-math-modify)
-              
-              ;; 在 LaTeX 环境中启用 TAB 补全
-              (when (fboundp 'my/in-latex-context-p)
-                (local-set-key (kbd "TAB")
-                               (lambda ()
-                                 (interactive)
-                                 (if (my/in-latex-context-p)
-                                     (cdlatex-tab)
-                                   (org-cycle)))))))
-  
-  ;; =================================
-  ;; 自定义函数增强
-  ;; =================================
-  
-  ;; 智能上下标
-  (defun my/cdlatex-smart-subscript ()
-    "智能下标输入"
-    (interactive)
-    (if (my/in-latex-context-p)
-        (cdlatex-sub-superscript ?_)
-      (insert "_")))
-  
-  (defun my/cdlatex-smart-superscript ()
-    "智能上标输入"
-    (interactive)
-    (if (my/in-latex-context-p)
-        (cdlatex-sub-superscript ?^)
-      (insert "^")))
-  
-  ;; 绑定智能上下标
-  (global-set-key (kbd "C-c _") 'my/cdlatex-smart-subscript)
-  (global-set-key (kbd "C-c ^") 'my/cdlatex-smart-superscript)
-  
-  ;; =================================
-  ;; 与其他包的集成
-  ;; =================================
-  
-  ;; 与 LaTeX-auto-activating-snippets 协同工作
-  (when (featurep 'laas)
-    ;; 设置优先级，让 LAAS 先处理简单情况
-    (setq cdlatex-takeover-dollar nil)
-    (setq cdlatex-paired-parens nil))
-  
-  ;; 与 YASnippet 协同工作
-  (when (featurep 'yasnippet)
-    ;; 在 CDLaTeX 失败时回退到 YASnippet
-    (advice-add 'cdlatex-tab :after
-                (lambda ()
-                  (when (and (boundp 'yas-minor-mode) yas-minor-mode)
-                    (unless (cdlatex-tab)
-                      (yas-expand)))))))
-
-;; 通常 dvipng 是最快的
-(setq org-preview-latex-default-process 'imagemagick)
-
-;; dvipng 优化设置
-(setq org-format-latex-options
-      `(:foreground default
-        :background default
-        :scale ,(cond ((eq system-type 'darwin) 1.2)      ; macOS
-                      ((eq system-type 'gnu/linux) 2.0)   ; Linux
-                      (t 1.5))                             ; 其他系统默认值
-        :html-foreground "Black"
-        :html-background "Transparent"
-        :html-scale 1.0
-        :matchers ("begin" "$1" "$" "$$" "\\(" "\\[")))
+;; Matrix insertion function
 (defun org-insert-matrix ()
   "Insert a LaTeX matrix template with placeholders"
   (interactive)
@@ -534,34 +524,17 @@ POINT defaults to the current `point'."
   (set-mark (point))
   (forward-char 1))
 
-(define-key org-mode-map (kbd "C-c C-m") 'org-insert-matrix)
+;; Org agenda configuration (if needed)
+(setq org-agenda-files '("~/org/"))  ; 根据需要调整路径
 
-(add-to-list 'org-latex-packages-alist '("" "tikz" t))
+;; 全局禁用 Unicode 替换
+(global-prettify-symbols-mode -1)
+(add-hook 'org-mode-hook (lambda () (prettify-symbols-mode -1)))
 
+;; Preview 增强
 (eval-after-load "preview"
   '(add-to-list 'preview-default-preamble
-  "\\PreviewEnvironment{tikzpicture}" t))
-
-
-
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((latex . t)
-   (emacs-lisp . t)
-   ;; 根据需要添加其他语言
-   (python . t)
-   (shell . t)))
-
-
-(add-hook 'org-latex-preview-open-functions
-          (defun +org-latex-preview-uncenter (ov)
-            (overlay-put ov 'justify (overlay-get ov 'before-string))
-            (overlay-put ov 'before-string nil)))
-(add-hook 'org-latex-preview-close-functions
-          (defun +org-latex-preview-recenter (ov)
-            (overlay-put ov 'before-string (overlay-get ov 'justify))
-            (overlay-put ov 'justify nil)))
-(setq org-image-align 'center)
+                "\\PreviewEnvironment{tikzpicture}" t))
 
 (provide 'init-org)
 ;;; init-org.el ends here
