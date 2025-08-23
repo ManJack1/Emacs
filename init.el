@@ -1,4 +1,4 @@
-;;; init.el --- Main configuration file
+;; init.el --- Main configuration file
 ;; 修复 macOS 上原生编译库路径问题
 ;; 设置 LIBRARY_PATH 环境变量，让 libgccjit 能找到必要的 GCC 库文件如 libemutls_w
 
