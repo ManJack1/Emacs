@@ -22,6 +22,11 @@
               ("C-c i u" . my/org-insert-image-url)
               ("C-c i s" . my/simple-screenshot))
   :config
+    ;; 在你的 use-package org 的 :config 部分添加这些行
+    (add-to-list 'org-latex-packages-alist '("" "tikz" t))
+    (add-to-list 'org-latex-packages-alist '("" "minted" t))
+    (add-to-list 'org-latex-packages-alist '("" "pgfplots" t))
+    (add-to-list 'org-latex-packages-alist '("" "circuitikz" t))
   ;; 启用 org-tempo (easy template)
   (require 'org-tempo)
   (require 'ob-tangle)
@@ -513,7 +518,7 @@ POINT defaults to the current `point'."
                       (yas-expand)))))))
 
 
-(setq org-preview-latex-default-process 'dvipng)
+(setq org-preview-latex-default-process 'imagemagick)
 
 ;; dvipng 优化设置
 (setq org-format-latex-options
@@ -535,11 +540,11 @@ POINT defaults to the current `point'."
   (forward-char 1))
 
 
-;; (add-to-list 'org-latex-packages-alist '("" "tikz" t))
 
 (eval-after-load "preview"
   '(add-to-list 'preview-default-preamble
   "\\PreviewEnvironment{tikzpicture}" t))
+
 
 
 
