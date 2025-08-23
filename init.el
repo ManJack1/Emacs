@@ -17,6 +17,7 @@
 (require 'init-code)
 (require 'compiler)
 (require 'init-ultisnippet)
+(require 'laas-org-math-detection)
 ;; Load custom file
 (load custom-file 'noerror)
 
