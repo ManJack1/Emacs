@@ -1,42 +1,22 @@
-;; init-packages.el --- Packages configuration with straight.el
+;;; init-packages.el --- Packages configuration
 
-;; ===============================================
-;; straight.el 初始化
-;; ===============================================
 
-;; 禁用 package.el
-(setq package-enable-at-startup nil)
+;; 设置包源
+(require 'package)
+(setq package-archives
+      '(("gnu" . "https://elpa.gnu.org/packages/")
+        ("melpa" . "https://mirrors.tuna.tsinghua.edu.cn/elpa/melpa/")))
+(package-initialize)
 
-;; 安装 straight.el
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 5))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
+;; 如果没有安装 use-package，先安装它
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
 
-;; 安装 use-package
-(straight-use-package 'use-package)
 
-;; 配置 use-package 默认使用 straight.el
-(setq straight-use-package-by-default t)
-
-;; 性能优化
-(setq straight-vc-git-default-clone-depth 1)
-(setq straight-check-for-modifications '(check-on-save find-when-checking))
-
-;; ===============================================
-;; 包配置
-;; ===============================================
 
 (use-package evil
-  :straight t
+  :ensure t
   :init
   (setq evil-want-integration t)
   (setq evil-want-keybinding nil)
@@ -44,7 +24,7 @@
   (evil-mode 1))
 
 (use-package evil-surround
-  :straight t
+  :ensure t
   :after evil
   :config
   (global-evil-surround-mode 1)
@@ -72,15 +52,15 @@
   (define-key evil-normal-state-map "gsr" 'evil-surround-change))
 
 (use-package doom-themes
-  :straight t)
+  :ensure t)
 
 ;; 图标支持
 (use-package nerd-icons
-  :straight t)
+  :ensure t)
 
 ;; 为补全添加图标
 (use-package nerd-icons-completion
-  :straight t
+  :ensure t
   :after marginalia
   :config
   (nerd-icons-completion-mode)
@@ -88,12 +68,13 @@
 
 ;; Marginalia - 丰富的注释
 (use-package marginalia
-  :straight t
+  :ensure t
   :init
   (marginalia-mode))
 
 ;; Vertico - 垂直补全界面
 (use-package vertico
+  :ensure t
   :custom
   (vertico-count 13)
   (vertico-resize t)
@@ -102,45 +83,42 @@
   (vertico-mode))
 
 (use-package orderless
-  :straight t
+  :ensure t
   :config
   (setq completion-styles '(orderless)))
 
-;; 删除重复的 marginalia 配置
-;; (use-package marginalia
-;;   :config
-;;   (marginalia-mode))
-
-
-(use-package embark-consult
-  :straight t
-  :after (embark consult))
-
-
-(use-package consult
-  :straight t)
-
+(use-package marginalia
+  :ensure t
+  :config
+  (marginalia-mode))
 
 (use-package embark
-  :straight t)
+  :ensure t)
 
+(use-package consult
+  :ensure t)
 
 (use-package wgrep
-  :straight t
+  :ensure t
   :defer t
   :config
   (setq wgrep-auto-save-buffer t))
 
+(use-package embark-consult
+  :ensure t
+  :after (embark consult)
+  :hook (embark-collect-mode . consult-preview-at-point-mode))
+
 
 (use-package treesit-auto
-  :straight t
+  :ensure t
   :config
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode)
   (setq treesit-auto-install t))
 
 (use-package centaur-tabs
-  :straight t
+  :ensure t
   :demand
   :config
   (centaur-tabs-mode t)
@@ -185,7 +163,7 @@
 (add-hook 'buffer-list-update-hook #'my/update-centaur-tabs-mode)
 
 (use-package avy
-  :straight t
+  :ensure t
   :config
   (setq avy-background t)
   (setq avy-background-alpha 0.3)
@@ -193,7 +171,7 @@
   (setq avy-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)))
 
 (use-package company
-  :straight t
+  :ensure t
   :init (global-company-mode)
   :config
   (setq company-minimum-prefix-length 1)
@@ -213,18 +191,18 @@
 
 ;; 安装 yasnippet
 (use-package yasnippet
-  :straight t
+  :ensure t
   :hook (prog-mode . yas-minor-mode)
   :config
   (yas-reload-all))
 
 ;; 安装官方 snippet 集
 (use-package yasnippet-snippets
-  :straight t
+  :ensure t
   :after yasnippet)
 
 (use-package consult-yasnippet
-   :straight t)
+  :ensure t)
 
 (with-eval-after-load 'yasnippet
   ;; 让yasnippet更宽松地匹配
@@ -252,38 +230,42 @@
         company-idle-delay 0.1
         company-selection-wrap-around t))
 
+
 (use-package recentf
-  :straight nil  ; 使用 Emacs 内置版本
+  :ensure t
   :config
   (recentf-mode 1)
   (setq recentf-max-menu-item 10))
 
 (use-package simple
-  :straight nil  ; 使用 Emacs 内置版本
+  :ensure nil
   :hook (after-init . size-indication-mode)
   :init
   (progn
-    (setq column-number-mode t)))
+    (setq column-number-mode t)
+    ))
 
 ;;modeline上显示我的所有的按键和执行的命令
 (use-package keycast
-  :straight t
+  :ensure t
   :config
   (add-to-list 'global-mode-string '("" keycast-mode-line))
   (keycast-mode-line-mode t))
 
-;; 这里的执行顺序非常重要，doom-modeline-mode 的激活时机一定要在设置global-mode-string 之后
+
+;; 这里的执行顺序非常重要，doom-modeline-mode 的激活时机一定要在设置global-mode-string 之后‘
 (use-package doom-modeline
-  :straight t
+  :ensure t
   :init
   (doom-modeline-mode t))
 
 (use-package consult-todo
-  :straight t
+  :ensure t
   :after (consult keycast))
 
+
 (use-package savehist
-  :straight t
+  :ensure nil
   :hook (after-init . savehist-mode)
   :init (setq enable-recursive-minibuffers t ; Allow commands in minibuffers
               history-length 1000
@@ -292,25 +274,32 @@
                                               search-ring
                                               regexp-search-ring
                                               extended-command-history)
-              savehist-autosave-interval 300))
+              savehist-autosave-interval 300)
+  )
 
 (use-package saveplace
-  :straight t
+  :ensure nil
   :hook (after-init . save-place-mode))
 
+;; 安装org 之前，一定要配置 use-package 不使用内置的org 版本，可以使用本段代码最后面的代码，具体位置可以参考视频
+(use-package org
+  :pin melpa
+  :ensure t)
 
-;; 使用 straight.el 安装最新版本的 org
+;; 添加 NonGNU ELPA 源
+(add-to-list 'package-archives 
+             '("nongnu" . "https://elpa.nongnu.org/nongnu/") t)
 
 ;; 安装 org-contrib
 (use-package org-contrib
-  :straight t
+  :ensure t
   :after org)
 
 ;;; SIS (Smart Input Source) cross-platform configuration
 ;;; Supports macOS and Linux
 
 (use-package sis
-  :straight t
+  :ensure t
   :config
   ;; Cross-platform input source configuration
   (cond
@@ -318,7 +307,8 @@
    ((eq system-type 'darwin)
     (sis-ism-lazyman-config
      "com.apple.keylayout.ABC"
-     "com.apple.inputmethod.SCIM.ITABC"))
+     "com.apple.inputmethod.SCIM.ITABC"
+     ))
    
    ;; Linux fcitx5 configuration
    ((eq system-type 'gnu/linux)

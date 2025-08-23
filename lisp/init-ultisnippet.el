@@ -2,13 +2,13 @@
 
 
 (use-package laas
-  :straight t
+  :ensure t
   :hook (LaTeX-mode . laas-mode)
   :config
   (aas-set-snippets 'laas-mode
                     ;; set condition!
-                    :cond #'texmathp ; expand only while in math
-                    "supp" "\\supp"
+                    ;;:cond #'texmathp 
+                    :cond #'laas-org-in-math-p
 		    "le" "\\leq"
                     "On" "O(n)"
 		    "ra" " \\Rightarrow "
@@ -95,7 +95,7 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
 ;; 注册到 LAAS
 (with-eval-after-load 'laas
   (aas-set-snippets 'laas-mode
-    :cond #'texmathp
+    :cond #'laas-org-in-math-p
     "sub" #'my/absorb-sub
     "bb" #'my/absorb-bb
     "pow" #'my/absorb-pow

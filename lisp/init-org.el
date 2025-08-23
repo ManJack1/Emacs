@@ -1,10 +1,10 @@
 ;;; init-org.el --- Org mode configuration
 ;; All Org mode settings go here
 
-;;; Code:org-latex-packages-alist
+;;; Code:
 ;; Core Org mode configuration
 (use-package org
-  :straight nil
+  :ensure t
   :hook ((org-mode . visual-line-mode)
          (org-mode . yas-minor-mode)
 	 (org-mode . laas-mode)
@@ -22,18 +22,13 @@
               ("C-c i u" . my/org-insert-image-url)
               ("C-c i s" . my/simple-screenshot))
   :config
-    ;; 在你的 use-package org 的 :config 部分添加这些行
-    (add-to-list 'org-latex-packages-alist '("" "tikz" t))
-    (add-to-list 'org-latex-packages-alist '("" "minted" t))
-    (add-to-list 'org-latex-packages-alist '("" "pgfplots" t))
-    (add-to-list 'org-latex-packages-alist '("" "circuitikz" t))
   ;; 启用 org-tempo (easy template)
   (require 'org-tempo)
   (require 'ob-tangle)
   
   ;; 基本外观设置
   (setq org-startup-indented t
-        org-pretty-entities nil
+        org-pretty-entities t
         org-hide-emphasis-markers t
         org-startup-with-inline-images t
         org-image-actual-width '(400)
@@ -91,7 +86,7 @@
         compilation-always-kill t
         compilation-ask-about-save nil)
   
-  ;; (add-to-list 'org-latex-packages-alist '("" "minted" t))
+  (add-to-list 'org-latex-packages-alist '("" "minted" nil))
   
   ;; 列表美化 - 替换 org-modern 的列表样式
   (font-lock-add-keywords 'org-mode
@@ -112,7 +107,7 @@
 
 ;; Org superstar for beautiful headlines
 (use-package org-superstar
-  :straight t
+  :ensure t
   :after org
   :hook (org-mode . org-superstar-mode)
   :custom
@@ -127,7 +122,7 @@
 
 ;; Org download for image handling
 (use-package org-download
-  :straight t
+  :ensure t
   :after org
   :custom
   (org-download-method 'directory)
@@ -141,7 +136,7 @@
 
 ;; LaTeX fragment toggle
 (use-package org-fragtog
-  :straight t
+  :ensure t
   :after org
   :hook (org-mode . org-fragtog-mode))
 
@@ -331,7 +326,7 @@ POINT defaults to the current `point'."
 ;; CDLaTeX 完整配置
 
 (use-package cdlatex
-  :straight t
+  :ensure t
   :hook ((LaTeX-mode . turn-on-cdlatex)
          (latex-mode . turn-on-cdlatex)
          (org-mode . turn-on-org-cdlatex))
@@ -517,7 +512,7 @@ POINT defaults to the current `point'."
                     (unless (cdlatex-tab)
                       (yas-expand)))))))
 
-
+;; 通常 dvipng 是最快的
 (setq org-preview-latex-default-process 'imagemagick)
 
 ;; dvipng 优化设置
@@ -539,12 +534,13 @@ POINT defaults to the current `point'."
   (set-mark (point))
   (forward-char 1))
 
+(define-key org-mode-map (kbd "C-c C-m") 'org-insert-matrix)
 
+(add-to-list 'org-latex-packages-alist '("" "tikz" t))
 
 (eval-after-load "preview"
   '(add-to-list 'preview-default-preamble
   "\\PreviewEnvironment{tikzpicture}" t))
-
 
 
 
