@@ -6,6 +6,7 @@
 
 # 保留 init.el
 !init.el
+!early-init.el
 
 # 保留 lisp/ 文件夹及其内容
 !lisp/
@@ -13,3 +14,8 @@
 
 !snippets/
 !snippets/**
+
+
+# 但保留 repos 中的源代码
+!straight/repos/
+!straight/repos/**

@@ -1,10 +1,9 @@
 ;;; init-org.el --- Org mode configuration
 ;; All Org mode settings go here
 
-;;; Code:
+;;; Code:org-latex-packages-alist
 ;; Core Org mode configuration
 (use-package org
-  :ensure t
   :hook ((org-mode . visual-line-mode)
          (org-mode . yas-minor-mode)
 	 (org-mode . laas-mode)
@@ -22,13 +21,18 @@
               ("C-c i u" . my/org-insert-image-url)
               ("C-c i s" . my/simple-screenshot))
   :config
+    ;; 在你的 use-package org 的 :config 部分添加这些行
+    (add-to-list 'org-latex-packages-alist '("" "tikz" t))
+    (add-to-list 'org-latex-packages-alist '("" "minted" t))
+    (add-to-list 'org-latex-packages-alist '("" "pgfplots" t))
+    (add-to-list 'org-latex-packages-alist '("" "circuitikz" t))
   ;; 启用 org-tempo (easy template)
   (require 'org-tempo)
   (require 'ob-tangle)
   
   ;; 基本外观设置
   (setq org-startup-indented t
-        org-pretty-entities t
+        org-pretty-entities nil
         org-hide-emphasis-markers t
         org-startup-with-inline-images t
         org-image-actual-width '(400)
@@ -86,7 +90,7 @@
         compilation-always-kill t
         compilation-ask-about-save nil)
   
-  (add-to-list 'org-latex-packages-alist '("" "minted" nil))
+  ;; (add-to-list 'org-latex-packages-alist '("" "minted" t))
   
   ;; 列表美化 - 替换 org-modern 的列表样式
   (font-lock-add-keywords 'org-mode
@@ -107,7 +111,7 @@
 
 ;; Org superstar for beautiful headlines
 (use-package org-superstar
-  :ensure t
+  :straight t
   :after org
   :hook (org-mode . org-superstar-mode)
   :custom
@@ -122,7 +126,7 @@
 
 ;; Org download for image handling
 (use-package org-download
-  :ensure t
+  :straight t
   :after org
   :custom
   (org-download-method 'directory)
@@ -136,7 +140,7 @@
 
 ;; LaTeX fragment toggle
 (use-package org-fragtog
-  :ensure t
+  :straight t
   :after org
   :hook (org-mode . org-fragtog-mode))
 
@@ -326,7 +330,7 @@ POINT defaults to the current `point'."
 ;; CDLaTeX 完整配置
 
 (use-package cdlatex
-  :ensure t
+  :straight t
   :hook ((LaTeX-mode . turn-on-cdlatex)
          (latex-mode . turn-on-cdlatex)
          (org-mode . turn-on-org-cdlatex))
@@ -512,8 +516,43 @@ POINT defaults to the current `point'."
                     (unless (cdlatex-tab)
                       (yas-expand)))))))
 
-;; 通常 dvipng 是最快的
+
+;; 1. 设置 LaTeX 预览使用 dvisvgm
 (setq org-preview-latex-default-process 'imagemagick)
+
+;; 2. 设置 LaTeX 选项缩放因子为 2（生成高分辨率图像）
+(with-eval-after-load 'org
+  (plist-put org-format-latex-options :scale 2))
+
+;; 3. 为 LaTeX 代码块添加图像缩放建议函数
+(defun my/image-scale-advice (image)
+  "Scale down images by factor of 2 for Retina display optimization."
+  (let* ((factor (image-property image :scale))
+         (new-factor (if factor
+                         (/ factor 2.0)
+                       0.5)))
+    (image--set-property image :scale new-factor)
+    image))
+
+;; 应用建议到 org--create-inline-image
+(advice-add 'org--create-inline-image :filter-return #'my/image-scale-advice)
+
+;; 4. 为内联 LaTeX 片段添加覆盖层缩放建议函数
+(defun my/overlay-scale-advice (beg end image &optional imagetype)
+  "Scale overlay images for Retina display optimization."
+  (mapc (lambda (ov) 
+          (when (equal (overlay-get ov 'org-overlay-type) 'org-latex-overlay)
+            (overlay-put ov
+                         'display
+                         (list 'image 
+                               :type (or (intern imagetype) 'png) 
+                               :file image 
+                               :ascent 'center 
+                               :scale 0.5))))
+        (overlays-at beg)))
+
+;; 应用建议到 org--make-preview-overlay
+(advice-add 'org--make-preview-overlay :after #'my/overlay-scale-advice)
 
 ;; dvipng 优化设置
 (setq org-format-latex-options
@@ -534,13 +573,12 @@ POINT defaults to the current `point'."
   (set-mark (point))
   (forward-char 1))
 
-(define-key org-mode-map (kbd "C-c C-m") 'org-insert-matrix)
 
-(add-to-list 'org-latex-packages-alist '("" "tikz" t))
 
 (eval-after-load "preview"
   '(add-to-list 'preview-default-preamble
   "\\PreviewEnvironment{tikzpicture}" t))
+
 
 
 
@@ -564,11 +602,10 @@ POINT defaults to the current `point'."
 (setq org-image-align 'center)
 
 
+
 (use-package org-bars
+  :straight (:type git :host github :repo "tonyaldon/org-bars")
   :hook (org-mode . org-bars-mode))
-
-
-
 
 
 (provide 'init-org)

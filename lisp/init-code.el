@@ -1,6 +1,7 @@
+;;; init-code.el --- Code-related packages configuration with straight.el
 
 (use-package hl-todo
-  :ensure t
+  :straight t
   :hook (prog-mode . hl-todo-mode)
   :config
   (setq hl-todo-keyword-faces
@@ -9,19 +10,11 @@
           ("NOTE"   . "#1E90FF")
           ("BUG"    . "#FF1493"))))
 
-
- (use-package smartparens
-  :ensure smartparens  ;; install the package
-  :hook (prog-mode text-mode markdown-mode) ;; add `smartparens-mode` to these hooks
+(use-package smartparens
+  :straight t
+  :hook ((prog-mode text-mode markdown-mode) . smartparens-mode)
   :config
   ;; load default config
-  (require 'smartparens-config))
-
-
-(use-package smartparens
-  :ensure t
-  :hook (prog-mode . smartparens-mode)
-  :config
   (require 'smartparens-config)
   
   (defun my/tabout ()
@@ -124,17 +117,15 @@
     (define-key org-mode-map (kbd "<backtab>") 'my/tab-back)))
 
 (use-package which-key
- :ensure t
- :init (which-key-mode)
- :diminish which-key-mode
- :config
- (setq which-key-idle-delay 0))
+  :straight t
+  :init (which-key-mode)
+  :diminish which-key-mode
+  :config
+  (setq which-key-idle-delay 0))
 
-
-
-
+;; GitHub Copilot 配置
 (use-package copilot
-  :ensure t
+  :straight (:host github :repo "zerolfx/copilot.el" :files ("dist" "*.el"))
   :bind ("M-p" . copilot-accept-completion)
   :config
   ;; 禁用特定的警告
@@ -142,5 +133,5 @@
   ;; 或者只禁用这个特定警告
   (setq warning-suppress-types '((copilot copilot--infer-indentation-offset))))
 
-
 (provide 'init-code)
+;;; init-code.el ends here
