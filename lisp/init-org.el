@@ -567,12 +567,6 @@ POINT defaults to the current `point'."
 (use-package org-bars
   :hook (org-mode . org-bars-mode))
 
-(use-package org-modern
-  :ensure t
-  :hook (org-mode . org-bars-mode))
-
-
-
 
 
 

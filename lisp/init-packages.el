@@ -434,9 +434,6 @@
   (define-key evil-normal-state-map (kbd "u") 'undo-fu-only-undo)
   (define-key evil-normal-state-map (kbd "C-r") 'undo-fu-only-redo))
 
-(use-package org-appear
-  :ensure t
-  :hook (org-mode org-appear-mode))
 
 (provide 'init-packages)
 ;;; init-packages.el ends here
