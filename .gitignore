@@ -1,7 +1,7 @@
-# 忽略所有文件
+# 忽略根目录所有内容
 /*
 
-# 保留基本配置文件
+# 保留配置文件
 !.gitignore
 !init.el
 !early-init.el
@@ -12,7 +12,15 @@
 !snippets/
 !snippets/**
 
-# 保留 straight 目录，但只要 repos
+# 保留 straight/repos 及所有内容
 !straight/
-straight/*
 !straight/repos/
+!straight/repos/**
+
+# 忽略 straight 中其他内容
+straight/build/
+straight/build-cache.el
+straight/modified/
+straight/versions/
+straight/*.el
+straight/*.elc
