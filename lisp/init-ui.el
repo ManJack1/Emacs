@@ -1,27 +1,30 @@
 
 ;;; init-ui.el --- UI configuration
 
-;; 字体设置
-;; 设置默认字体为 JetBrains Mono
+;; 英文字体
 (set-face-attribute 'default nil
-                    :font "Maple Mono NF"
-                    :height 150) ; 14pt，高度以1/10pt为单位
+                    :family "Maple Mono NF"
+                    :height 150)
 
-;; 设置中文字体为 LXGW WenKai Mono
-(dolist (charset '(kana han symbol cjk-misc bopomofo))
-  (set-fontset-font (frame-parameter nil 'font)
-                    charset
-                    (font-spec :family "LXGW WenKai Mono")))
-
-;; 设置粗体
-(set-face-attribute 'bold nil
-                    :font "Maple Mono NF"
-                    :weight 'bold)
-
-;; 设置斜体
-(set-face-attribute 'italic nil
-                    :font "Maple Mono NF"
-                    :slant 'italic)
+;; 中文字体 - 使用 Unicode 范围更精确
+(when (member "LXGW WenKai Mono" (font-family-list))
+  ;; 中日韩统一表意文字
+  (set-fontset-font "fontset-default"
+                    '(#x4e00 . #x9fff)
+                    (font-spec :family "LXGW WenKai Mono"
+                               :size 15))
+  
+  ;; 中日韩符号和标点
+  (set-fontset-font "fontset-default"
+                    '(#x3000 . #x303f)
+                    (font-spec :family "LXGW WenKai Mono"
+                               :size 15))
+  
+  ;; 全角字符
+  (set-fontset-font "fontset-default"
+                    '(#xff00 . #xffef)
+                    (font-spec :family "LXGW WenKai Mono"
+                               :size 15)))
 
 ;; 基础界面配置
 (setq frame-title-format '("%b"))

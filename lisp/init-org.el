@@ -580,15 +580,6 @@ POINT defaults to the current `point'."
 
 
 
-(use-package mixed-pitch
-  :after org
-  :ensure t
-  :hook (org-mode . mixed-pitch-mode)
-  :custom-face
-  ;; 使用系统默认字体
-  (fixed-pitch ((t (:family "monospace" :height 140))))
-  (variable-pitch ((t (:family "sans-serif" :height 160))))
-  (default ((t (:family "Maple Mono NF" :height 140)))))
 
 
 (provide 'init-org)
