@@ -18,6 +18,8 @@
 (require 'compiler)
 (require 'init-ultisnippet)
 (require 'laas-org-math-detection)
+(require 'org-bars)
+(require 'org-modern-indent)
 ;; Load custom file
 (load custom-file 'noerror)
 

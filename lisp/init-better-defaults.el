@@ -23,5 +23,15 @@
 ;; 主题加载
 (load-theme 'modus-operandi-tinted t)
 
+;; 在你的配置文件中添加
+(with-eval-after-load 'evil
+  ;; 全局绑定C-r为redo
+  (define-key evil-normal-state-map (kbd "C-r") 'evil-redo)
+  (define-key evil-insert-state-map (kbd "C-r") 'evil-redo)
+  (define-key evil-visual-state-map (kbd "C-r") 'evil-redo)
+  
+  ;; 如果你也想在emacs状态下使用
+  (global-set-key (kbd "C-r") 'evil-redo))
+
 (provide 'init-better-defaults)
 ;;; init-better-defaults.el ends here

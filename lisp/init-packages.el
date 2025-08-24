@@ -121,46 +121,102 @@
   :ensure t
   :demand
   :config
-  (centaur-tabs-mode t)
+  ;; 初始不启用，后面通过 hook 控制
+  ;; (centaur-tabs-mode t)  ; 注释掉这行
   
   ;; 自定义 buffer 分组
   (defun my/centaur-tabs-buffer-groups ()
     "Custom buffer grouping for centaur-tabs"
     (list
      (cond
-      ((string-match-p "^\*" (buffer-name)) nil)
-      ((string-match-p "^ " (buffer-name)) nil)
+      ;; 隐藏系统 buffer (以 * 开头的)
+      ((string-match-p "^\\*" (buffer-name)) "System")
+      ;; 隐藏以空格开头的临时 buffer
+      ((string-match-p "^ " (buffer-name)) "Hidden")
+      ;; 文件 buffer
       ((buffer-file-name) "Files")
+      ;; Dired 模式
       ((memq major-mode '(dired-mode)) "Dired")
+      ;; 其他
       (t "Common"))))
   
   (setq centaur-tabs-buffer-groups-function #'my/centaur-tabs-buffer-groups)
   
+  ;; 只显示文件 buffer 的标签
+  (defun my/centaur-tabs-hide-tab (buffer)
+    "Hide certain tabs from being displayed"
+    (let ((name (buffer-name buffer)))
+      (or
+       ;; 隐藏以 * 开头的系统 buffer
+       (string-match-p "^\\*" name)
+       ;; 隐藏以空格开头的临时 buffer
+       (string-match-p "^ " name)
+       ;; 隐藏 magit 相关 buffer
+       (string-match-p "magit" name)
+       ;; 可以添加更多需要隐藏的 buffer
+       )))
+  
+  (setq centaur-tabs-hide-tab-function #'my/centaur-tabs-hide-tab)
+  
   ;; Cycle 范围
   (setq centaur-tabs-cycle-scope 'tabs)
   
-  ;; 标签字体颜色设置（修复 background 警告）
+  ;; 标签字体颜色设置
   (set-face-attribute 'centaur-tabs-selected nil
-                      :foreground "#DDA0DD"  ;; 亮紫色
-                      :background 'unspecified  ;; 使用 unspecified 而不是 nil
+                      :foreground "#DDA0DD"      ; 亮紫色
+                      :background 'unspecified  ; 使用主题背景
                       :weight 'bold)
   
   (set-face-attribute 'centaur-tabs-unselected nil
-                      :foreground "#000000"  ;; 白色
-                      :background 'unspecified  ;; 使用 unspecified 而不是 nil
+                      :foreground "#888888"      ; 修改为灰色，更容易区分
+                      :background 'unspecified
                       :weight 'normal)
   
   (set-face-attribute 'centaur-tabs-default nil
                       :foreground "#000000"
-                      :background 'unspecified))  ;; 使用 unspecified 而不是 nil
+                      :background 'unspecified)
+  
+  ;; 其他有用的设置
+  (setq centaur-tabs-set-icons t)           ; 显示图标
+  (setq centaur-tabs-gray-out-icons 'buffer) ; 灰化非活动标签图标
+  (setq centaur-tabs-set-close-button nil)   ; 不显示关闭按钮
+  (setq centaur-tabs-set-modified-marker t)  ; 显示修改标记
+  (setq centaur-tabs-modified-marker "●"))   ; 修改标记样式
 
+;; 智能启用 centaur-tabs 的函数
 (defun my/update-centaur-tabs-mode ()
-  "Enable centaur-tabs only if more than 1 buffer."
-  (if (> (length (cl-remove-if-not #'buffer-file-name (buffer-list))) 1)
-      (centaur-tabs-mode 1)
-    (centaur-tabs-mode -1)))
+  "智能启用 centaur-tabs：只在有多个文件 buffer 时启用"
+  (let ((file-buffers (cl-count-if 
+                       (lambda (buf)
+                         (and (buffer-file-name buf)
+                              ;; 确保是可见的 buffer
+                              (not (string-match-p "^\\*" (buffer-name buf)))
+                              (not (string-match-p "^ " (buffer-name buf)))))
+                       (buffer-list))))
+    (if (> file-buffers 1)
+        (unless centaur-tabs-mode
+          (centaur-tabs-mode 1))
+      (when centaur-tabs-mode
+        (centaur-tabs-mode -1)))))
 
-(add-hook 'buffer-list-update-hook #'my/update-centaur-tabs-mode)
+;; 添加 hook，但避免频繁调用
+(defvar my/centaur-tabs-timer nil
+  "Timer for delayed centaur-tabs update")
+
+(defun my/delayed-update-centaur-tabs ()
+  "延迟更新 centaur-tabs 状态，避免频繁调用"
+  (when my/centaur-tabs-timer
+    (cancel-timer my/centaur-tabs-timer))
+  (setq my/centaur-tabs-timer
+        (run-with-timer 0.1 nil #'my/update-centaur-tabs-mode)))
+
+;; 使用延迟更新避免性能问题
+(add-hook 'buffer-list-update-hook #'my/delayed-update-centaur-tabs)
+
+;; 在特定事件后也检查一下
+(add-hook 'find-file-hook #'my/delayed-update-centaur-tabs)
+(add-hook 'kill-buffer-hook #'my/delayed-update-centaur-tabs)
+
 
 (use-package avy
   :ensure t
@@ -339,6 +395,48 @@
     (add-hook 'evil-insert-state-exit-hook #'sis--evil-insert-exit)
     ;; 确保 normal mode 也是英文
     (add-hook 'evil-normal-state-entry-hook #'sis-set-english)))
+
+;; undo-fu 配置（专为 evil 优化）
+(use-package undo-fu
+  :ensure t
+  :config
+  ;; Evil 兼容设置
+  (setq undo-fu-allow-undo-in-region t)
+  ;; 设置 undo 限制
+  (setq undo-limit 67108864)           ; 64MB
+  (setq undo-strong-limit 100663296)   ; 96MB  
+  (setq undo-outer-limit 1006632960))  ; 960MB
+
+;; 持久化 undo 历史
+(use-package undo-fu-session
+  :ensure t
+  :after undo-fu
+  :config
+  (undo-fu-session-global-mode)
+  ;; 设置保存目录
+  (setq undo-fu-session-directory 
+        (expand-file-name "undo-fu-session/" user-emacs-directory))
+  ;; 忽略某些文件
+  (setq undo-fu-session-ignore-glob-patterns
+        '("/tmp/*" "*.tmp" "*.log" "**/COMMIT_EDITMSG" "**/.git/*"))
+  ;; 启用压缩
+  (setq undo-fu-session-compression 'gz)
+  ;; 线性 undo（更符合 Vim 习惯）
+  (setq undo-fu-session-linear t))
+
+;; Evil 配置，使用 undo-fu
+(use-package evil
+  :init
+  (setq evil-undo-system 'undo-fu)  ; 关键设置
+  :config
+  (evil-mode 1)
+  ;; 绑定 undo/redo 键
+  (define-key evil-normal-state-map (kbd "u") 'undo-fu-only-undo)
+  (define-key evil-normal-state-map (kbd "C-r") 'undo-fu-only-redo))
+
+(use-package org-appear
+  :ensure t
+  :hook (org-mode org-appear-mode))
 
 (provide 'init-packages)
 ;;; init-packages.el ends here
