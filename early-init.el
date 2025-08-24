@@ -13,5 +13,6 @@
   (load bootstrap-file nil 'nomessage))
 
 ;;--------------------自定义安装包
-(straight-use-package 'org)  ; 测试其他包是否正常
+(when (eq system-type 'darwin)
+  (straight-use-package 'org))
 
