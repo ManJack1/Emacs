@@ -518,41 +518,53 @@ POINT defaults to the current `point'."
 
 
 ;; 1. 设置 LaTeX 预览使用 dvisvgm
-(setq org-preview-latex-default-process 'imagemagick)
+(setq org-preview-latex-default-process
+      (cond ((eq system-type 'gnu/linux) 'dvisvgm)      ; Linux 使用 dvisvgm
+            ((eq system-type 'darwin) 'imagemagick)      ; macOS 使用 imagemagick
+            (t 'dvipng)))    
 
-;; 2. 设置 LaTeX 选项缩放因子为 2（生成高分辨率图像）
-(with-eval-after-load 'org
-  (plist-put org-format-latex-options :scale 2))
 
-;; 3. 为 LaTeX 代码块添加图像缩放建议函数
-(defun my/image-scale-advice (image)
-  "Scale down images by factor of 2 for Retina display optimization."
-  (let* ((factor (image-property image :scale))
-         (new-factor (if factor
-                         (/ factor 2.0)
-                       0.5)))
-    (image--set-property image :scale new-factor)
-    image))
 
-;; 应用建议到 org--create-inline-image
-(advice-add 'org--create-inline-image :filter-return #'my/image-scale-advice)
 
-;; 4. 为内联 LaTeX 片段添加覆盖层缩放建议函数
-(defun my/overlay-scale-advice (beg end image &optional imagetype)
-  "Scale overlay images for Retina display optimization."
-  (mapc (lambda (ov) 
-          (when (equal (overlay-get ov 'org-overlay-type) 'org-latex-overlay)
-            (overlay-put ov
-                         'display
-                         (list 'image 
-                               :type (or (intern imagetype) 'png) 
-                               :file image 
-                               :ascent 'center 
-                               :scale 0.5))))
-        (overlays-at beg)))
 
-;; 应用建议到 org--make-preview-overlay
-(advice-add 'org--make-preview-overlay :after #'my/overlay-scale-advice)
+;; macOS Retina 显示优化配置
+(when (eq system-type 'darwin)
+  ;; 设置 LaTeX 选项缩放因子为 2（生成高分辨率图像）
+  (with-eval-after-load 'org
+    (plist-put org-format-latex-options :scale 2))
+  
+  ;; 为 LaTeX 代码块添加图像缩放建议函数
+  (defun my/image-scale-advice (image)
+    "Scale down images by factor of 2 for Retina display optimization."
+    (let* ((factor (image-property image :scale))
+           (new-factor (if factor
+                           (/ factor 2.0)
+                         0.5)))
+      (image--set-property image :scale new-factor)
+      image))
+  
+  ;; 应用建议到 org--create-inline-image
+  (advice-add 'org--create-inline-image :filter-return #'my/image-scale-advice)
+  
+  ;; 为内联 LaTeX 片段添加覆盖层缩放建议函数
+  (defun my/overlay-scale-advice (beg end image &optional imagetype)
+    "Scale overlay images for Retina display optimization."
+    (mapc (lambda (ov) 
+            (when (equal (overlay-get ov 'org-overlay-type) 'org-latex-overlay)
+              (overlay-put ov
+                           'display
+                           (list 'image 
+                                 :type (or (intern imagetype) 'png) 
+                                 :file image 
+                                 :ascent 'center 
+                                 :scale 0.5))))
+          (overlays-at beg)))
+  
+  ;; 应用建议到 org--make-preview-overlay
+  (advice-add 'org--make-preview-overlay :after #'my/overlay-scale-advice))
+
+
+
 
 ;; dvipng 优化设置
 (setq org-format-latex-options
