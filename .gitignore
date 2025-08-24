@@ -1,21 +1,18 @@
 # 忽略所有文件
 /*
 
-# 保留 .gitignore 文件本身（否则 Git 连规则都看不到）
+# 保留基本配置文件
 !.gitignore
-
-# 保留 init.el
 !init.el
 !early-init.el
 
-# 保留 lisp/ 文件夹及其内容
+# 保留自定义目录
 !lisp/
 !lisp/**
-
 !snippets/
 !snippets/**
 
-
-# 但保留 repos 中的源代码
+# 保留 straight 目录，但只要 repos
+!straight/
+straight/*
 !straight/repos/
-!straight/repos/**
