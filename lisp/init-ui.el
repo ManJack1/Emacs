@@ -12,19 +12,19 @@
   (set-fontset-font "fontset-default"
                     '(#x4e00 . #x9fff)
                     (font-spec :family "LXGW WenKai Mono"
-                               :size 15))
+                               :height 15))
   
   ;; 中日韩符号和标点
   (set-fontset-font "fontset-default"
                     '(#x3000 . #x303f)
                     (font-spec :family "LXGW WenKai Mono"
-                               :size 15))
+                               :height 15))
   
   ;; 全角字符
   (set-fontset-font "fontset-default"
                     '(#xff00 . #xffef)
                     (font-spec :family "LXGW WenKai Mono"
-                               :size 15)))
+                               :height 15)))
 
 ;; 基础界面配置
 (setq frame-title-format '("%b"))

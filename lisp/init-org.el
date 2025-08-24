@@ -572,11 +572,6 @@ POINT defaults to the current `point'."
   :hook (org-mode . org-bars-mode))
 
 
-;; -*- lexical-binding: t; -*-
-(use-package markdown-mode
-  :defer t
-  :mode
-  ("\\.mdx?\\'" . gfm-mode))
 
 
 
