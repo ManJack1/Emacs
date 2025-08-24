@@ -5,22 +5,8 @@
 !.gitignore
 !init.el
 !early-init.el
-
-# 保留自定义目录
 !lisp/
 !lisp/**
 !snippets/
 !snippets/**
 
-# 保留 straight/repos 及所有内容
-!straight/
-!straight/repos/
-!straight/repos/**
-
-# 忽略 straight 中其他内容
-straight/build/
-straight/build-cache.el
-straight/modified/
-straight/versions/
-straight/*.el
-straight/*.elc
