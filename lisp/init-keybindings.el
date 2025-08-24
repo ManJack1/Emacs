@@ -242,7 +242,7 @@
   (switch-to-buffer "*scratch*"))
 
 ;; 默认加载 modus-operandi-tinted
-(load-theme 'modus-operandi-tinted t)
+(load-theme 'doom-one t)
 
 (defun my/modus ()
   "swift the dark theme and light theme of modus"
