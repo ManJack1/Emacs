@@ -20,6 +20,7 @@
 (require 'laas-org-math-detection)
 (require 'org-bars)
 (require 'org-modern-indent)
+(provide 'TS-setting)
 ;; Load custom file
 (load custom-file 'noerror)
 

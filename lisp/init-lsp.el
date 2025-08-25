@@ -1,5 +1,11 @@
 ;;; init-lsp.el --- LSP configuration with straight.el -*- lexical-binding: t; -*-
 
+
+(use-package treesit-auto
+  :straight t
+  :config
+  (global-treesit-auto-mode 1))
+
 (use-package flymake
   :straight t
   :hook (prog-mode . flymake-mode)
@@ -60,6 +66,7 @@
 (use-package lsp-mode
   :straight t
   :hook ((c++-mode . lsp)
+         (python-mode . lsp-deferred)
          (c++-ts-mode . lsp)
          (c-ts-mode . lsp)
          (c-mode . lsp)
@@ -75,6 +82,7 @@
   (setq lsp-enable-symbol-highlighting t)
   (setq lsp-headerline-breadcrumb-enable t)
   (setq lsp-idle-delay 0.5))
+  (setq lsp-pylsp-server-command '("~/.venv/bin/pylsp"))
 
 ;;; LSP UI 配置
 (use-package lsp-ui
@@ -133,6 +141,11 @@
     (shell-command-on-region (point-min) (point-max) 
                              "clang-format" 
                              (current-buffer) t)))
+
+
+;;----------lua
+(use-package lua-mode
+  :straight t)
 
 (provide 'init-lsp)
 ;;; init-lsp.el ends here

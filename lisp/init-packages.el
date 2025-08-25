@@ -118,13 +118,6 @@
   (setq wgrep-auto-save-buffer t))
 
 
-(use-package treesit-auto
-  :straight t
-  :config
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode)
-  (setq treesit-auto-install t))
-
 (use-package centaur-tabs
   :straight t
   :demand
@@ -335,6 +328,10 @@
     (add-hook 'evil-insert-state-exit-hook #'sis--evil-insert-exit)
     ;; 确保 normal mode 也是英文
     (add-hook 'evil-normal-state-entry-hook #'sis-set-english)))
+
+(use-package magit-todos
+  :straight t)
+
 
 (provide 'init-packages)
 ;;; init-packages.el ends here

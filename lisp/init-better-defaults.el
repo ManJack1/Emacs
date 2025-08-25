@@ -46,11 +46,6 @@
 (add-hook 'markdown-mode-hook 'visual-line-mode)
 
 
-;; 安装必要的包
-(straight-use-package 'evil)
-(straight-use-package 'undo-fu)
-(straight-use-package 'undo-fu-session)  ; 持久化 undo 历史
-(straight-use-package 'vundo)           ; 可视化 undo 树
 
 ;; Evil 基础配置
 (use-package evil
