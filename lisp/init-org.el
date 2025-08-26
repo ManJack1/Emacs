@@ -566,24 +566,20 @@ POINT defaults to the current `point'."
 
 
 
-;; dvipng 优化设置
-(setq org-format-latex-options
-      `(:foreground default
-        :background default
-        :scale ,(cond ((eq system-type 'darwin) 1.2)      ; macOS
-                      ((eq system-type 'gnu/linux) 2.0)   ; Linux
-                      (t 1.5))                             ; 其他系统默认值
-        :html-foreground "Black"
-        :html-background "Transparent"
-        :html-scale 1.0
-        :matchers ("begin" "$1" "$" "$$" "\\(" "\\[")))
-(defun org-insert-matrix ()
-  "Insert a LaTeX matrix template with placeholders"
-  (interactive)
-  (insert "$\\begin{pmatrix}\na & b \\\\\nc & d\n\\end{pmatrix}$")
-  (search-backward "a")
-  (set-mark (point))
-  (forward-char 1))
+
+;; Linux 简单分辨率优化
+(when (eq system-type 'gnu/linux)
+  (defun my/linux-latex-scale ()
+    "为 Linux 设置合适的 LaTeX 缩放"
+    (interactive)
+    (let ((scale (read-number "输入 LaTeX 缩放倍数 (推荐 1.2-2.0): " 1.5)))
+      (with-eval-after-load 'org
+        (plist-put org-format-latex-options :scale scale))
+      (message "Linux LaTeX 缩放设置为: %.1f" scale)))
+  
+  ;; 默认为 Linux 设置 1.5 倍缩放
+  (with-eval-after-load 'org
+    (plist-put org-format-latex-options :scale 0.7)))
 
 
 
