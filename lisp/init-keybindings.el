@@ -100,6 +100,9 @@
     "st" 'consult-todo
     "sT" 'consult-todo-project
     "sk" 'embark-bindings
+    "sm" 'consult-bookmark
+    "bm" 'bookmark-set
+
     
     ;; Windows
     "w-" 'split-window-below

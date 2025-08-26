@@ -85,7 +85,13 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
 (defun my/absorb-bb ()
   "黑板体吸取: Abb -> \\mathbb{A}"
   (interactive)
-  (my/simple-absorb "\\([A-Z]\\)bb" "\\mathbbr{$s"))
+  (my/simple-absorb "\\([A-Z]\\)bb" "\\mathbb{$s"))
+
+
+(defun my/absorb-bf ()
+  "黑板体吸取: Abb -> \\mathbb{A}"
+  (interactive)
+  (my/simple-absorb "\\([A-Z]\\)bf" "\\mathbf{$s"))
 
 (defun my/absorb-hat ()
   "帽子吸取: xhat -> \\hat{x}"
@@ -98,10 +104,18 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
     :cond #'texmathp
     "sub" #'my/absorb-sub
     "bb" #'my/absorb-bb
+    "bf" #'my/absorb-bf
     "pow" #'my/absorb-pow
     "hat" #'my/absorb-hat
     "bc" #'my/absorb-brace))
 
+
+(with-eval-after-load 'laas
+  (aas-set-snippets 'laas-mode
+                    "ii" (lambda () (interactive)
+                            (yas-expand-snippet "\\\\( $1 \\\\)$0"))
+                    "dm" (lambda () (interactive)
+                            (yas-expand-snippet "\\[ $1 \\]$0"))))
 
 
 (provide 'init-ultisnippet)
