@@ -8,7 +8,8 @@
   (aas-set-snippets 'laas-mode
                     ;; set condition!
                     :cond #'texmathp ; expand only while in math
-                    "supp" "\\supp"
+		    "qq" "\\quad"
+		    "c.." "\cdots"
 		    "le" "\\leq"
                     "On" "O(n)"
 		    "ra" " \\Rightarrow "
@@ -80,7 +81,7 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
 (defun my/absorb-brace ()
   "xbc -> x() 支持跳转"
   (interactive)
-  (my/simple-absorb "\\([a-zA-Z]+\\)bc" "%s($0"))
+  (my/simple-absorb "\\([a-zA-Z]+\\)bc" "%s($0)"))
 
 (defun my/absorb-bb ()
   "黑板体吸取: Abb -> \\mathbb{A}"
@@ -112,10 +113,11 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
 
 (with-eval-after-load 'laas
   (aas-set-snippets 'laas-mode
+                    :cond (lambda () (not (texmathp)))
                     "ii" (lambda () (interactive)
-                            (yas-expand-snippet "\\\\( $1 \\\\)$0"))
+                            (yas-expand-snippet "\\\\( $1 \\\\) $0"))
                     "dm" (lambda () (interactive)
-                            (yas-expand-snippet "\\[ $1 \\]$0"))))
+                            (yas-expand-snippet "\\[ $1 \\] $0"))))
 
 
 (provide 'init-ultisnippet)

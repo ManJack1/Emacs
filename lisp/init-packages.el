@@ -140,6 +140,26 @@
   ;; Cycle 范围
   (setq centaur-tabs-cycle-scope 'tabs)
   
+  ;; 启用修改指示器
+  (setq centaur-tabs-set-modified-marker t)
+  (setq centaur-tabs-modified-marker "●")  ;; 使用实心圆圈
+  
+  ;; 自定义标签名称格式，包含修改指示器
+  (defun my/centaur-tabs-tab-name (tab)
+    "Custom tab name with modification indicator"
+    (let* ((buffer (car tab))
+           (name (buffer-name buffer))
+           (modified (with-current-buffer buffer (buffer-modified-p)))
+           (file-name (if (buffer-file-name buffer)
+                         (file-name-nondirectory (buffer-file-name buffer))
+                       name)))
+      (if modified
+          (concat centaur-tabs-modified-marker " " file-name)
+        file-name)))
+  
+  ;; 设置自定义标签名称函数
+  (setq centaur-tabs-tab-name-function #'my/centaur-tabs-tab-name)
+  
   ;; 标签字体颜色设置（修复 background 警告）
   (set-face-attribute 'centaur-tabs-selected nil
                       :foreground "#DDA0DD"  ;; 亮紫色
@@ -147,13 +167,22 @@
                       :weight 'bold)
   
   (set-face-attribute 'centaur-tabs-unselected nil
-                      :foreground "#000000"  ;; 白色
+                      :foreground "#000000"  ;; 黑色
                       :background 'unspecified  ;; 使用 unspecified 而不是 nil
                       :weight 'normal)
   
   (set-face-attribute 'centaur-tabs-default nil
                       :foreground "#000000"
-                      :background 'unspecified))  ;; 使用 unspecified 而不是 nil
+                      :background 'unspecified)  ;; 使用 unspecified 而不是 nil
+  
+  ;; 设置修改指示器的颜色
+  (set-face-attribute 'centaur-tabs-modified-marker-selected nil
+                      :foreground "#FF6B6B"  ;; 红色，用于已选中的修改标签
+                      :background 'unspecified)
+  
+  (set-face-attribute 'centaur-tabs-modified-marker-unselected nil
+                      :foreground "#FF8E8E"  ;; 浅红色，用于未选中的修改标签
+                      :background 'unspecified))
 
 (defun my/update-centaur-tabs-mode ()
   "Enable centaur-tabs only if more than 1 buffer."
@@ -162,6 +191,9 @@
     (centaur-tabs-mode -1)))
 
 (add-hook 'buffer-list-update-hook #'my/update-centaur-tabs-mode)
+
+;; 可选：添加保存后自动刷新标签的功能
+(add-hook 'after-save-hook #'centaur-tabs-display-update)
 
 (use-package avy
   :straight t

@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: latex-thm
+# key: thm
+# --
+#+begin_theorem
+$0 
+#+end_theorem

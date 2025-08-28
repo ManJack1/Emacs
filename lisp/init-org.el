@@ -139,10 +139,12 @@
   (org-download-enable))
 
 ;; LaTeX fragment toggle
-(use-package org-fragtog
-  :straight t
-  :after org
-  :hook (org-mode . org-fragtog-mode))
+;; (use-package org-fragtog
+;;   :straight t
+;;   :after org
+;;   :hook (org-mode . org-fragtog-mode))
+
+;; 配置xenops
 
 ;;; Custom Functions
 

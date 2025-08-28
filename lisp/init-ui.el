@@ -7,10 +7,10 @@
                     :height 150) ; 14pt，高度以1/10pt为单位
 
 ;; 设置中文字体为 LXGW WenKai Mono
-(dolist (charset '(kana han symbol cjk-misc bopomofo))
-  (set-fontset-font (frame-parameter nil 'font)
-                    charset
-                    (font-spec :family "LXGW WenKai Mono")))
+(set-fontset-font 
+    (frame-parameter nil 'font) 
+    'han
+    (font-spec :name "Noto Serif CJK SC" :height 150))
 
 ;; 设置粗体
 (set-face-attribute 'bold nil

@@ -1,32 +1,5 @@
 ;;; init-better-defaults.el --- Better defaults
 
-;; Enhance default behaviors here
-
-
-;; 英文字体
-(set-face-attribute 'default nil
-                    :family "Maple Mono NF"
-                    :height 150)
-
-;; 中文字体 - 使用 Unicode 范围更精确
-(when (member "LXGW WenKai Mono" (font-family-list))
-  ;; 中日韩统一表意文字
-  (set-fontset-font "fontset-default"
-                    '(#x4e00 . #x9fff)
-                    (font-spec :family "LXGW WenKai Mono"
-                               :height 15))
-  
-  ;; 中日韩符号和标点
-  (set-fontset-font "fontset-default"
-                    '(#x3000 . #x303f)
-                    (font-spec :family "LXGW WenKai Mono"
-                               :height 15))
-  
-  ;; 全角字符
-  (set-fontset-font "fontset-default"
-                    '(#xff00 . #xffef)
-                    (font-spec :family "LXGW WenKai Mono"
-                               :height 15)))
 
 (global-auto-revert-mode 1)
 ;; 完全关闭自动备份
