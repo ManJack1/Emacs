@@ -40,11 +40,7 @@
                             (yas-expand-snippet "\\frac{$1{$2} $0"))
 
                     "prod" (lambda () (interactive)
-                            (yas-expand-snippet "\\prod\\limits_{${1:i}^{${2:n}}${0:x}"))
-
-                    ;; add accent snippets
-                    :cond #'laas-object-on-left-condition
-                    "qq" (lambda () (interactive) (laas-wrap-previous-object "sqrt"))))
+                            (yas-expand-snippet "\\prod\\limits_{${1:i}^{${2:n}}${0:x}"))))
 
 (defun my/simple-absorb (pattern replacement)
   "通用的正则吸取函数，支持 YAS 跳转
@@ -81,7 +77,7 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
 (defun my/absorb-brace ()
   "xbc -> x() 支持跳转"
   (interactive)
-  (my/simple-absorb "\\([a-zA-Z]+\\)bc" "%s($0)"))
+  (my/simple-absorb "\\([a-zA-Z]+\\)bc" "%s(($0)"))
 
 (defun my/absorb-bb ()
   "黑板体吸取: Abb -> \\mathbb{A}"
@@ -103,6 +99,8 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
 (with-eval-after-load 'laas
   (aas-set-snippets 'laas-mode
     :cond #'texmathp
+    :cond #'laas-object-on-left-condition
+    "qq" (lambda () (interactive) (laas-wrap-previous-object "sqrt"))
     "sub" #'my/absorb-sub
     "bb" #'my/absorb-bb
     "bf" #'my/absorb-bf
