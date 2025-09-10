@@ -133,5 +133,9 @@
   ;; 或者只禁用这个特定警告
   (setq warning-suppress-types '((copilot copilot--infer-indentation-offset))))
 
+(use-package copilot-chat
+  :straight (:host github :repo "chep/copilot-chat.el" :files ("*.el"))
+  :after (request org markdown-mode))
+
 (provide 'init-code)
 ;;; init-code.el ends here

@@ -40,7 +40,7 @@
   
   ;; TODO 关键词
   (setq org-todo-keywords
-        '((sequence " TODO" "⚡ DOING" "|" "✅ DONE" "❌ CANCELLED")))
+        '((sequence "⏳ TODO" "⚡ DOING" "|" "✅ DONE" "❌ CANCELLED")))
   
   ;; 代码块设置
   (setq org-src-fontify-natively t
@@ -122,7 +122,8 @@
   :config
   ;; 隐藏leading stars
   (setq org-superstar-leading-fallback ?\s)
-  (setq org-hide-leading-stars t))
+  (setq org-hide-leading-stars t
+))
 
 ;; Org download for image handling
 (use-package org-download
@@ -321,7 +322,7 @@ POINT defaults to the current `point'."
 (add-hook 'org-mode-hook 'my/org-mode-setup)
 
 ;; Org agenda configuration (if needed)
-(setq org-agenda-files '("~/org/"))  ; 根据需要调整路径
+(setq org-agenda-files '("~/Workspace/org/"))  ; 根据需要调整路径
 
 
 ;; 最简配置 - 禁用所有Unicode替换
@@ -616,6 +617,87 @@ POINT defaults to the current `point'."
 (use-package org-bars
   :straight (:type git :host github :repo "tonyaldon/org-bars")
   :hook (org-mode . org-bars-mode))
+
+
+
+
+(use-package org-checklist
+  :straight t
+  :config
+    (setq org-todo-keywords
+	(quote ((sequence "TODO(t)" "STARTED(s)" "|" "DONE(d!/!)")
+		    (sequence "WAITING(w@/!)" "SOMEDAY(S)" "|" "CANCELLED(c@/!)" "MEETING(m)" "PHONE(p)"))))
+  (setq org-log-done t)
+  (setq org-log-into-drawer t))
+
+
+(setq org-agenda-max-level 6)    ; 搜索到第6级
+
+
+(setq org-priority-faces
+      '((?A . (:foreground "red" :weight bold))
+        (?B . (:foreground "orange"))
+        (?C . (:foreground "blue"))))
+
+(setq org-capture-templates
+      '(("a" "重要紧急 [A]" entry (file+headline "~/Workspace/org/gtd.org" "收件箱")
+         "* TODO [#A] %?\n  %U")
+        ("b" "重要不紧急 [B]" entry (file+headline "~/Workspace/org/gtd.org" "收件箱") 
+         "* TODO [#B] %?\n  %U")
+        ("c" "一般任务 [C]" entry (file+headline "~/Workspace/org/gtd.org" "收件箱")
+         "* TODO [#C] %?\n  %U")
+        ("t" "普通任务" entry (file+headline "~/Workspace/org/gtd.org" "收件箱")
+         "* TODO %?\n  %U")))
+
+;; 设置agenda块分隔符
+(setq org-agenda-block-separator 8411)
+
+;; 自定义agenda命令
+(setq org-agenda-custom-commands
+      '(("v" "📊 更好的agenda视图"
+         ((tags "PRIORITY=\"A\""
+                ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                 (org-agenda-overriding-header "🔥 A级 - 重要紧急任务:")))
+          (tags "PRIORITY=\"B\""
+                ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                 (org-agenda-overriding-header "⚡ B级 - 重要不紧急任务:")))
+          (tags "PRIORITY=\"C\""
+                ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                 (org-agenda-overriding-header "📋 C级 - 一般任务:")))
+          (agenda "")
+          (alltodo ""))
+         )))
+
+(global-set-key (kbd "C-c r") 'org-capture)
+
+;; (setq org-agenda-custom-commands
+;;       '(("c" "important and urgent event"
+;;          ((tags-todo "+PRIORITY=\"A\"")))
+;;         ;; ...other commands here
+;;         ))
+
+
+;; 安装并启用org-fancy-priorities
+(use-package org-fancy-priorities
+  :straight t
+  :hook (org-mode . org-fancy-priorities-mode)
+  :config
+  ;; 设置优先级图标
+  (setq org-fancy-priorities-list '("🔴" "🟠" "🟡"))
+  
+  ;; 或者使用这些符号
+  ;; (setq org-fancy-priorities-list '("⚡" "⬆" "⬇"))
+  ;; (setq org-fancy-priorities-list '("HIGH" "MID" "LOW"))
+  )
+
+;; 优先级颜色配置
+(setq org-priority-faces
+      '((?A :foreground "#ff6c6b" :weight bold)
+        (?B :foreground "#98be65" :weight bold) 
+        (?C :foreground "#c678dd" :weight bold)))
+
+;; agenda块分隔符
+(setq org-agenda-block-separator 8411)
 
 
 (provide 'init-org)
