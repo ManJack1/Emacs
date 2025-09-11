@@ -109,21 +109,70 @@
       ("\\[ \\]" . '(:foreground "#BDBDBD"))
       ("\\[-\\]" . '(:foreground "#FFA726" :weight bold)))))
 
-;; Org superstar for beautiful headlines
 (use-package org-superstar
   :straight t
   :after org
   :hook (org-mode . org-superstar-mode)
   :custom
   (org-superstar-headline-bullets-list '("◉" "○" "✸" "✤" "▶"))
-  (org-superstar-item-bullet-alist '((?- . ?•) (?+ . ?‣) (?* . ?▸)))
-  (org-superstar-leading-bullet ?\s)
+  (org-superstar-prettify-item-bullets t)
+  (org-superstar-cycle-headline-bullets t)
   (org-superstar-special-todo-items t)
+  (org-superstar-leading-bullet ?\s)
+  (org-superstar-leading-fallback ?\s)
+  (org-hide-leading-stars t)
+  
   :config
-  ;; 隐藏leading stars
-  (setq org-superstar-leading-fallback ?\s)
-  (setq org-hide-leading-stars t
-))
+  (setq org-superstar-item-bullet-alist
+        '((?- . ?●) (?+ . ?◆) (?* . ?▸)))
+  
+  (custom-set-faces
+   '(org-superstar-item ((t (:foreground "#ff6b6b" :weight bold))))
+   '(org-superstar-leading ((t (:foreground "#ddd")))))
+  
+  ;; 支持多层级的有序列表颜色
+  (defun my-org-enhanced-list-colors ()
+    "增强的 org 列表颜色，支持层级"
+    (font-lock-add-keywords nil
+      '(;; 第一层有序列表 - 蓝色
+        ("^\\([ \t]*\\)\\([0-9]+\\)\\(\\.\\)\\( \\)"
+         (2 '(:foreground "#74b9ff" :weight bold :height 1.1))
+         (3 '(:foreground "#74b9ff" :weight bold)))
+        
+        ;; 第二层有序列表 (2+ 个空格/tab) - 紫色
+        ("^\\([ \t]\\{2,\\}\\)\\([0-9]+\\)\\(\\.\\)\\( \\)"
+         (2 '(:foreground "#6c5ce7" :weight bold :height 1.0))
+         (3 '(:foreground "#6c5ce7" :weight bold)))
+        
+        ;; 第三层有序列表 (4+ 个空格/tab) - 橙色
+        ("^\\([ \t]\\{4,\\}\\)\\([0-9]+\\)\\(\\.\\)\\( \\)"
+         (2 '(:foreground "#e17055" :weight bold :height 0.9))
+         (3 '(:foreground "#e17055" :weight bold)))
+        
+        ;; 字母列表 - 绿色
+        ("^\\([ \t]*\\)\\([a-zA-Z]\\)\\(\\.\\)\\( \\)"
+         (2 '(:foreground "#00b894" :weight bold :height 1.1))
+         (3 '(:foreground "#00b894" :weight bold)))
+        
+        ;; 罗马数字 - 青色
+        ("^\\([ \t]*\\)\\([ivxlcdmIVXLCDM]+\\)\\(\\.\\)\\( \\)"
+         (2 '(:foreground "#00cec9" :weight bold :height 1.1))
+         (3 '(:foreground "#00cec9" :weight bold)))
+        
+        ;; 带括号的列表 - 黄色
+        ("^\\([ \t]*\\)\\([0-9]+\\|[a-zA-Z]\\)\\()\\)\\( \\)"
+         (2 '(:foreground "#fdcb6e" :weight bold :height 1.1))
+         (3 '(:foreground "#fdcb6e" :weight bold)))
+        
+        ;; checkbox - 不同状态不同颜色
+        ("^\\([ \t]*\\)\\(\\[ \\]\\)\\( \\)"  ; 未完成
+         (2 '(:foreground "#ddd" :weight bold)))
+        ("^\\([ \t]*\\)\\(\\[X\\]\\)\\( \\)"  ; 已完成
+         (2 '(:foreground "#00b894" :weight bold)))
+        ("^\\([ \t]*\\)\\(\\[-\\]\\)\\( \\)"  ; 部分完成
+         (2 '(:foreground "#fdcb6e" :weight bold))))))
+  
+  (add-hook 'org-mode-hook #'my-org-enhanced-list-colors))
 
 ;; Org download for image handling
 (use-package org-download
@@ -698,6 +747,8 @@ POINT defaults to the current `point'."
 
 ;; agenda块分隔符
 (setq org-agenda-block-separator 8411)
+
+
 
 
 (provide 'init-org)
