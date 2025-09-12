@@ -127,8 +127,9 @@
             (lambda ()
               ;; 在 treemacs buffer 中禁用一些不必要的 minor modes
               (setq-local truncate-lines t)
-              (setq-local word-wrap nil)))
-  
+              ;; (setq-local word-wrap nil)
+	      ))
+
   ;; 自定义主题样式（可选）
   (custom-set-faces
    '(treemacs-root-face ((t (:inherit font-lock-string-face :weight bold))))

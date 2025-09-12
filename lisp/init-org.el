@@ -749,7 +749,9 @@ POINT defaults to the current `point'."
 (setq org-agenda-block-separator 8411)
 
 
-
+(add-hook 'org-mode-hook 
+          (lambda () 
+            (run-with-idle-timer 0.1 nil 'toggle-word-wrap)))
 
 (provide 'init-org)
 ;;; init-org.el ends here
