@@ -30,6 +30,15 @@
   (require 'org-tempo)
   (require 'ob-tangle)
   
+
+(defun my/org-preview-latex-on-save ()
+  "Save buffer and automatically preview LaTeX fragments in Org."
+  (when (eq major-mode 'org-mode)
+    ;; 刷新 LaTeX 预览
+    (org-preview-latex-fragment)))
+
+;; 将函数加入 after-save-hook
+(add-hook 'after-save-hook #'my/org-preview-latex-on-save)
   ;; 基本外观设置
   (setq org-startup-indented t
         org-pretty-entities nil
@@ -66,7 +75,7 @@
                                 (set-face-attribute 'org-level-5 nil :height 1.05 :weight 'bold)))))
   
   ;; LaTeX预览设置
-  (setq org-startup-with-latex-preview nil
+  (setq org-startup-with-latex-preview t
         org-format-latex-options
         '(:foreground default
           :background default
@@ -753,66 +762,6 @@ POINT defaults to the current `point'."
           (lambda () 
             (run-with-idle-timer 0.1 nil 'toggle-word-wrap)))
 
-;; 或者使用 use-package 语法
-(use-package xenops
-  :straight (:type git :host github :repo "dandavison/xenops")
-  :hook ((latex-mode . xenops-mode)
-         (LaTeX-mode . xenops-mode))
-  :config
-
-(setq xenops-math-latex-process-alist
-      '((dvipng :programs
-         ("latex" "dvipng")
-         :description "dvi > png" :message "you need to install the programs: latex and dvipng."
-         :image-input-type "dvi" :image-output-type "png" :image-size-adjust (1.0 . 1.0)
-         :latex-compiler
-         ("latex -interaction nonstopmode -shell-escape -output-format dvi -output-directory %o %f")
-         :image-converter
-         ("dvipng -D %D -T tight -o %O %f"))
-        (dvisvgm :programs
-         ("latex" "dvisvgm")
-         :description "xdv > svg"
-         :message "you need to install the programs: latex and dvisvgm."
-         :image-input-type "xdv"
-         :image-output-type "svg"
-         :image-size-adjust (1.5 . 1.5)
-         :latex-compiler
-         ("xelatex -no-pdf -interaction nonstopmode -shell-escape -output-directory %o %f")
-         :image-converter
-         ("dvisvgm %f -n -b min -c %S -o %O"))
-       (imagemagick
-         :programs ("xelatex" "convert")
-         :description "PDF -> PNG (Retina optimized)"
-         :message "You need to install xelatex and ImageMagick."
-         :image-input-type "pdf"
-         :image-output-type "png"
-         ;; 生成 2× 高清图片
-         :image-size-adjust (0.5 . 0.5)
-         :latex-compiler
-         ("xelatex -interaction nonstopmode -shell-escape -output-directory %o %f")
-         :image-converter
-         ;; 转 PNG 时保持高分辨率，并设置显示缩放为 0.5
-         ("convert -density 300 -trim -antialias %f -quality 100 %O"))))
-  :init
-  (require 'ob-python nil t)
-  (require 'ob-wolfram nil t))
-
-(defun fn/xenops-src-parse-at-point ()
-  (-if-let* ((element (xenops-parse-element-at-point 'src))
-             (org-babel-info
-              (xenops-src-do-in-org-mode
-               (org-babel-get-src-block-info 'light (org-element-context)))))
-      (xenops-util-plist-update
-       element
-       :type 'src
-       :language (nth 0 org-babel-info)
-       :org-babel-info org-babel-info)))
-
-(advice-add 'xenops-src-parse-at-point :override 'fn/xenops-src-parse-at-point)
-
-(add-hook 'latex-mode-hook #'xenops-mode)
-(add-hook 'LaTeX-mode-hook #'xenops-mode)
-(add-hook 'org-mode-hook #'xenops-mode)
 
 
 (provide 'init-org)
