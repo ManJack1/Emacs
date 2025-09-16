@@ -47,9 +47,6 @@
         org-image-actual-width '(400)
         org-ellipsis " ▾")
   
-  ;; TODO 关键词
-  (setq org-todo-keywords
-        '((sequence "⏳ TODO" "⚡ DOING" "|" "✅ DONE" "❌ CANCELLED")))
   
   ;; 代码块设置
   (setq org-src-fontify-natively t
@@ -378,7 +375,6 @@ POINT defaults to the current `point'."
   )
 
 (add-hook 'org-mode-hook 'my/org-mode-setup)
-
 ;; Org agenda configuration (if needed)
 (setq org-agenda-files '("~/Workspace/org/"))  ; 根据需要调整路径
 
@@ -698,14 +694,37 @@ POINT defaults to the current `point'."
         (?C . (:foreground "blue"))))
 
 (setq org-capture-templates
-      '(("a" "重要紧急 [A]" entry (file+headline "~/Workspace/org/gtd.org" "收件箱")
+      '(
+        ;; 第一级菜单 - 长期任务
+        ("l" "长期任务")
+        ("la" "长期重要紧急" entry 
+         (file+headline "~/Workspace/org/lgtd.org" "收件箱")
          "* TODO [#A] %?\n  %U")
-        ("b" "重要不紧急 [B]" entry (file+headline "~/Workspace/org/gtd.org" "收件箱") 
+        ("lb" "长期重要不紧急" entry 
+         (file+headline "~/Workspace/org/lgtd.org" "收件箱")
          "* TODO [#B] %?\n  %U")
-        ("c" "一般任务 [C]" entry (file+headline "~/Workspace/org/gtd.org" "收件箱")
+        ("lc" "长期一般任务" entry 
+         (file+headline "~/Workspace/org/lgtd.org" "收件箱")
          "* TODO [#C] %?\n  %U")
-        ("t" "普通任务" entry (file+headline "~/Workspace/org/gtd.org" "收件箱")
-         "* TODO %?\n  %U")))
+        ("lt" "长期普通任务" entry 
+         (file+headline "~/Workspace/org/lgtd.org" "收件箱")
+         "* TODO %?\n  %U")
+        
+        ;; 第一级菜单 - 短期任务  
+        ("s" "短期任务")
+        ("sa" "短期重要紧急" entry 
+         (file+headline "~/Workspace/org/sgtd.org" "收件箱")
+         "* TODO [#A] %?\n  %U")
+        ("sb" "短期重要不紧急" entry 
+         (file+headline "~/Workspace/org/sgtd.org" "收件箱")
+         "* TODO [#B] %?\n  %U")
+        ("sc" "短期一般任务" entry 
+         (file+headline "~/Workspace/org/sgtd.org" "收件箱")
+         "* TODO [#C] %?\n  %U")
+        ("st" "短期普通任务" entry 
+         (file+headline "~/Workspace/org/sgtd.org" "收件箱")
+         "* TODO %?\n  %U")
+        ))
 
 ;; 设置agenda块分隔符
 (setq org-agenda-block-separator 8411)
@@ -761,6 +780,7 @@ POINT defaults to the current `point'."
 (add-hook 'org-mode-hook 
           (lambda () 
             (run-with-idle-timer 0.1 nil 'toggle-word-wrap)))
+
 
 
 

@@ -62,6 +62,9 @@
 ;; LazyVim 风格的按键绑定 - 优先使用 consult 和 lsp-mode
 (with-eval-after-load 'evil
   (my/leader-keys
+    ;;agenda
+    "aa" 'org-agenda-file-to-front
+    "A" 'org-agenda
     ;; Files
     "fc" 'my-find-config-files
     "ff" 'find-file

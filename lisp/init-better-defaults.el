@@ -89,7 +89,8 @@
   :straight t
   :after evil
   :config
-  (evil-collection-init))
+  (evil-collection-init)
+(evil-collection-init '(org agenda)))
 
 
 (provide 'init-better-defaults)
