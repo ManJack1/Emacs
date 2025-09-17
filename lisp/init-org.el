@@ -414,7 +414,6 @@ POINT defaults to the current `point'."
 
 (add-hook 'org-mode-hook 'my/org-mode-setup)
 ;; Org agenda configuration (if needed)
-(setq org-agenda-files '("~/Workspace/org/")) ; 根据需要调整路径
 
 
 ;; 最简配置 - 禁用所有Unicode替换
@@ -906,25 +905,39 @@ POINT defaults to the current `point'."
 ;; 设置agenda块分隔符
 (setq org-agenda-block-separator 8411)
 
-;; 自定义agenda命令
+;; 完整的自定义 agenda 命令配置
 (setq org-agenda-custom-commands
       '(("v" "📊 更好的agenda视图"
          ((tags
            "PRIORITY=\"A\""
            ((org-agenda-skip-function
              '(org-agenda-skip-entry-if 'todo 'done))
-            (org-agenda-overriding-header "🔥 A级 - 重要紧急任务:")))
+            (org-agenda-overriding-header "🔥 A级 - 重要紧急任务:")
+            (org-agenda-entry-types
+             '(:scheduled :deadline :timestamp))))
           (tags
            "PRIORITY=\"B\""
            ((org-agenda-skip-function
              '(org-agenda-skip-entry-if 'todo 'done))
-            (org-agenda-overriding-header "⚡ B级 - 重要不紧急任务:")))
+            (org-agenda-overriding-header "⚡ B级 - 重要不紧急任务:")
+            (org-agenda-entry-types
+             '(:scheduled :deadline :timestamp))))
           (tags
            "PRIORITY=\"C\""
            ((org-agenda-skip-function
              '(org-agenda-skip-entry-if 'todo 'done))
-            (org-agenda-overriding-header "📋 C级 - 一般任务:")))
-          (agenda "") (alltodo "")))))
+            (org-agenda-overriding-header "📋 C级 - 一般任务:")
+            (org-agenda-entry-types
+             '(:scheduled :deadline :timestamp))))
+          (agenda
+           ""
+           ((org-agenda-entry-types
+             '(:scheduled :deadline :timestamp :sexp))))
+          (alltodo
+           ""
+           ((org-agenda-overriding-header "📝 所有其他 TODO:")
+            (org-agenda-entry-types
+             '(:scheduled :deadline :timestamp))))))))
 
 (global-set-key (kbd "C-c r") 'org-capture)
 

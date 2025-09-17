@@ -68,7 +68,7 @@
 (with-eval-after-load 'evil
   (my/leader-keys
    ;;agenda
-   "aa"
+   "af"
    'org-agenda-file-to-front
    "A"
    'org-agenda
