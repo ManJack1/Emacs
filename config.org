@@ -24,6 +24,7 @@
 #+LATEX_HEADER: }
 #+LATEX_HEADER: \usepackage{tcolorbox}
 #+LATEX_HEADER: \tcbuselibrary{listings,skins,breakable}
+#+LATEX_HEADER: \setcounter{secnumdepth}{2}
 
 #+LATEX_HEADER: % 超美代码框颜色
 #+LATEX_HEADER: \definecolor{boxblue}{RGB}{70, 130, 180}
@@ -2097,17 +2098,17 @@ org-mode 是 Emacs 的杀手级功能，用于笔记、待办事项、文档编�
   ;; Retina 优化 + 自动居中
   (plist-put org-format-latex-options :scale 2.0)
   
-  ;; (setq org-preview-latex-default-process 'imagemagick)
-  ;; (setq org-preview-latex-process-alist
-  ;;       '((imagemagick
-  ;;          :programs ("xelatex" "magick")
-  ;;          :description "pdf > png"
-  ;;          :message "需要安装 xelatex 和 imagemagick"
-  ;;          :image-input-type "pdf"
-  ;;          :image-output-type "png"
-  ;;          :image-size-adjust (1.0 . 1.0)
-  ;;          :latex-compiler ("xelatex -interaction nonstopmode -output-directory %o %f")
-  ;;          :image-converter ("convert -density 300 -trim %f -quality 100 %O"))))
+  (setq org-preview-latex-default-process 'imagemagick)
+  (setq org-preview-latex-process-alist
+        '((imagemagick
+           :programs ("xelatex" "magick")
+           :description "pdf > png"
+           :message "需要安装 xelatex 和 imagemagick"
+           :image-input-type "pdf"
+           :image-output-type "png"
+           :image-size-adjust (1.0 . 1.0)
+           :latex-compiler ("xelatex -interaction nonstopmode -output-directory %o %f")
+           :image-converter ("convert -density 300 -trim %f -quality 100 %O"))))
 
 ;; 使用 dvipng 渲染 LaTeX 公式
 ;; (setq org-preview-latex-default-process 'dvipng)
