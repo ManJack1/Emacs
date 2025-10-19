@@ -86,6 +86,38 @@
 
 * 脚本
 
+** toggle-eat
+#+begin_src emacs-lisp
+(defun toggle-eat ()
+  "切换 eat 终端，再次按下返回之前的 buffer"
+  (interactive)
+  (let ((eat-buffer (get-buffer "*eat*")))
+    (if (and eat-buffer (eq (current-buffer) eat-buffer))
+        (if (and (boundp 'eat-previous-buffer) (buffer-live-p eat-previous-buffer))
+            (switch-to-buffer eat-previous-buffer)
+          (previous-buffer))
+      (setq eat-previous-buffer (current-buffer))
+      (if eat-buffer
+          (switch-to-buffer eat-buffer)))))
+#+end_src
+
+
+
+** load-modus-theme-based-on-time
+#+begin_src emacs-lisp
+(defun my/auto-switch-modus-theme ()
+  "根据时间自动切换 Modus 主题"
+  (let ((hour (string-to-number (format-time-string "%H"))))
+    (if (or (>= hour 22) (< hour 6))
+        (load-theme 'modus-vivendi t)
+      (load-theme 'modus-operandi-tinted t))))
+#+end_src
+
+
+
+
+
+
 ** org-math-preview-on-save
 
 #+begin_src emacs-lisp
@@ -509,8 +541,12 @@ doom-themes 是一个丰富的主题集合，包含 25+ 个精心设计的高对
 (use-package modus-themes
   :straight t
   :init
-  (load-theme 'modus-operandi-tinted t))
+  (my/auto-switch-modus-theme)
+  (run-at-time "00:00" 3600 #'my/auto-switch-modus-theme)
+  (run-at-time "06:00" 86400 #'my/auto-switch-modus-theme)  ; 每天早上6点
+  (run-at-time "22:00" 86400 #'my/auto-switch-modus-theme)) ; 每天晚上10点
 #+end_src
+
 
 
 
@@ -1445,7 +1481,7 @@ avy 提供基于字符的快速跳转功能，类似 Vim 的 EasyMotion。输入
   (evil-define-key 'normal 'global
     
     ;;terminal
-    (kbd "C-/") 'eat
+    (kbd "C-/") 'toggle-eat
     (kbd "SPC g g") 'magit
 
     ;;ai
@@ -1454,6 +1490,11 @@ avy 提供基于字符的快速跳转功能，类似 Vim 的 EasyMotion。输入
     (kbd "SPC a a") 'gptel
     (kbd "SPC a m") 'gptel-menu
     (kbd "SPC a t") 'gptel-tools
+    (kbd "SPC g c") 'gptel-commit
+    (kbd "SPC c a") 'claude-code-ide
+    (kbd "SPC c t") 'claude-code-ide-stop
+    (kbd "SPC c r") 'claude-code-ide-resume
+    (kbd "SPC c c") 'claude-code-continue
    
 
     ;; 文件操作
@@ -1610,8 +1651,6 @@ avy 提供基于字符的快速跳转功能，类似 Vim 的 EasyMotion。输入
     (kbd "y") 'neotree-copy-node
     (kbd "RET") 'neotree-enter))
 #+END_SRC
-
-
 
 
 
@@ -2580,21 +2619,22 @@ eat (Emulate A Terminal) 是一个现代化的终端模拟器,比 term.el 和 an
 - 支持完整的终端功能,包括 vim、htop 等程序
 - 在 eshell 中提供更好的命令行体验
 
-
-
-
+** transient & vterm  
 #+begin_src emacs-lisp
-(use-package ai-code-interface
-  :straight (:host github :repo "tninja/ai-code-interface.el")
-  :config
-  (ai-code-set-backend  'claude-code-ide) ;; use claude-code-ide as backend
-  ;; Enable global keybinding for the main menu
-  (global-set-key (kbd "C-c a") #'ai-code-menu)
-  ;; Optional: Set up Magit integration for AI commands in Magit popups
-  (with-eval-after-load 'magit
-    (ai-code-magit-setup-transients)))
+(use-package transient
+  :straight t
+  :demand t)
 #+end_src
 
+** vterm
+#+begin_src emacs-lisp
+(use-package vterm
+  :straight t
+  :config
+  (setq vterm-max-scrollback 10000))
+#+end_src
+
+** claude-code-ide
 #+begin_src emacs-lisp
 (use-package claude-code-ide
   :straight (:type git :host github :repo "manzaltu/claude-code-ide.el")
@@ -2604,17 +2644,24 @@ eat (Emulate A Terminal) 是一个现代化的终端模拟器,比 term.el 和 an
 #+end_src
 
 
-
 #+begin_src emacs-lisp
-(use-package vterm
-  :straight t
-  :config
-  (setq vterm-max-scrollback 10000))
+;; (use-package ai-code-interface
+;;   :straight (:host github :repo "tninja/ai-code-interface.el")
+;;   :after claude-code-ide
+;;   :bind ("C-c a" . ai-code-menu)
+;;   :config
+;;   (ai-code-set-backend 'claude-code-ide)
+  
+;;   ;; 可选：Magit 集成
+;;   (with-eval-after-load 'magit
+;;     (ai-code-magit-setup-transients)))
 #+end_src
-
 
 
 *** TODO which-key设置标签
 
-*** TODO git快捷键设置 与 ai 快捷键设置
+*** git快捷键设置 与 ai 快捷键设置
 
+*** DONE 设置一个随时间调节颜色的主题
+
+*** DONE 设置一个C-/ toggle eat

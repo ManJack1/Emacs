@@ -1,3 +1,22 @@
+(defun toggle-eat ()
+  "切换 eat 终端，再次按下返回之前的 buffer"
+  (interactive)
+  (let ((eat-buffer (get-buffer "*eat*")))
+    (if (and eat-buffer (eq (current-buffer) eat-buffer))
+        (if (and (boundp 'eat-previous-buffer) (buffer-live-p eat-previous-buffer))
+            (switch-to-buffer eat-previous-buffer)
+          (previous-buffer))
+      (setq eat-previous-buffer (current-buffer))
+      (if eat-buffer
+          (switch-to-buffer eat-buffer)))))
+
+(defun my/auto-switch-modus-theme ()
+  "根据时间自动切换 Modus 主题"
+  (let ((hour (string-to-number (format-time-string "%H"))))
+    (if (or (>= hour 22) (< hour 6))
+        (load-theme 'modus-vivendi t)
+      (load-theme 'modus-operandi-tinted t))))
+
 (defun my/org-math-preview-on-save ()
   "在保存 Org 文件时自动执行 math-preview-all，排除 config.org."
   (when (and (eq major-mode 'org-mode)
@@ -290,7 +309,10 @@
 (use-package modus-themes
   :straight t
   :init
-  (load-theme 'modus-operandi-tinted t))
+  (my/auto-switch-modus-theme)
+  (run-at-time "00:00" 3600 #'my/auto-switch-modus-theme)
+  (run-at-time "06:00" 86400 #'my/auto-switch-modus-theme)  ; 每天早上6点
+  (run-at-time "22:00" 86400 #'my/auto-switch-modus-theme)) ; 每天晚上10点
 
   (use-package keycast
     :straight t
@@ -685,7 +707,7 @@
   (evil-define-key 'normal 'global
     
     ;;terminal
-    (kbd "C-/") 'eat
+    (kbd "C-/") 'toggle-eat
     (kbd "SPC g g") 'magit
 
     ;;ai
@@ -694,6 +716,11 @@
     (kbd "SPC a a") 'gptel
     (kbd "SPC a m") 'gptel-menu
     (kbd "SPC a t") 'gptel-tools
+    (kbd "SPC g c") 'gptel-commit
+    (kbd "SPC c a") 'claude-code-ide
+    (kbd "SPC c t") 'claude-code-ide-stop
+    (kbd "SPC c r") 'claude-code-ide-resume
+    (kbd "SPC c c") 'claude-code-continue
    
 
     ;; 文件操作
@@ -1389,15 +1416,14 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   :config
   (add-hook 'eshell-first-time-mode-hook #'eat-eshell-mode))
 
-(use-package ai-code-interface
-  :straight (:host github :repo "tninja/ai-code-interface.el")
+(use-package transient
+  :straight t
+  :demand t)
+
+(use-package vterm
+  :straight t
   :config
-  (ai-code-set-backend  'claude-code-ide) ;; use claude-code-ide as backend
-  ;; Enable global keybinding for the main menu
-  (global-set-key (kbd "C-c a") #'ai-code-menu)
-  ;; Optional: Set up Magit integration for AI commands in Magit popups
-  (with-eval-after-load 'magit
-    (ai-code-magit-setup-transients)))
+  (setq vterm-max-scrollback 10000))
 
 (use-package claude-code-ide
   :straight (:type git :host github :repo "manzaltu/claude-code-ide.el")
@@ -1405,7 +1431,13 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   :config
   (claude-code-ide-emacs-tools-setup)) ; Optionally enable Emacs MCP tools
 
-(use-package vterm
-  :straight t
-  :config
-  (setq vterm-max-scrollback 10000))
+;; (use-package ai-code-interface
+;;   :straight (:host github :repo "tninja/ai-code-interface.el")
+;;   :after claude-code-ide
+;;   :bind ("C-c a" . ai-code-menu)
+;;   :config
+;;   (ai-code-set-backend 'claude-code-ide)
+  
+;;   ;; 可选：Magit 集成
+;;   (with-eval-after-load 'magit
+;;     (ai-code-magit-setup-transients)))
