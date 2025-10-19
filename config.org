@@ -1,0 +1,2541 @@
+#+TITLE: Emacs 配置文档
+#+AUTHOR: ManJack
+#+DATE: \today
+#+LATEX_CLASS: article
+#+LATEX_CLASS_OPTIONS: [UTF8,fontset=fandol]
+#+LATEX_HEADER: \usepackage[margin=2.5cm]{geometry}
+#+LATEX_HEADER: \usepackage{ctex}
+#+LATEX_HEADER: \usepackage{tikz}
+#+LATEX_HEADER: \usepackage{xcolor}
+#+LATEX_HEADER: \definecolor{boxblue}{RGB}{136,192,208} % Nord 主题蓝色
+#+LATEX_HEADER: \usepackage{minted}
+#+LATEX_HEADER: \usepackage{amsmath, amssymb, amsfonts}  % 基础数学包
+#+LATEX_HEADER: \usepackage{bm}                           % 粗体数学符号
+#+LATEX_HEADER: \usepackage{mathtools}                    % amsmath 的增强
+#+LATEX_HEADER: \setminted{
+#+LATEX_HEADER:   breaklines=true,
+#+LATEX_HEADER:   breakanywhere=true,
+#+LATEX_HEADER:   frame=leftline,
+#+LATEX_HEADER:   framerule=2pt,
+#+LATEX_HEADER:   rulecolor=\color{boxblue},
+#+LATEX_HEADER:   bgcolor=boxback,
+#+LATEX_HEADER:   fontsize=\small,
+#+LATEX_HEADER:   baselinestretch=1.2
+#+LATEX_HEADER: }
+#+LATEX_HEADER: \usepackage{tcolorbox}
+#+LATEX_HEADER: \tcbuselibrary{listings,skins,breakable}
+
+#+LATEX_HEADER: % 超美代码框颜色
+#+LATEX_HEADER: \definecolor{boxblue}{RGB}{70, 130, 180}
+#+LATEX_HEADER: \definecolor{boxgreen}{RGB}{34, 139, 34}
+#+LATEX_HEADER: \definecolor{boxpurple}{RGB}{148, 0, 211}
+#+LATEX_HEADER: \definecolor{boxgray}{RGB}{108, 117, 125}
+#+LATEX_HEADER: \definecolor{boxback}{RGB}{252, 252, 252}
+#+LATEX_HEADER: \definecolor{boxframe}{RGB}{220, 220, 220}
+
+#+LATEX_HEADER: \usepackage{graphicx}
+#+LATEX_HEADER: \usepackage{float}
+#+LATEX_HEADER: \usepackage{caption}
+
+#+LATEX_HEADER: % 定义注意事项框
+#+LATEX_HEADER: \newtcolorbox{NOTE}{
+#+LATEX_HEADER:     enhanced,
+#+LATEX_HEADER:     colback=blue!5!white,
+#+LATEX_HEADER:     colframe=blue!50!black,
+#+LATEX_HEADER:     arc=3pt,
+#+LATEX_HEADER:     boxrule=0.5pt,
+#+LATEX_HEADER:     left=8pt,
+#+LATEX_HEADER:     right=8pt,
+#+LATEX_HEADER:     title={\textbf{注意}},
+#+LATEX_HEADER:     fonttitle=\sffamily\bfseries,
+#+LATEX_HEADER:     coltitle=blue!80!black,
+#+LATEX_HEADER:     colbacktitle=blue!20!white
+#+LATEX_HEADER: }
+
+#+LATEX_HEADER: \newtcolorbox{WARNING}{
+#+LATEX_HEADER:     enhanced,
+#+LATEX_HEADER:     colback=red!5!white,
+#+LATEX_HEADER:     colframe=red!50!black,
+#+LATEX_HEADER:     arc=3pt,
+#+LATEX_HEADER:     boxrule=0.5pt,
+#+LATEX_HEADER:     left=8pt,
+#+LATEX_HEADER:     right=8pt,
+#+LATEX_HEADER:     title={\textbf{警告}},
+#+LATEX_HEADER:     fonttitle=\sffamily\bfseries,
+#+LATEX_HEADER:     coltitle=red!80!black,
+#+LATEX_HEADER:     colbacktitle=red!20!white
+#+LATEX_HEADER: }
+
+#+LATEX_HEADER: \newtcolorbox{TIP}{
+#+LATEX_HEADER:     enhanced,
+#+LATEX_HEADER:     colback=green!5!white,
+#+LATEX_HEADER:     colframe=green!50!black,
+#+LATEX_HEADER:     arc=3pt,
+#+LATEX_HEADER:     boxrule=0.5pt,
+#+LATEX_HEADER:     left=8pt,
+#+LATEX_HEADER:     right=8pt,
+#+LATEX_HEADER:     title={\textbf{提示}},
+#+LATEX_HEADER:     fonttitle=\sffamily\bfseries,
+#+LATEX_HEADER:     coltitle=green!80!black,
+#+LATEX_HEADER:     colbacktitle=green!20!white
+#+LATEX_HEADER: }
+#+OPTIONS: toc:2 num:t
+#+PROPERTY: header-args:emacs-lisp :tangle config.el
+#+LATEX: \newpage
+
+
+* 脚本
+
+** org-math-preview-on-save
+
+#+begin_src emacs-lisp
+(defun my/org-math-preview-on-save ()
+  "在保存 Org 文件时自动执行 math-preview-all，排除 config.org."
+  (when (and (eq major-mode 'org-mode)
+             (not (string-equal (file-name-nondirectory (or buffer-file-name "")) "config.org")))
+    (math-preview-all)))
+
+;; 打开 Org 文件时执行
+(defun my/org-math-preview-on-open ()
+  "打开 Org 文件时自动执行 math-preview-all，排除 config.org."
+  (when (not (string-equal (file-name-nondirectory (or buffer-file-name "")) "config.org"))
+    (math-preview-all)))
+
+(add-hook 'org-mode-hook #'my/org-math-preview-on-open)
+(add-hook 'before-save-hook #'my/org-math-preview-on-save)
+#+end_src
+
+
+
+** set-transparency
+#+begin_src emacs-lisp
+;; 全局透明度设置
+;; 0 = 完全透明，100 = 不透明
+(cond
+ ;; macOS
+ ((eq system-type 'darwin)
+  (set-frame-parameter (selected-frame) 'alpha '(95 . 95))
+  (add-to-list 'default-frame-alist '(alpha . (95 . 95))))
+ ;; Linux
+ ((eq system-type 'gnu/linux)
+  (set-frame-parameter (selected-frame) 'alpha '(90 . 85)) ; 活动窗口 90%，非活动窗口 85%
+  (add-to-list 'default-frame-alist '(alpha . (90 . 85)))))
+
+#+end_src
+
+
+
+** toggle-copilot-mode
+
+#+begin_src emacs-lisp
+(defun toggle-copilot-mode ()
+  "Toggle copilot-mode on or off."
+  (interactive)
+  (if (bound-and-true-p copilot-mode)
+      (progn
+        (copilot-mode -1)
+        (message "Copilot mode disabled"))
+    (copilot-mode 1)
+    (message "Copilot mode enabled")))
+#+end_src
+
+
+** org-latex-preview-keys
+#+begin_src emacs-lisp
+;; 添加到配置中
+(with-eval-after-load 'org
+  ;; 全局数学公式预览
+  (define-key org-mode-map (kbd "C-c C-p")
+    (lambda () (interactive) (math-preview-all)))
+
+  ;; 清除所有数学公式预览
+  (define-key org-mode-map (kbd "C-c C-r")
+    (lambda () (interactive) (math-preview-clear-all))))
+#+end_src
+
+
+
+** auto-tangle-config
+#+begin_src emacs-lisp
+(defun my/auto-tangle-config ()
+  "自动在保存 config.org 时执行 org-babel-tangle。"
+  (when (string-equal (buffer-file-name)
+                      (expand-file-name "~/.emacs.d/config.org"))
+    (let ((org-confirm-babel-evaluate nil)) ;; 不提示确认
+      (org-babel-tangle))))
+
+(add-hook 'after-save-hook #'my/auto-tangle-config)
+#+end_src
+
+
+
+** copy-path()
+#+begin_src emacs-lisp
+  (defun copy-file-path ()
+  "Copy current file absolute path to clipboard."
+  (interactive)
+  (let ((file-path (buffer-file-name)))
+    (if file-path
+        (progn
+          (kill-new (expand-file-name file-path))
+          (message "Copied: %s" (expand-file-name file-path)))
+      (error "Current buffer is not associated with a file"))))
+
+;;;###autoload
+(defun copy-file-name ()
+  "Copy current file name to clipboard."
+  (interactive)
+  (let ((file-path (buffer-file-name)))
+    (if file-path
+        (let ((name (file-name-nondirectory file-path)))
+          (kill-new name)
+          (message "Copied: %s" name))
+      (error "Current buffer is not associated with a file"))))
+#+end_src
+
+** toggle-lsp-ui()
+#+begin_src emacs-lisp
+  ;; LSP imenu 切换函数
+  (defun my/toggle-lsp-ui-imenu ()
+    "Toggle lsp-ui-imenu sidebar."
+    (interactive)
+    (if (get-buffer-window "*lsp-ui-imenu*")
+        (lsp-ui-imenu--kill)
+      (lsp-ui-imenu)))
+#+end_src
+
+
+** lsp-goto-prev-param()
+#+begin_src emacs-lisp
+;; 参数导航（基于 treesitter）
+(defun lsp-goto-next-param ()
+  "跳转到下一个参数"
+  (interactive)
+  (when (bound-and-true-p tree-sitter-mode)
+    (let ((node (tsc-get-node-at-point (treesit-node-start (treesit-node-at (point))))))
+      (when node
+        (treesit-search-forward node "parameter_declaration" t)))))
+#+end_src
+
+
+** lsp-goto-next-param()
+#+begin_src emacs-lisp
+(defun lsp-goto-prev-param ()
+  "跳转到前一个参数"
+  (interactive)
+  (when (bound-and-true-p tree-sitter-mode)
+    (let ((node (tsc-get-node-at-point (treesit-node-start (treesit-node-at (point))))))
+      (when node
+        (treesit-search-backward node "parameter_declaration" t)))))
+#+end_src
+
+
+ 
+
+** smart-tab
+#+begin_src emacs-lisp
+;; 清空所有 Shift-TAB 绑定
+(with-eval-after-load 'company
+  (define-key company-active-map (kbd "S-TAB") nil)
+  (define-key company-active-map (kbd "<backtab>") nil))
+
+(with-eval-after-load 'yasnippet
+  (define-key yas-minor-mode-map (kbd "S-TAB") nil)
+  (define-key yas-minor-mode-map (kbd "<backtab>") nil))
+
+;; 清空 company 的 TAB 绑定
+(with-eval-after-load 'company
+  (define-key company-active-map (kbd "TAB") nil)
+  (define-key company-active-map (kbd "<tab>") nil))
+
+;; 清空 yasnippet 的 TAB 绑定
+(with-eval-after-load 'yasnippet
+  (define-key yas-minor-mode-map (kbd "TAB") nil)
+  (define-key yas-minor-mode-map (kbd "<tab>") nil))
+
+;; 定义智能 Shift-TAB：仅 YASnippet 反向跳转
+(defun smart-shift-tab ()
+  "Shift-TAB：仅用于 YASnippet 反向跳转"
+  (interactive)
+  (when (and (bound-and-true-p yas-minor-mode)
+             (yas-active-snippets))
+    (yas-prev-field)))
+
+;; 绑定 Shift-TAB
+(global-set-key (kbd "<backtab>") 'smart-shift-tab)
+
+(defun smart-tab ()
+  "智能 TAB 键：优先展开/跳转 YASnippet，其次 Copilot，最后正常 TAB。"
+  (interactive)
+  (cond
+   ;; 1. 如果光标在 snippet 缩写词后，尝试展开
+   ((and (bound-and-true-p yas-minor-mode)
+         (yas-expand)))
+   
+   ;; 2. 如果 YASnippet 有活跃的占位符，尝试跳转
+   ((and (bound-and-true-p yas-minor-mode)
+         (yas-active-snippets))
+    (or (yas-next-field)
+        ;; 如果没有下一个字段，退出 snippet
+        (yas-exit-all-snippets)))
+   
+   ;; 3. 如果 Copilot 有建议，接受建议
+   ((and (bound-and-true-p copilot-mode)
+         (copilot--overlay-visible))
+    (copilot-accept-completion))
+   
+   ;; 4. 否则执行正常的 TAB 缩进
+   (t
+    (indent-for-tab-command))))
+
+#+end_src
+
+
+
+* 包管理系统
+
+本配置使用 straight.el 作为包管理器，配合 use-package 进行声明式配置。straight.el 直接从 Git 仓库克隆包，支持版本锁定和可重现构建。
+
+** straight.el
+*** 介绍
+straight.el 是一个功能强大的现代化包管理器，从 Git 仓库直接克隆和构建包。相比传统的 package.el：
+- 支持版本锁定（lockfiles）确保环境可重现
+- 可以直接修改包源码
+- 从任何 Git 仓库安装包，不限于 ELPA
+- 完全透明，所有包源码都在 =~/.emacs.d/straight/repos/=
+
+*** 相关链接
+- GitHub: https://github.com/radian-software/straight.el
+- 文档: https://github.com/radian-software/straight.el/blob/develop/README.md
+
+*** 使用方法
+#+BEGIN_SRC emacs-lisp
+  ;; straight.el 已在 init.el 中初始化
+  ;; 这里配置 use-package 的默认行为
+
+  (setq use-package-always-defer t)  ; 延迟加载，提高启动速度
+#+END_SRC
+
+*** 常用命令
+- =M-x straight-pull-all= : 更新所有包
+- =M-x straight-rebuild-all= : 重新构建所有包
+- =M-x straight-freeze-versions= : 创建版本锁定文件
+- =M-x straight-check-all= : 检查所有包状态
+
+** use-package
+*** 介绍
+use-package 是一个声明式包配置宏，简化包的安装、配置和延迟加载。它提供统一的配置语法，支持条件加载、键绑定、hooks 等功能。
+
+*** 相关链接
+- GitHub: https://github.com/jwiegley/use-package
+- 文档: https://github.com/jwiegley/use-package/blob/master/README.md
+
+*** 配置说明
+本配置已设置 =straight-use-package-by-default t= ，所有 use-package 声明会自动使用 straight.el 安装包。
+
+* 界面美化
+提升 Emacs 的视觉体验，包括主题、状态栏、标签栏、图标等。
+** 基础设置
+
+*** 字体配置
+#+BEGIN_SRC emacs-lisp
+;; 设置编程字体
+(set-face-attribute 'default nil
+                    :font "Iosevka Nerd Font"
+                    :height 140)
+
+;; Set Chinese font for Han script
+(set-fontset-font t 'han "Noto Serif CJK SC")
+#+END_SRC
+
+
+*** UI 元素配置
+#+BEGIN_SRC emacs-lisp
+  ;; 关闭不必要的 UI 元素
+  (tool-bar-mode -1)        ; 关闭工具栏
+  (scroll-bar-mode -1)      ; 关闭滚动条
+  (menu-bar-mode -1)        ; 关闭菜单栏
+
+  ;; 启用有用的 UI 功能
+  (global-display-line-numbers-mode 1)  ; 显示行号
+  (global-visual-line-mode 1)           ; 视觉行模式，软换行
+  (global-hl-line-mode 1)               ; 高亮当前行
+
+  ;; 启动配置
+  (setq inhibit-startup-message t)      ; 关闭启动画面
+#+END_SRC
+
+** dashboard
+:PROPERTIES:
+:ID:       83bfbb2c-92ce-481f-ac5e-c1a764e7c123
+:END:
+
+#+begin_src emacs-lisp
+;;; Dashboard 配置（修复白屏和导航字母）
+;;; Dashboard 配置（优化精简版）
+
+(use-package dashboard
+  :straight t
+  :demand t
+  :after (centaur-tabs nerd-icons evil)
+  :custom
+  ;; 基础设置
+  (dashboard-banner-logo-title (format "GNU Emacs %s" emacs-version))
+  (dashboard-startup-banner 'logo)
+  (dashboard-center-content t)
+  (dashboard-show-shortcuts t)
+  (dashboard-items-default-length 20)
+  
+  ;; 显示项目
+  (dashboard-items '((recents . 5) (bookmarks . 5) (projects . 5) (agenda . 5)))
+  (dashboard-item-shortcuts '((recents . "r") (bookmarks . "m") 
+                             (agenda . "a") (projects . "p")))
+  
+  ;; Agenda
+  (dashboard-week-agenda t)
+  (dashboard-filter-agenda-entry 'dashboard-no-filter-agenda)
+  
+  ;; 图标
+  (dashboard-set-heading-icons t)
+  (dashboard-set-file-icons t)
+  (dashboard-icon-type 'nerd-icons)
+  (dashboard-display-icons-p t)
+  
+  ;; Footer
+  (dashboard-set-init-info t)
+  (dashboard-set-footer t)
+  (dashboard-footer-messages '("Happy Hacking!"))
+  (dashboard-footer-icon (nerd-icons-faicon "nf-fa-heart" :height 1.1 
+                                           :v-adjust -0.05 :face 'error))
+  
+  ;; 初始缓冲区
+  (initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+  
+  :init
+  ;; 导航按钮
+  (setq dashboard-navigator-buttons
+        `(((,(nerd-icons-faicon "nf-fa-github" :height 1.1 :v-adjust 0.0)
+            "GitHub" "Browse" (lambda (&rest _) (browse-url "https://github.com")))
+           (,(nerd-icons-octicon "nf-oct-gear" :height 1.1 :v-adjust 0.0)
+            "Config" "Edit" (lambda (&rest _) (find-file (expand-file-name "config.org" user-emacs-directory))))
+           (,(nerd-icons-faicon "nf-fa-refresh" :height 1.1 :v-adjust 0.0)
+            "Update" "Packages" (lambda (&rest _) (straight-pull-all))))))
+  
+  :config
+  (dashboard-setup-startup-hook)
+  
+  ;; 隐藏 tabs
+  (with-eval-after-load 'centaur-tabs
+    (add-to-list 'centaur-tabs-excluded-prefixes "*dashboard"))
+  
+  ;; Evil 键绑定
+  (evil-set-initial-state 'dashboard-mode 'normal)
+  (evil-define-key 'normal dashboard-mode-map
+    "r" 'dashboard-jump-to-recents
+    "m" 'dashboard-jump-to-bookmarks
+    "p" 'dashboard-jump-to-projects
+    "a" 'dashboard-jump-to-agenda
+    "g" 'dashboard-refresh-buffer
+    "q" 'quit-window
+    "{" 'dashboard-previous-section
+    "}" 'dashboard-next-section
+    "j" 'widget-forward
+    "k" 'widget-backward
+    (kbd "RET") 'widget-button-press))
+
+;; Org-agenda 基础配置
+(with-eval-after-load 'org
+  (let ((org-dir (expand-file-name "~/org")))
+    (unless (file-directory-p org-dir) (make-directory org-dir t)))
+  (setq org-agenda-files (list (expand-file-name "~/org"))
+        org-agenda-start-on-weekday nil
+        org-agenda-span 7))
+#+end_src
+
+
+
+
+
+
+
+**  colorful-mode
+#+begin_src emacs-lisp
+(use-package colorful-mode
+  :straight t
+  :config
+  (colorful-mode t)
+  :custom
+  (colorful-use-prefix nil)           ; 直接高亮颜色
+  (colorful-only-strings 'only-prog)  ; 只在字符串中高亮
+  (css-fontify-colors nil))           ; 禁用 CSS 内置的颜色渲染
+#+end_src
+
+** doom-themes
+*** 介绍
+doom-themes 是一个丰富的主题集合，包含 25+ 个精心设计的高对比度主题。支持深色和浅色模式，为 org-mode、treemacs、magit 等常用模式做了特别优化。
+
+*** 相关链接
+- GitHub: https://github.com/doomemacs/themes
+- 主题预览: https://github.com/doomemacs/themes/tree/screenshots
+
+*** 配置
+#+BEGIN_SRC emacs-lisp
+  ;; 主题包需要立即加载以在启动时生效
+  (use-package doom-themes
+    :straight t
+    :demand t  ; 主题需要立即加载
+    :config
+    (setq doom-themes-enable-bold t      ; 启用粗体
+          doom-themes-enable-italic t)   ; 启用斜体
+    ;; 注意：这里不再加载 doom 主题，因为我们用 catppuccin 替换
+    (doom-themes-org-config))            ; 优化 org-mode 显示
+
+  (use-package catppuccin-theme
+    :straight t
+    :demand t  ; 主题需要立即加载
+    :config
+    ;; 可选：自定义 catppuccin 变体（默认是 'latte，可选：'frappe, 'macchiato, 'mocha）
+    (setq catppuccin-flavor 'mocha)  ; 选择深色变体
+    )      ; 加载 catppuccin 主题
+#+END_SRC
+
+
+*** 使用方法
+- 更换主题: =M-x load-theme RET doom-<主题名> RET=
+- 推荐主题: doom-one, doom-molokai, doom-nord, doom-tomorrow-night
+
+** modus-themes
+#+begin_src emacs-lisp
+(use-package modus-themes
+  :straight t
+  :init
+  (load-theme 'modus-operandi-tinted t))
+#+end_src
+
+
+
+
+** keycast
+*** 介绍
+显示实时按键输入，用于教学、录屏或调试键绑定。
+
+*** 相关链接
+- GitHub: https://github.com/tarsius/keycast
+
+*** 配置
+#+BEGIN_SRC emacs-lisp
+  (use-package keycast
+    :straight t
+    :init
+    (add-to-list 'global-mode-string '("" keycast-mode-line))
+    (keycast-mode-line-mode t))
+#+END_SRC
+
+** doom-modeline
+*** 介绍
+doom-modeline 是一个现代化的状态栏（mode-line），显示 Git 分支、LSP 状态、文件编码、行号等信息。比内置 mode-line 更美观，信息密度更高。
+
+*** 相关链接
+- GitHub: https://github.com/seagle0128/doom-modeline
+- 文档: https://github.com/seagle0128/doom-modeline/blob/master/README.md
+
+*** 配置
+#+BEGIN_SRC emacs-lisp
+(use-package doom-modeline
+  :straight t
+  :hook (after-init . doom-modeline-mode)
+  :config
+  (setq doom-modeline-height 25         ; 状态栏高度
+        doom-modeline-bar-width 3))     ; 左侧条宽度
+#+END_SRC
+
+*** 使用方法
+状态栏会自动显示当前缓冲区信息，无需手动操作。
+
+** centaur-tabs
+*** 介绍
+centaur-tabs 提供类似浏览器的标签栏，支持标签分组、图标显示、自定义样式。可以按项目或模式分组缓冲区，方便多文件管理。
+
+*** 相关链接
+- GitHub: https://github.com/ema2159/centaur-tabs
+
+*** 配置
+#+BEGIN_SRC emacs-lisp
+(use-package centaur-tabs
+  :straight t
+  :demand t
+  :config
+  ;; 基础配置
+  (setq centaur-tabs-set-bar 'left
+        centaur-tabs-style "bar"
+        centaur-tabs-set-icons t
+        centaur-tabs-gray-out-icons 'buffer
+        centaur-tabs-icon-type 'nerd-icons
+        centaur-tabs-set-modified-marker t)
+  
+  ;; 计数函数
+  (defun my/count-file-buffers ()
+    "计算打开的文件 buffer 数量"
+    (length (cl-remove-if-not 'buffer-file-name (buffer-list))))
+  
+  ;; 更新显示
+  (defun my/update-tabs-visibility ()
+    "2个或以上文件才显示 tabs"
+    (let ((count (my/count-file-buffers)))
+      (if (>= count 2)
+          (unless centaur-tabs-mode (centaur-tabs-mode 1))
+        (when centaur-tabs-mode (centaur-tabs-mode -1)))))
+  
+  ;; 监听 buffer 变化
+  (add-hook 'buffer-list-update-hook 'my/update-tabs-visibility)
+  
+  ;; 初始检查
+  (run-with-idle-timer 0.5 nil 'my/update-tabs-visibility))
+#+END_SRC
+
+*** 使用方法
+- 切换标签: =H= (前一个), =L= (后一个) - 需在 Evil 模式下
+- 切换分组: =SPC f t=
+
+** indent-bars
+*** 介绍
+indent-bars 在代码中显示缩进参考线，支持 tree-sitter，帮助识别代码块层级。对 Python 等缩进敏感的语言特别有用。
+
+*** 相关链接
+- GitHub: https://github.com/jdtsmith/indent-bars
+
+*** 配置
+#+BEGIN_SRC emacs-lisp
+(use-package indent-bars
+  :straight t
+  :custom
+  (indent-bars-no-descend-lists t)                    ; 列表不显示额外缩进线
+  (indent-bars-treesit-support t)                     ; 启用 tree-sitter 支持
+  (indent-bars-treesit-ignore-blank-lines-types '("module"))
+  (indent-bars-treesit-scope '((python function_definition class_definition 
+                                       for_statement if_statement 
+                                       with_statement while_statement)))
+  :hook ((java-ts-mode python-ts-mode yaml-mode c++-ts-mode) . indent-bars-mode))
+#+END_SRC
+
+*** 使用方法
+在支持的模式下自动启用，无需手动操作。
+
+** all-the-icons
+*** 介绍
+all-the-icons 提供 1000+ 个图标，用于美化文件浏览器、dired、mode-line 等。是许多 UI 插件的基础依赖。
+
+*** 相关链接
+- GitHub: https://github.com/domtronn/all-the-icons.el
+
+*** 配置
+#+BEGIN_SRC emacs-lisp
+(use-package all-the-icons
+  :straight t
+  :if (display-graphic-p))
+#+END_SRC
+
+*** 使用方法
+- 首次使用需安装字体: =M-x all-the-icons-install-fonts=
+
+** nerd-icons
+*** 介绍
+nerd-icons 是 all-the-icons 的现代化版本，支持最新的 Nerd Fonts 图标集，性能更好，图标更丰富。
+
+*** 相关链接
+- GitHub: https://github.com/rainstormstudio/nerd-icons.el
+
+*** 配置
+#+BEGIN_SRC emacs-lisp
+(use-package nerd-icons
+  :straight t
+  :defer t
+  :if (display-graphic-p))
+#+END_SRC
+
+*** 使用方法
+- 安装字体: =M-x nerd-icons-install-fonts=
+
+** nerd-icons-completion
+*** 介绍
+为补全界面（如 Vertico）添加图标支持，使补全列表更加直观美观。
+
+*** 相关链接
+- GitHub: https://github.com/rainstormstudio/nerd-icons-completion
+
+*** 配置
+#+BEGIN_SRC emacs-lisp
+(use-package nerd-icons-completion
+  :straight t
+  :after marginalia
+  :hook (after-init . nerd-icons-completion-mode)
+  :hook (marginalia-mode . nerd-icons-completion-marginalia-setup))
+#+END_SRC
+
+** neotree
+*** 介绍
+neotree 是一个侧边文件树浏览器，类似 VS Code 的资源管理器，支持 Git 状态图标、文件操作等。
+
+*** 相关链接
+- GitHub: https://github.com/jaypei/emacs-neotree
+
+*** 配置
+#+BEGIN_SRC emacs-lisp
+(use-package neotree
+  :straight t
+  :hook (after-init . (lambda ()
+                        (global-set-key [f3] 'neotree-toggle)))
+  :config
+  (setq neo-smart-open t)  ; 自动展开到当前文件
+  (setq neo-theme (if (display-graphic-p) 'nerd-icons 'arrow)))
+#+END_SRC
+
+*** 使用方法
+- 打开/关闭: =F3= 或 =SPC e=
+- 在 neotree 中:
+  - =h= : 上一级目录
+  - =l= : 进入目录或打开文件
+  - =q= : 关闭 neotree
+  - =a= : 创建文件
+  - =d= : 删除文件
+  - =r= : 重命名文件
+
+* 编辑增强
+
+提升文本编辑体验，包括 Vim 模拟、自动补全、代码片段等。
+
+** 基础编辑设置
+#+BEGIN_SRC emacs-lisp
+      ;; 编辑体验优化
+      (auto-save-visited-mode 1)           ; 自动保存
+      (show-paren-mode 1)                  ; 高亮匹配括号
+      (global-auto-revert-mode 1)          ; 自动重新加载外部修改的文件
+      (delete-selection-mode 1)            ; 选中文字后输入会替换
+      (recentf-mode 1)                     ; 最近文件列表
+
+      ;; 启用相对行号
+      (global-display-line-numbers-mode 1)
+      (setq display-line-numbers-type 'relative)
+
+      ;; 将 yes-or-no-p 替换为 y-or-n-p
+      (defalias 'yes-or-no-p 'y-or-n-p)
+      ;; 关闭备份文件
+      (setq make-backup-files nil)         ; 不创建 ~ 备份文件
+      (setq auto-save-default nil)         ; 不创建 # 自动保存文件
+#+END_SRC
+
+
+** sis-change-input-method
+
+#+begin_src emacs-lisp
+(use-package sis
+  :straight t
+  :init
+  ;; macOS 配置
+  (when (eq system-type 'darwin)
+    (sis-ism-lazyman-config
+     "com.apple.keylayout.ABC"
+     "com.tencent.inputmethod.wetype.pinyin"
+     'macOS))
+  
+  ;; Linux 配置
+  (when (eq system-type 'gnu/linux)
+    (sis-ism-lazyman-config "1" "2" 'fcitx5))
+  
+  ;; 启用功能
+  (sis-global-cursor-color-mode t)
+  (sis-global-respect-mode t)     ; 不用这个，会强制切英文
+  ;; (sis-global-context-mode t)        ; 这个会根据上下文智能切换，保持输入法
+  (sis-global-inline-mode t))
+#+end_src
+
+** savehist
+#+begin_src emacs-lisp
+(use-package savehist
+  :hook (after-init . savehist-mode)
+  :config
+  (setq history-length 1000                     ;; 保存历史条目数
+        savehist-autosave-interval 300         ;; 自动保存间隔（秒）
+        savehist-additional-variables '(kill-ring search-ring regexp-search-ring)))                            ;; 启用 savehist
+#+end_src
+
+
+
+** saveplace
+#+begin_src emacs-lisp
+(use-package saveplace
+  :hook (after-init . save-place-mode)
+  :config
+  (setq save-place-file (expand-file-name "saveplace" user-emacs-directory)))                           ;; 启用 saveplace
+#+end_src
+
+
+** magit
+#+begin_src emacs-lisp
+(use-package magit
+  :config
+  ;; 可选配置
+  (setq magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
+#+end_src
+
+
+
+
+** pdf-tools
+#+begin_src emacs-lisp
+(use-package pdf-tools
+  :straight t
+  :mode ("\\.pdf\\'" . pdf-view-mode)
+  :init
+  (setq pdf-view-display-size 'fit-page
+        pdf-view-incompatible-modes
+        '(display-line-numbers-mode hl-line-mode visual-line-mode)
+        ;; 禁用 pdf-view 的警告
+        warning-suppress-types '((pdf-view)))
+  :config
+  (unless (pdf-info-running-p)
+    (pdf-tools-install-noverify))
+  :hook
+  (pdf-view-mode . pdf-view-fit-page-to-window))
+#+end_src
+
+
+
+** super-save
+#+begin_src emacs-lisp
+(use-package super-save
+  :ensure t
+  :hook (after-init . super-save-mode)
+  :config
+  (setq super-save-auto-save-when-idle t
+        super-save-silent t
+        auto-save-default nil))
+#+end_src
+
+
+** which-key
+*** 介绍
+which-key 在你按下一个前缀键（如 =SPC=、=C-x= 等）后，自动显示所有可用的键绑定补全建议。帮助你发现和记忆复杂的键绑定序列，非常适合初学者和使用 leader key 的配置。
+
+*** 相关链接
+- GitHub: https://github.com/justbur/emacs-which-key
+
+*** 配置
+#+begin_src emacs-lisp
+  (use-package which-key
+  :straight t
+  :hook (after-init . which-key-mode)
+  :config
+  ;; 快速显示（0.4 秒）
+  (setq which-key-idle-delay 0.1)
+  ;; 在屏幕底部显示
+  (setq which-key-side-window-location 'bottom)
+  ;; 显示宽度
+  (setq which-key-side-window-max-width 0.5))
+#+end_src
+
+*** 使用方法
+- 按下任意前缀键（如 =SPC=），稍等片刻即可看到所有可用的后续按键
+- 可以继续输入缩小范围，或按 =C-h= 查看分页帮助
+
+** evil
+*** 介绍
+evil 是 Emacs 的 Vim 模拟层，提供完整的 Vim 模式系统（normal、insert、visual 等）。支持 Vim 的核心命令和操作，适合 Vim 用户迁移到 Emacs。
+
+*** 相关链接
+- GitHub: https://github.com/emacs-evil/evil
+- 文档: https://evil.readthedocs.io/
+
+*** 配置
+#+BEGIN_SRC emacs-lisp
+  (use-package evil
+    :straight t
+    :demand t
+    :init
+    (setq evil-want-keybinding nil)  ; 避免键绑定冲突
+    (setq evil-want-C-u-scroll t)    ; C-u 向上滚动
+    (setq evil-undo-system 'undo-fu) ; 设置 undo 系统
+    :config
+    (evil-mode 1)
+    ;; 允许 RET 在 org-mode 中跟随链接
+    (with-eval-after-load 'evil-maps
+      (define-key evil-motion-state-map (kbd "RET") nil)))
+#+END_SRC
+
+*** 使用方法
+- =i= : 进入插入模式
+- =ESC= : 返回 normal 模式
+- =v= : 进入 visual 模式
+- 支持所有标准 Vim 命令：=dd=, =yy=, =p=, =u=, =Ctrl-r= 等
+
+  
+** evil-collection
+
+*** 介绍
+evil-collection 是一个 Evil 模式的扩展包，为 Emacs 的各种内置模式和第三方包提供更好的 Vim 快捷键支持。简单说，它让你在使用 Evil 模式时，能在更多地方使用 Vim 风格的快捷键，而不仅仅是编辑器。
+比如在 Dired（文件管理器）、Magit（Git 客户端）、Help 等地方，都能用 hjkl 移动，dd 删除等 Vim 快捷键。
+
+*** 相关链接
+- GitHub: https://github.com/emacs-evil/evil-collection
+
+*** 配置
+#+begin_src emacs-lisp
+(use-package evil-collection
+  :straight t
+  :after evil
+  :init
+  (evil-collection-init))
+#+end_src
+
+*** 使用方法
+- 自动为 100+ 个 Emacs 模式添加 Vim 风格键绑定
+- 在 Dired、Magit、Help、Ibuffer 等模式中都能使用 Vim 操作
+
+
+** evil-commentary
+*** 介绍
+evil-commentary 为 Evil 模式提供快速注释/反注释功能，类似 Vim 的 commentary.vim 插件。支持按行注释、按块注释和自动识别注释符号。
+
+*** 相关链接
+- GitHub: https://github.com/linktohack/evil-commentary
+
+*** 配置
+#+begin_src emacs-lisp
+(use-package evil-commentary
+  :straight t
+  :after evil
+  :init
+  (evil-commentary-mode))
+#+end_src
+
+
+*** 使用方法
+- =gcc= : 注释/反注释当前行
+- =gc= + 动作 : 注释选定范围（如 =gcap= 注释一个段落）
+- 在 Visual 模式下选中后按 =gc= : 注释选中区域
+
+** company
+*** 介绍
+company (Complete Anything) 是一个模块化的自动补全框架，支持多种后端（LSP、Yasnippet、Dabbrev 等）。提供弹出菜单、快速选择和文档预览。
+
+*** 相关链接
+- GitHub: https://github.com/company-mode/company-mode
+- 手册: https://company-mode.github.io/
+
+*** 配置
+#+BEGIN_SRC emacs-lisp
+   (use-package company
+     :straight t
+     :hook (after-init . global-company-mode)
+     :config
+  ;; 这个配置会同时显示 yasnippet、LSP、代码词汇 的补全
+   (setq company-backends
+         '( (company-capf                  ; LSP/完成点
+            company-dabbrev-code          ; 代码词汇
+            company-files)
+           (company-abbrev                ; 缩写（备用）
+            company-dabbrev)))            ; 文本词汇（备用）
+   
+   ;; 启用以下选项以优化多点补全体验
+   (setq company-idle-delay 0.2)
+   (setq company-minimum-prefix-length 1)
+   (setq company-show-quick-access t)
+   (setq company-tooltip-align-annotations t)
+   
+   ;; 允许多个后端同时补全
+   (setq company-backend-load-all-backends t)
+   
+   ;; 显示补全的最大高度
+   (setq company-tooltip-limit 20)
+   
+   ;; 在补全菜单中显示所有后端的候选项
+   (setq company-selection-wrap-around t)
+   
+     :bind (:map company-active-map
+                 ("C-n" . company-select-next)
+                 ("C-p" . company-select-previous)
+                 ("M-<" . company-select-first)
+                 ("M->" . company-select-last)
+		 ("C-<tab>" . company-complete-common-or-cycle)
+                 ;; ("<tab>" . company-complete-selection)
+                 ("RET" . company-complete-selection)))
+
+#+END_SRC
+
+*** 使用方法
+- 输入时自动触发补全
+- =C-n/C-p= : 上下选择
+- =TAB= 或 =RET= : 确认选择
+- =M-数字= : 直接选择对应编号的项
+
+** yasnippet
+*** 介绍
+yasnippet 是一个代码片段系统，支持数千个预定义片段（如 HTML 标签、函数模板）。允许自定义片段，支持占位符和动态内容。
+
+*** 相关链接
+- GitHub: https://github.com/joaotavora/yasnippet
+- 片段集合: https://github.com/AndreaCrotti/yasnippet-snippets
+
+*** 配置
+#+BEGIN_SRC emacs-lisp
+(use-package yasnippet
+  :straight t
+  :hook (prog-mode . yas-minor-mode)
+  :config
+  (yas-global-mode 1))
+#+END_SRC
+
+*** 使用方法
+- 输入片段缩写后按 =TAB= 展开
+- 例如在 Python 中输入 =def= 然后 =TAB= 展开为函数模板
+- =C-c & C-n= : 创建新片段
+- =C-c & C-v= : 访问片段文件
+
+  #+begin_src emacs-lisp
+(use-package yasnippet-snippets
+  :straight t
+  :after yasnippet)
+  #+end_src
+
+
+** undo-fu
+*** 介绍
+undo-fu 提供简单、线性的撤销/重做系统，替代 Emacs 复杂的默认 undo 机制。特别适合 Evil 模式用户，提供类似 Vim 的 undo/redo 体验。
+
+*** 相关链接
+- GitHub: https://codeberg.org/ideasman42/emacs-undo-fu
+- GitLab 镜像: https://gitlab.com/ideasman42/emacs-undo-fu
+
+*** 配置
+#+begin_src emacs-lisp
+  (use-package undo-fu
+    :straight t
+    :demand t
+    :config
+    ;; 确保 evil 能找到 undo-fu 的函数
+    (global-unset-key (kbd "C-z"))
+
+    ;; 使用内置的 undo 持久化（需要 Emacs 28+）
+    (setq undo-no-redo t)
+    ;; 增大 undo 限制
+    (setq undo-limit 67108864) ; 64mb
+    (setq undo-strong-limit 100663296) ; 96mb
+    (setq undo-outer-limit 1006632960)) ; 960mb
+#+end_src
+
+*** 使用方法
+- 在 Evil 模式下：=u= 撤销，=C-r= 重做
+- 提供线性的撤销历史，避免 Emacs 默认的树状结构带来的困惑
+
+
+
+** undo-fu-session
+*** 介绍
+undo-fu-session 提供简单可靠的 undo 历史持久化功能。与 undohist 不同，它更加轻量级且稳定，能够在文件关闭后保存 undo 历史，重新打开时自动恢复。
+
+*** 相关链接
+- GitHub: https://github.com/emacsmirror/undo-fu-session
+
+*** 配置
+#+begin_src emacs-lisp
+(use-package undo-fu-session
+  :straight t
+  :after undo-fu
+  :hook (after-init . global-undo-fu-session-mode)
+  :config
+  ;; 设置会话保存目录
+  (setq undo-fu-session-directory 
+        (expand-file-name "undo-fu-session/" user-emacs-directory))
+  
+  ;; 忽略某些文件的撤销历史
+  (setq undo-fu-session-incompatible-files
+        '("/tmp/" "/dev/shm/" "COMMIT_EDITMSG" ".gpg$"))
+  
+  ;; 显示 undo-fu-session 的日志信息
+  (setq undo-fu-session-linear nil))
+#+end_src
+
+*** 使用方法
+- 自动保存和恢复撤销历史，无需手动操作
+- 撤销历史保存在 `~/.emacs.d/undo-fu-session/` 目录
+- 与 undo-fu 完全兼容
+
+
+
+
+** vundo
+*** 介绍
+vundo 提供可视化的撤销树浏览器，让你能看到完整的编辑历史分支。可以在撤销树中自由导航，恢复任意历史状态，非常适合需要探索不同编辑路径的场景。
+
+*** 相关链接
+- GitHub: https://github.com/casouri/vundo
+
+*** 配置
+#+begin_src emacs-lisp
+(use-package vundo
+  :straight t
+  :commands (vundo)
+  :config
+  (setq vundo-compact-display t))
+#+end_src
+
+*** 使用方法
+- =M-x vundo= : 打开可视化撤销树
+- 在 vundo 界面中：=n/p= 前后导航，=q= 退出，=RET= 应用选中的状态
+
+
+
+** smartparens
+*** 介绍
+smartparens 提供智能的括号配对、自动补全和导航功能。自动插入、删除成对的括号、引号等符号，支持跳过和包裹选区，大幅提升编码效率。
+
+** 相关链接
+- GitHub: https://github.com/Fuco1/smartparens
+
+*** 配置
+#+begin_src emacs-lisp
+(use-package smartparens
+  :straight t
+  :hook (after-init . smartparens-global-mode)  ; 全局启用
+  :config
+  (require 'smartparens-config)
+  (setq sp-autoskip-closing-pair 'always))
+#+end_src
+
+
+
+*** 使用方法
+- 输入左括号自动补全右括号
+- 删除左括号时自动删除配对的右括号
+- 光标位于右括号前时自动跳过
+
+
+
+** evil-surround
+*** 介绍
+evil-surround 是 Vim surround.vim 的 Emacs 移植，用于快速添加、修改、删除成对符号（括号、引号、标签等）。极大简化了处理文本周围字符的操作。
+
+*** 相关链接
+- GitHub: https://github.com/emacs-evil/evil-surround
+
+*** 配置
+#+begin_src emacs-lisp
+(use-package evil-surround
+  :straight t
+  :after evil
+  :config
+  ;; 启用全局 evil-surround 模式
+  (global-evil-surround-mode 1))
+#+end_src
+
+*** 使用方法
+- =ys<motion><char>= : 添加周围符号（如 =ysiw"= 给单词加双引号）
+- =cs<old><new>= : 修改周围符号（如 =cs"'= 将双引号改为单引号）
+- =ds<char>= : 删除周围符号（如 =ds"= 删除双引号）
+- 在 Visual 模式下 =S<char>= : 给选中文本添加周围符号
+
+
+** expand-region
+*** 介绍
+expand-region 提供智能的区域扩展功能，根据语法结构逐步扩大选区范围。从光标位置开始，依次选择单词、句子、段落、函数等，非常适合快速选择代码块。
+
+*** 相关链接
+- GitHub: https://github.com/magnars/expand-region.el
+
+*** 配置
+#+begin_src emacs-lisp
+  (use-package expand-region
+  :straight t
+  :bind ("C-=" . er/expand-region))
+#+end_src
+
+*** 使用方法
+- =C-== : 扩大选区（连续按多次逐步扩大）
+- =C-- C-== : 缩小选区
+
+
+
+
+
+** evil-fringe-mark
+*** 介绍
+evil-fringe-mark 在编辑器边缘（fringe）显示 Evil 的标记（marks），让标记位置一目了然。支持显示普通标记和特殊标记，方便在大文件中快速定位。
+
+*** 相关链接
+- GitHub: https://github.com/Andrew-William-Smith/evil-fringe-mark
+
+*** 配置
+#+begin_src emacs-lisp
+  (use-package evil-fringe-mark
+    :after evil
+    :config
+    ;; 方案 1：evil 标记在右 fringe，bookmark 在左 fringe
+;; 增加左 fringe 宽度，给 bookmark 图标更多空间
+(setq-default left-fringe-width 40)
+    (setq-default evil-fringe-mark-side 'right-fringe)
+
+    ;; 可选：调整 evil 标记的样式
+    (setq-default evil-fringe-mark-show-special t)  ;; 显示特殊标记
+    (global-evil-fringe-mark-mode))
+#+end_src
+
+*** 使用方法
+- =m<letter>= : 设置标记（如 =ma= 设置标记 a）
+- ='<letter>= : 跳转到标记（如 ='a= 跳转到标记 a）
+- 标记会在 fringe 显示为可视化指示符
+
+
+
+
+
+
+* 导航与搜索
+
+增强文件和内容的查找、导航能力。
+
+** vertico
+*** 介绍
+vertico 是一个极简、高性能的垂直补全 UI，基于 Emacs 内置补全系统。支持循环导航、历史排序，与 orderless、marginalia 完美集成。
+
+*** 相关链接
+- GitHub: https://github.com/minad/vertico
+
+*** 配置
+#+BEGIN_SRC emacs-lisp
+(use-package vertico
+  :straight t
+  :hook (after-init . vertico-mode)
+  :custom
+  (vertico-scroll-margin 0)  ; 滚动边距
+  (vertico-count 20)         ; 显示 20 个候选项
+  (vertico-resize t)         ; 自动调整大小
+  (vertico-cycle t))         ; 循环导航
+#+END_SRC
+
+*** 使用方法
+- =M-x= : 命令补全
+- =C-x C-f= : 文件查找
+- =C-n/C-p= : 上下导航
+- =RET= : 确认选择
+
+** savehist
+*** 介绍
+保存 minibuffer 历史记录，让补全系统能按历史频率排序结果。
+
+*** 配置
+#+BEGIN_SRC emacs-lisp
+(use-package savehist
+  :straight nil  ; 内置包
+  :init
+  (savehist-mode))
+#+END_SRC
+
+** emacs (minibuffer 配置)
+*** 配置
+#+BEGIN_SRC emacs-lisp
+(use-package emacs
+  :straight nil
+  :custom
+  (context-menu-mode t)                    ; 启用上下文菜单
+  (enable-recursive-minibuffers t)         ; 允许递归 minibuffer
+  (read-extended-command-predicate 
+   #'command-completion-default-include-p) ; 只显示可用命令
+  (minibuffer-prompt-properties
+   '(read-only t cursor-intangible t face minibuffer-prompt)))
+#+END_SRC
+
+** orderless
+*** 介绍
+orderless 提供无序、灵活的补全风格，支持空格分隔的多词匹配。例如搜索 "buf list" 可以匹配 "list-buffers"。
+
+*** 相关链接
+- GitHub: https://github.com/oantolin/orderless
+
+*** 配置
+#+BEGIN_SRC emacs-lisp
+(use-package orderless
+  :straight t
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles partial-completion))))
+  (completion-category-defaults nil)
+  (completion-pcm-leading-wildcard t))
+#+END_SRC
+
+*** 使用方法
+- 在任何补全界面输入空格分隔的关键词即可模糊匹配
+
+** marginalia
+*** 介绍
+在补全候选项旁添加注解，如文件大小、命令描述、变量值等，提供更丰富的上下文信息。
+
+*** 相关链接
+- GitHub: https://github.com/minad/marginalia
+
+*** 配置
+#+BEGIN_SRC emacs-lisp
+(use-package marginalia
+  :straight t
+  :init
+  (marginalia-mode t))
+#+END_SRC
+
+  
+** hl-todo
+*** 介绍
+hl-todo 高亮代码中的 TODO、FIXME、NOTE 等关键词，帮助你快速识别代码中的待办事项和注释标记。支持自定义关键词和颜色。
+
+*** 相关链接
+- GitHub: https://github.com/tarsius/hl-todo
+
+*** 配置
+#+begin_src emacs-lisp
+(use-package hl-todo
+  :straight t
+  :hook (prog-mode . hl-todo-mode)
+  :custom
+  (hl-todo-highlight-punctuation ":"))
+#+end_src
+
+*** 使用方法
+- 在代码注释中使用 =TODO:=、=FIXME:=、=NOTE:= 等关键词
+- 使用键绑定 =[ t= 和 =] t= 在 TODO 之间跳转
+
+
+** consult-todo
+*** 介绍
+consult-todo 集成 hl-todo 与 consult，提供快速搜索和导航项目中所有 TODO 标记的功能。支持预览和过滤，方便管理大型项目的待办事项。
+
+*** 相关链接
+- GitHub: https://github.com/liuyinz/consult-todo
+
+*** 配置
+#+begin_src emacs-lisp
+  (use-package consult-todo
+  :straight t
+  :commands (consult-todo consult-todo-project))
+#+end_src
+
+*** 使用方法
+- =SPC s t= : 搜索当前缓冲区的 TODO
+- =SPC s T= : 搜索整个项目的 TODO
+
+
+** embark
+*** 介绍
+embark 提供上下文动作菜单，对选中的文本、文件或符号执行各种操作。类似右键菜单，但更强大。
+
+*** 相关链接
+- GitHub: https://github.com/oantolin/embark
+
+*** 配置
+#+BEGIN_SRC emacs-lisp
+(use-package embark
+  :straight t
+  :bind
+  (("C-;" . embark-act)
+   ;; ("C-;" . embark-dwim)
+   ("C-h B" . embark-bindings))
+  :config
+  (setq prefix-help-command 'embark-prefix-help-command))
+#+END_SRC
+
+
+
+*** 使用方法
+- =C-.= : 在光标处显示动作菜单
+- 选择文件后按 =C-.= 可以复制、删除、重命名等
+
+** wgrep
+#+begin_src emacs-lisp
+(use-package wgrep
+  :straight t
+  :config
+  (setq wgrep-change-readonly-file t)
+  (setq wgrep-enable-key "e"))
+(add-hook 'grep-mode-hook 'wgrep-setup)
+#+end_src
+
+
+
+** embark-consult
+*** 介绍
+embark 与 consult 的集成包，提供更好的协同体验。
+
+*** 配置
+#+BEGIN_SRC emacs-lisp
+(use-package embark-consult
+  :straight t
+  :after (embark consult)
+  :hook (embark-collect-mode . consult-preview-at-point-mode))
+#+END_SRC
+
+
+** windmove
+*** 介绍
+使用方向键或快捷键在窗口间快速切换焦点。
+
+*** 配置
+#+BEGIN_SRC emacs-lisp
+(use-package windmove
+  :straight nil)  ; 内置包
+#+END_SRC
+
+*** 使用方法
+- =C-h/j/k/l= : Vim 风格的窗口切换（需配置键绑定）
+
+
+
+** projectile
+*** 介绍
+projectile 是强大的项目管理工具，自动识别和管理 Git、Maven、NPM 等项目。提供项目内文件搜索、编译、测试等功能，支持项目间快速切换。
+
+*** 相关链接
+- GitHub: https://github.com/bbatsov/projectile
+- 文档: https://docs.projectile.mx/
+
+*** 配置
+#+begin_src emacs-lisp :tangle yes
+  (use-package projectile
+    :straight t
+    :hook (after-init . projectile-mode)
+    :config
+    (setq projectile-completion-system 'default))
+#+end_src
+
+*** 使用方法
+- =SPC f p= : 在项目中查找文件
+- =SPC f P= : 切换项目
+- =SPC f d= : 在项目中查找目录
+- 自动识别项目根目录（包含 .git、package.json 等）
+
+
+
+** avy
+*** 介绍
+avy 提供基于字符的快速跳转功能，类似 Vim 的 EasyMotion。输入一个或多个字符后，avy 会在所有匹配位置显示提示标记，输入标记即可跳转。
+
+*** 相关链接
+- GitHub: https://github.com/abo-abo/avy
+
+*** 配置
+#+begin_src emacs-lisp
+(use-package avy
+  :straight t
+  :commands (avy-goto-char avy-goto-char-2 avy-goto-word-1 avy-goto-line)
+  :config
+  (setq avy-style 'at-full)
+  (setq avy-all-windows t))
+#+end_src
+
+*** 使用方法
+- =s= : 跳转到字符（avy-goto-char）
+- =S= : 跳转到单词（avy-goto-word-1）
+- 输入字符后，再输入高亮的标记字母即可跳转
+
+
+* 键位绑定
+
+自定义的键位绑定配置，主要基于 Evil 模式。
+asdkj
+** Evil 键位配置
+#+BEGIN_SRC emacs-lisp
+  ;;; Evil 模式键位配置（已修正）
+
+  ;; Normal 模式键位
+  (evil-define-key 'normal 'global
+    
+    ;;ai
+    (kbd "SPC a c t") 'toggle-copilot-mode
+    (kbd "SPC a d") 'gptel-add
+    (kbd "SPC a a") 'gptel
+    (kbd "SPC a m") 'gptel-menu
+    (kbd "SPC a t") 'gptel-tools
+   
+
+    ;; 文件操作
+    (kbd "SPC f f") 'find-file
+    (kbd "C-s") 'save-buffer
+    
+    ;;undo
+    (kbd "u") 'undo-only
+    (kbd "C-r") 'undo-fu-only-redo
+
+    ;;avy
+    (kbd "s") 'avy-goto-char
+    (kbd "S") 'avy-goto-word-1
+    
+    ;; 窗口管理
+    (kbd "SPC -") 'split-window-below    ; 水平分割
+    (kbd "SPC |") 'split-window-right   ; 垂直分割（用 \\ 代替 |）
+    (kbd "SPC w d") 'delete-window       ; 删除窗口
+    (kbd "SPC w k") 'enlarge-window
+    (kbd "SPC w j") 'shrink-window
+    (kbd "SPC w l") 'enlarge-window-horizontally
+    (kbd "SPC w h") 'shrink-window-horizontally
+    (kbd "C-h") 'windmove-left
+    (kbd "C-j") 'windmove-down
+    (kbd "C-k") 'windmove-up
+    (kbd "C-l") 'windmove-right
+    
+    ;; 缓冲区管理
+    (kbd "SPC b d") 'evil-delete-buffer
+    
+    ;; 标签管理
+    (kbd "SPC f t") 'centaur-tabs-switch-group
+    (kbd "H") 'centaur-tabs-backward-tab
+    (kbd "L") 'centaur-tabs-forward-tab
+    
+    ;; 文件树
+    (kbd "SPC e") 'neotree-toggle
+    
+    ;; LSP
+    (kbd "g d") 'lsp-goto-type-definition
+    (kbd "g r") 'lsp-ui-peek-find-references
+    (kbd "g i") 'lsp-find-implementation
+    (kbd "SPC c s") 'my/toggle-lsp-ui-imenu
+    (kbd "SPC c f") 'lsp-format-buffer
+    (kbd "SPC c a") 'lsp-execute-code-action
+    (kbd "SPC c r") 'lsp-rename
+    (kbd "SPC c i") 'describe-mode
+    (kbd "K") 'lsp-ui-doc-glance
+    
+    ;; org-download
+    (kbd "SPC i p") 'org-download-clipboard
+    (kbd "SPC i d") 'org-download-delete
+    
+    ;; evil-surround
+    (kbd "g s d") 'evil-surround-delete
+    (kbd "g s r") 'evil-surround-change
+    
+    ;; 脚本
+    (kbd "SPC c p") 'copy-file-path
+    
+    ;; bookmark
+    (kbd "SPC m s") 'bookmark-set
+    (kbd "SPC m j") 'bookmark-jump
+    (kbd "SPC m d") 'bookmark-delete
+    
+    ;; 搜索和导航
+    (kbd "SPC s f") 'describe-function
+
+    ;;diagnostics
+    (kbd "SPC x x") 'lsp-treemacs-errors-list
+    (kbd "[ d") 'flymake-goto-prev-error
+    (kbd "] d") 'flymake-goto-next-error
+    (kbd "[ t") 'hl-todo-previous
+    (kbd "] t") 'hl-todo-next
+
+    ;;quit/session
+
+    (kbd "SPC q q") 'save-buffers-kill-terminal
+    (kbd "SPC q Q") 'save-buffers-kill-emacs
+
+    (kbd "SPC f d") 'project-find-dir
+    (kbd "SPC f p") 'project-find-file
+    (kbd "SPC f P") 'project-switch-project
+    (kbd "SPC f r") 'consult-recent-file
+
+
+    (kbd "SPC s e") 'consult-flymake
+    (kbd "SPC s y") 'consult-yank-pop
+    (kbd "SPC s k") 'embark-bindings
+    (kbd "SPC s t") 'hl-todo-occur
+    (kbd "SPC s T") 'hl-todo-rgrep
+    (kbd "SPC s b") 'consult-line
+    (kbd "SPC SPC") 'consult-buffer
+    (kbd "SPC s g") 'consult-ripgrep
+    (kbd "SPC s G") 'consult-git-grep
+    (kbd "SPC s n") 'yas-visit-snippet-file
+    (kbd "SPC s m") 'consult-bookmark
+    (kbd "SPC s S") 'imenu
+    (kbd "SPC s s") 'consult-imenu)
+
+  ;; Visual 模式键位
+  (evil-define-key 'visual 'global
+    ;;ai
+    (kbd "SPC a r") 'gptel-rewrite
+    (kbd "SPC a d") 'gptel-add
+    (kbd "SPC a a") 'gptel
+    (kbd "SPC a m") 'gptel-menu
+    (kbd "SPC a t") 'gptel-tools
+
+    (kbd "C-l") 'evil-end-of-line
+    (kbd "C-h") 'evil-beginning-of-line
+    (kbd "g s a") 'evil-surround-region)  ; 添加周围符号
+
+  (evil-define-key 'insert 'global
+    (kbd "C-h") 'backward-char
+    (kbd "C-l") 'forward-char  ; 向右
+    (kbd "TAB") 'smart-tab)
+
+(with-eval-after-load 'neotree
+  (evil-define-key 'normal neotree-mode-map
+    ;; h 折叠当前目录（如果是文件夹且已展开），否则进入上一级
+    (kbd "h")
+    (lambda ()
+      (interactive)
+      (let ((node (neo-buffer--get-filename-current-line)))
+        (cond
+         ;; 当前节点是目录并已展开 → 折叠
+         ((and node (file-directory-p node)
+               (neo-buffer--expanded-node-p node))
+          (neo-buffer--set-expand node nil)
+          (neo-buffer--refresh t))
+         ;; 否则回到上级目录
+         (t (neotree-select-up-node)))))
+
+    ;; l 打开文件或展开目录
+    (kbd "l")
+    (lambda ()
+      (interactive)
+      (let ((node (neo-buffer--get-filename-current-line)))
+        (when node
+          (if (file-directory-p node)
+              (progn
+                (neo-buffer--set-expand node t)
+                (neo-buffer--refresh t)
+                (neotree-next-line))
+            (neotree-enter)))))
+
+    ;; 其他常用快捷键
+    (kbd "q") 'neotree-toggle
+    (kbd "a") 'neotree-create-node
+    (kbd "d") 'neotree-delete-node
+    (kbd "r") 'neotree-rename-node
+    (kbd "y") 'neotree-copy-node
+    (kbd "RET") 'neotree-enter))
+#+END_SRC
+
+
+* 文档编写
+
+Org-mode 和 LaTeX 相关配置。
+
+** org
+*** 介绍
+org-mode 是 Emacs 的杀手级功能，用于笔记、待办事项、文档编写、文学编程等。支持导出为 PDF、HTML、Markdown 等多种格式。
+
+*** 相关链接
+- 官网: https://orgmode.org/
+- 手册: https://orgmode.org/manual/
+
+*** 配置
+#+BEGIN_SRC emacs-lisp
+(use-package org
+  :straight t
+  :mode ("\\.org\\'" . org-mode)
+  :config
+  (setq org-startup-with-inline-images t)
+  (setq org-image-align 'center)
+  (setq org-image-actual-width '(250))
+  (setq org-directory "~/org"
+        org-startup-indented t
+        org-hide-emphasis-markers t)
+  
+  ;; org-babel 配置
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (python . t)
+     (shell . t)
+     (C . t)
+     (java . t)
+     (js . t)
+     (ruby . t)
+     (perl . t)
+     (css . t)
+     (latex . t)
+     (org . t)))
+  
+  ;; 不要每次都询问是否执行代码
+  (setq org-confirm-babel-evaluate nil)
+  
+  ;; 代码块语法高亮
+  (setq org-src-fontify-natively t)
+  (setq org-src-tab-acts-natively t)
+  (setq org-src-preserve-indentation t)
+  
+;; 启用 Org 内联 LaTeX 高亮
+(setq org-highlight-latex-and-related '(latex script entities))
+
+
+
+  ;; 只改大小，用 set-face-attribute 而不是 custom-theme-set-faces
+  ;; 这样可以保留主题的颜色
+  (set-face-attribute 'org-level-1 nil :height 1.8 :weight 'bold)
+  (set-face-attribute 'org-level-2 nil :height 1.5 :weight 'bold)
+  (set-face-attribute 'org-level-3 nil :height 1.3 :weight 'bold)
+  (set-face-attribute 'org-level-4 nil :height 1.1 :weight 'bold)
+  (set-face-attribute 'org-level-5 nil :height 1.0 :weight 'bold)
+  (set-face-attribute 'org-level-6 nil :height 1.0 :weight 'normal)
+  (set-face-attribute 'org-level-7 nil :height 1.0 :weight 'normal)
+  (set-face-attribute 'org-level-8 nil :height 1.0 :weight 'normal)
+  
+)
+
+#+END_SRC
+
+*** auctex
+#+begin_src emacs-lisp
+(use-package auctex
+  :straight t
+  :defer t
+  :config
+  ;; 自动保存时重新生成文档
+  (setq TeX-auto-save t)
+  (setq TeX-parse-self t)
+  ;; 使用 PDF 模式而不是 DVI
+  (setq TeX-PDF-mode t)
+  ;; 启用 RefTeX 支持
+  (add-hook 'LaTeX-mode-hook 'turn-on-reftex)
+  ;; 自动折叠环境
+  (add-hook 'LaTeX-mode-hook 'TeX-fold-mode)
+  ;; 自动补全数学符号
+  (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+  (setq TeX-source-correlate-start-server t))
+#+end_src
+
+
+*** mathjax-preivew
+
+#+begin_src emacs-lisp
+(use-package math-preview
+  :straight (:host gitlab :repo "matsievskiysv/math-preview")
+  :config
+  (when (eq system-type 'gnu/linux)
+    (setq math-preview-command 
+          (expand-file-name "~/.npm-global/bin/math-preview")))
+  
+  (setq math-preview-svg-postprocess-functions '())
+  
+  ;; 块级公式居中对齐
+  (advice-add 'math-preview--process-input :after
+    (lambda (&rest _)
+      (dolist (ov (overlays-in (point-min) (point-max)))
+        (when (eq (overlay-get ov 'category) 'math-preview)
+          (let* ((begin (overlay-start ov))
+                 (end (overlay-end ov))
+                 (text (buffer-substring-no-properties begin end))
+                 (is-display (or (string-match-p "^\\\\\\[" text)
+                                (string-match-p "^\\$\\$" text)))
+                 (display (overlay-get ov 'display)))
+            (when (and is-display display)
+              (let* ((image-spec (if (and (listp display) (listp (cdr display)))
+                                    (cadr display)
+                                  display))
+                     (img-size (condition-case nil
+                                  (image-size image-spec t)
+                                (error nil)))
+                     (img-width (if img-size (car img-size) 400))
+                     (window-width (window-body-width nil t))
+                     (indent (max 0 (/ (- window-width img-width) 2))))
+                (overlay-put ov 'before-string 
+                            (propertize " " 'display `(space :width (,indent)))))))))))
+  
+  ;; 窗口大小变化时自动重新居中
+  (defvar-local math-preview--last-width nil)
+  
+  (defun math-preview--auto-recenter (frame)
+    (dolist (window (window-list frame))
+      (with-current-buffer (window-buffer window)
+        (when (cl-some (lambda (ov) (eq (overlay-get ov 'category) 'math-preview))
+                       (overlays-in (point-min) (point-max)))
+          (let ((width (window-body-width window t)))
+            (unless (equal width math-preview--last-width)
+              (setq math-preview--last-width width)
+              (with-selected-window window
+                (math-preview-clear-all)
+                (math-preview-all))))))))
+  
+  (add-to-list 'window-size-change-functions #'math-preview--auto-recenter)
+  
+  (math-preview-start-process))
+#+end_src
+
+
+*** org-latex-preview
+
+#+begin_src emacs-lisp
+;; 这些配置需要在 org 完全加载后才能执行
+(with-eval-after-load 'org
+  ;; Retina 优化 + 自动居中
+  (plist-put org-format-latex-options :scale 2.0)
+  
+  ;; (setq org-preview-latex-default-process 'imagemagick)
+  ;; (setq org-preview-latex-process-alist
+  ;;       '((imagemagick
+  ;;          :programs ("xelatex" "magick")
+  ;;          :description "pdf > png"
+  ;;          :message "需要安装 xelatex 和 imagemagick"
+  ;;          :image-input-type "pdf"
+  ;;          :image-output-type "png"
+  ;;          :image-size-adjust (1.0 . 1.0)
+  ;;          :latex-compiler ("xelatex -interaction nonstopmode -output-directory %o %f")
+  ;;          :image-converter ("convert -density 300 -trim %f -quality 100 %O"))))
+
+;; 使用 dvipng 渲染 LaTeX 公式
+;; (setq org-preview-latex-default-process 'dvipng)
+
+;; (setq org-preview-latex-process-alist
+;;       '((dvipng
+;;          :programs ("latex" "dvipng")                  ;; 调用 latex 和 dvipng
+;;          :description "DVI > PNG"
+;;          :message "需要安装 latex 和 dvipng"
+;;          :use-xcolor t                                  ;; 支持公式颜色
+;;          :image-input-type "dvi"                        ;; 输入类型为 DVI
+;;          :image-output-type "png"                       ;; 输出 PNG
+;;          :image-size-adjust (1.0 . 1.0)                 ;; 图片缩放
+;;          :latex-compiler ("latex -interaction=nonstopmode -output-directory=%o %f")
+;;          :image-converter ("dvipng -D 300 -T tight -o %O %f")))) ;; DVI 转 PNG
+
+;; (setq org-preview-latex-default-process 'dvisvgm)
+
+
+  ;; 行内图片缩放
+  (advice-add 'org--create-inline-image :filter-return
+              (lambda (img) (image--set-property img :scale 0.5) img))
+  
+  ;; LaTeX 预览缩放 + 居中
+  (defun my/org-latex-preview-setup (beg end image &optional imagetype)
+    "设置 LaTeX 预览:Retina 缩放 + 独立公式居中"
+    (let ((ov (car (overlays-at beg))))
+      (when (eq (overlay-get ov 'org-overlay-type) 'org-latex-overlay)
+        ;; 设置缩放
+        (overlay-put ov 'display
+                     `(image :type ,(or (and imagetype (intern imagetype)) 'png)
+                            :file ,image :ascent center :scale 0.5))
+        ;; 独立成行则居中
+        (when (save-excursion
+                (goto-char beg)
+                (and (looking-back "^[[:space:]]*" (line-beginning-position))
+                     (goto-char end)
+                     (looking-at "[[:space:]]*$")))
+          (overlay-put ov 'line-prefix 
+                       `(space :align-to (- center (0.5 . ,(overlay-get ov 'display)))))))))
+  
+  (advice-add 'org--make-preview-overlay :after #'my/org-latex-preview-setup))
+#+end_src
+
+*** 使用方法
+- =C-c C-c= : 执行代码块
+- =C-c '= : 编辑代码块
+- =TAB= : 折叠/展开标题
+- =C-c C-e= : 导出菜单
+
+** org-superstar
+*** 介绍
+美化 org-mode 的标题和列表项，使用更好看的符号替代星号。
+
+*** 相关链接
+- GitHub: https://github.com/integral-dw/org-superstar-mode
+
+*** 配置
+#+BEGIN_SRC emacs-lisp
+(use-package org-superstar
+  :straight t
+  :after org
+  :hook (org-mode . org-superstar-mode)
+  :config
+  (setq org-superstar-headline-bullets-list
+        '("◉" "○" "✸" "✿" "✦" "❀" "➤" "▶"))
+  
+  (setq org-superstar-item-bullet-alist
+        '((?* . ?•) (?+ . ?➤) (?- . ?•)))
+  
+  (setq org-superstar-checkbox-bullet-alist
+        '((?X . "☒") (?? . "☐") (?\  . "☐")))
+  
+  (setq org-superstar-item-indent-offset 2)
+  (setq org-superstar-remove-leading-stars t)
+  (setq org-superstar-use-with-org-bullets t))
+#+END_SRC
+
+
+
+
+** org-bars
+*** 介绍
+org-bars 为 org-mode 标题添加漂亮的垂直彩色条，增强视觉层次感。支持自定义颜色和样式，让 org 文档更加美观易读。
+
+*** 相关链接
+- GitHub: https://github.com/tonyaldon/org-bars
+
+*** 配置
+#+begin_src emacs-lisp
+(use-package org-bars
+  :straight (org-bars :type git :host github :repo "tonyaldon/org-bars")
+  :after org
+  :hook (org-mode . org-bars-mode)
+  :config
+  ;; 星号符号配置
+  (setq org-bars-stars '(:empty "◉"
+                         :invisible "▶"
+                         :visible "▼")))
+;; 方案2: 统一的次要颜色
+;; (setq org-bars-color-options '(:only-one-color t
+;;                                :bar-color "#51afef")))  ;;
+  ;; 方法 1: 让 bars 跟随标题颜色（推荐）
+  ;; 默认就是这样，bars 会继承各级标题的颜色
+ ;; (setq org-bars-color-options nil))
+#+end_src
+
+*** 使用方法
+- 在 org-mode 中自动显示，无需手动操作
+- 折叠/展开标题时彩色条会自动调整
+
+
+** auctex
+*** 介绍
+AUCTeX 是 Emacs 中最强大的 LaTeX 编辑环境，提供语法高亮、自动补全、PDF 同步预览等功能。
+
+*** 相关链接
+- 官网: https://www.gnu.org/software/auctex/
+- GitHub: https://github.com/emacs-auctex/auctex
+
+*** 配置
+#+BEGIN_SRC emacs-lisp
+(use-package auctex
+  :straight t
+  :mode (("\\.tex\\'" . LaTeX-mode)
+         ("\\.ltx\\'" . LaTeX-mode)
+         ("\\.cls\\'" . LaTeX-mode))
+  :init
+  (setq TeX-auto-save t
+        TeX-parse-self t
+        TeX-master nil)
+  :config
+  (require 'texmathp)
+  (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
+  (add-hook 'LaTeX-mode-hook 'turn-on-reftex))
+#+END_SRC
+
+*** 使用方法
+- =C-c C-c= : 编译文档
+- =C-c C-v= : 查看 PDF
+- =C-c C-e= : 插入环境
+- =C-c C-m= : 插入宏
+
+** org-latex 导出配置
+*** 配置
+#+BEGIN_SRC emacs-lisp
+;; LaTeX 导出设置
+(setq org-latex-compiler "xelatex")
+(setq org-latex-pdf-process
+      '("xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+
+;; 使用 minted 代码高亮
+(setq org-latex-listings 'minted)
+
+;; 语言映射
+(with-eval-after-load 'ox-latex
+  (add-to-list 'org-latex-minted-langs '(emacs-lisp "common-lisp"))
+  (add-to-list 'org-latex-minted-langs '(elisp "common-lisp")))
+
+;; minted 选项
+(setq org-latex-minted-options
+      '(("fontsize" "\\small")
+        ("breaklines" "true")
+        ("breakanywhere" "true")
+        ("bgcolor" "boxback")
+        ("frame" "leftline")
+        ("framerule" "2pt")
+        ("rulecolor" "boxblue")
+        ("baselinestretch" "1.2")))
+#+END_SRC
+** org-plus-contrib
+*** 介绍
+org-contrib 是 Org-mode 的贡献模块集合，包含一些由社区和维护者贡献的额外功能和扩展，这些功能没有被纳入 Org-mode 的核心。
+org-contrib 包含哪些功能？
+一些主要的模块包括：
+
+org-annotate-file：为文件添加注释
+org-attach-git：使用 Git 管理附件
+org-bookmark：书签管理
+org-elisp-symbol：符号链接支持
+org-eval：代码评估
+org-expiry：过期日期处理
+org-git-link：Git 链接支持
+org-mac-link：Mac 应用链接
+org-man：Man 页面支持
+以及其他社区贡献的模块
+
+org-contrib vs org-plus-contrib 的关系：
+
+org：核心功能
+org-contrib：额外的贡献模块（独立包）
+org-plus-contrib：org + org-contrib 的组合（现已弃用）
+
+#+begin_src emacs-lisp
+(use-package org-contrib
+  :straight t
+  :after org)
+#+end_src
+
+** org-download
+:PROPERTIES:
+:ID:       dc34808e-9e63-41d7-bbdb-995aae719b79
+:END:
+
+*** 介绍
+org-download 简化在 org-mode 中插入图片的流程，支持从剪贴板、URL、本地文件等多种方式插入图片。自动管理图片文件，支持截图和拖放。
+
+*** 相关链接
+- GitHub: https://github.com/abo-abo/org-download
+
+*** 配置
+#+begin_src emacs-lisp
+(use-package org-download
+  :straight t
+  :after org
+  :hook (org-mode . org-download-enable)
+  :config
+  (setq org-download-image-dir "./images")
+  (setq org-download-heading-lvl nil)
+  (setq org-download-timestamp "%Y%m%d-%H%M%S_")
+  (setq org-download-screenshot-method "screencapture -i %s")
+  (setq org-download-display-inline-images t)
+  (setq org-download-image-attr-list '("#+ATTR_ORG: :width 600")))
+
+#+end_src
+
+*** 使用方法
+- =SPC i p= : 从剪贴板插入图片
+- =SPC i d= : 删除光标处的图片
+- 图片自动保存在当前文件的 `./images/` 目录
+
+
+
+
+** procress
+#+begin_src emacs-lisp
+(use-package procress
+  :straight (:host github :repo "haji-ali/procress")
+  :commands procress-auctex-mode
+  :init
+  (add-hook 'LaTeX-mode-hook #'procress-auctex-mode)
+  :config
+  (procress-load-default-svg-images))
+#+end_src
+
+** helpful
+#+begin_src emacs-lisp
+(use-package helpful
+  :defer 3
+  :bind ; 这里更好的选择可能是用 [remap]
+  (([remap describe-function] . #'helpful-callable)
+   ([remap describe-variable] . #'helpful-variable)
+   ([remap describe-key] . #'helpful-key)
+   ([remap describe-command] . #'helpful-command)
+   ([remap describe-symbol] . #'helpful-symbol)
+   ("C-h C-d" . #'helpful-at-point)
+   ("C-h F" . #'helpful-function))
+  :config
+  (add-hook 'helpful-mode-hook 'visual-line-mode)) ; 侧窗显示的帮助界面需要自动换行
+#+end_src
+
+
+** lass
+
+#+begin_src emacs-lisp 
+;; 支持跳转的简单 LAAS 吸取函数
+
+
+(use-package laas
+  :straight t
+  :hook ((LaTeX-mode . laas-mode) (org-mode . laas-mode))
+  :config
+  (aas-set-snippets 'laas-mode
+                    ;; set condition!
+                    :cond #'texmathp ; expand only while in math
+		    "qq" "\\quad"
+		    "c.." "\cdots"
+		    "le" "\\leq"
+                    "On" "O(n)"
+		    "ra" " \\Rightarrow "
+		    "oo"  "\\infty"
+		    "int" "\\int"
+		    "-oo"  "-\\infty"
+                    "O1" "O(1)"
+                    "Olog" "O(\\log n)"
+		    ";;" "\&"
+		    "\\" "\\\\"
+                    "Olon" "O(n \\log n)"
+                    ;; bind to functions!
+                    "sum" (lambda () (interactive)
+                            (yas-expand-snippet "\\sum\\limits_{$1}^{$2} $0"))
+
+                    "bmat" (lambda () (interactive)
+                            (yas-expand-snippet "\\begin{bmatrix} $1 \\end{bmatrix} $0"))
+
+                    "lc" (lambda () (interactive)
+                            (yas-expand-snippet "\\left( $1 \\right) $0"))
+
+                    "xsp" (lambda () (interactive)
+                            (yas-expand-snippet "$1^{$2} + $1^{2*$2} + \\dots + $1^{n*$2}"))
+
+                    "xas" (lambda () (interactive)
+                            (yas-expand-snippet "$1_{1}$2_{1} + $1_{2}$2_{2} + \\dots + $1_{$3}$2_{$3}"))
+                    "ff" (lambda () (interactive)
+                            (yas-expand-snippet "\\frac{$1}{$2} $0"))
+
+                    "prod" (lambda () (interactive)
+                            (yas-expand-snippet "\\prod\\limits_{${1:i}^{${2:n}}${0:x}"))))
+
+(defun my/simple-absorb (pattern replacement)
+  "通用的正则吸取函数，支持 YAS 跳转
+PATTERN: 正则表达式模式
+REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳转点"
+  (cond
+   ;; 1. 尝试正则模式匹配吸取
+   ((looking-back pattern (line-beginning-position))
+    (let ((matched (match-string 1)))
+      (replace-match "")
+      (yas-expand-snippet (format replacement matched))))
+   ;; 2. 尝试 LAAS 对象包装（如果存在的话）
+   ((and (fboundp 'laas-object-on-left-condition)
+         (laas-object-on-left-condition)
+         (string-match "\\\\\\([a-z]+\\)" replacement))
+    (laas-wrap-previous-object (match-string 1 replacement)))
+   ;; 3. 普通插入
+   (t 
+    (yas-expand-snippet (replace-regexp-in-string "%s" "" replacement)))))
+
+;; 核心吸取函数
+(defun my/absorb-sub ()
+  "下标吸取: xsub -> x_{} 支持跳转"
+  (interactive)
+  (my/simple-absorb "\\([a-zA-Z]+\\)sub" "%s_{$1}$0"))
+
+
+(defun my/absorb-pow ()
+  "下标吸取: xpow -> x^{} 支持跳转"
+  (interactive)
+  (my/simple-absorb "\\([a-zA-Z]+\\)pow" "%s^{$1}$0"))
+
+
+(defun my/absorb-brace ()
+  "xbc -> x() 支持跳转"
+  (interactive)
+  (my/simple-absorb "\\([a-zA-Z]+\\)bc" "%s($0)"))
+
+(defun my/absorb-bb ()
+  "黑板体吸取: Abb -> \\mathbb{A}"
+  (interactive)
+  (my/simple-absorb "\\([A-Z]\\)bb" "\\mathbb{$s}"))
+
+
+(defun my/absorb-bf ()
+  "黑板体吸取: Abb -> \\mathbb{A}"
+  (interactive)
+  (my/simple-absorb "\\([A-Z]\\)bf" "\\mathbf{$s}"))
+
+(defun my/absorb-hat ()
+  "帽子吸取: xhat -> \\hat{x}"
+  (interactive)
+  (my/simple-absorb "\\([a-zA-Z]+\\)hat" "\\hat{$s}"))
+
+;; 注册到 LAAS
+(with-eval-after-load 'laas
+  (aas-set-snippets 'laas-mode
+    :cond #'texmathp
+    :cond #'laas-object-on-left-condition
+    "qq" (lambda () (interactive) (laas-wrap-previous-object "sqrt"))
+    "sub" #'my/absorb-sub
+    "bb" #'my/absorb-bb
+    "bf" #'my/absorb-bf
+    "pow" #'my/absorb-pow
+    "hat" #'my/absorb-hat
+    "bc" #'my/absorb-brace))
+
+
+(with-eval-after-load 'laas
+  (aas-set-snippets 'laas-mode
+                    :cond (lambda () (not (texmathp)))
+                    "ii" (lambda () (interactive)
+                            (yas-expand-snippet "\\\\( $0 \\\\)"))
+                    "dd" (lambda () (interactive)
+                            (yas-expand-snippet "\\[ $0 \\]"))))
+
+
+#+end_src
+
+
+
+* 编程开发
+
+LSP、tree-sitter 和各种编程语言支持。
+
+** lsp-mode
+*** 介绍
+lsp-mode 是 Language Server Protocol 的 Emacs 实现，提供智能补全、代码导航、重构、诊断等 IDE 级别的功能。支持几十种编程语言。
+
+*** 相关链接
+- GitHub: https://github.com/emacs-lsp/lsp-mode
+- 官网: https://emacs-lsp.github.io/lsp-mode/
+
+*** 配置
+#+BEGIN_SRC emacs-lisp
+(use-package lsp-mode
+  :straight t
+  :hook ((c-ts-mode . lsp)
+         (c++-ts-mode . lsp)
+         (python-ts-mode . lsp)
+         (nix-ts-mode . lsp)
+         (java-ts-mode . lsp)
+         (go-mode . lsp))
+  :commands lsp
+  :config
+  ;; 可选配置
+  (setq lsp-nil-server-command '("nil"))
+  (setq lsp-prefer-flymake nil))
+#+END_SRC
+
+*** 使用方法
+- =g d= : 跳转到定义
+- =g r= : 查找引用
+- =SPC c f= : 格式化代码
+- =M-x lsp-rename= : 重命名符号
+- =M-x lsp-organize-imports= : 整理导入
+
+*** 支持的语言
+需要先安装对应的 language server：
+- Python: =pip install python-lsp-server=
+- C/C++: =clangd=
+- Java: 自动下载（通过 lsp-java）
+- Go: =go install golang.org/x/tools/gopls@latest=
+- Rust: =rustup component add rust-analyzer=
+
+** lsp-ui
+*** 介绍
+lsp-ui 为 lsp-mode 提供 UI 增强，包括悬浮文档、侧边信息、代码预览等。
+
+*** 相关链接
+- GitHub: https://github.com/emacs-lsp/lsp-ui
+
+*** 配置
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-ui
+    :straight t
+    :hook (lsp-mode . lsp-ui-mode)
+    :custom
+    (lsp-ui-sideline-enable t)
+    (lsp-ui-doc-position 'at-point)      ; 在光标位置显示
+    (lsp-ui-sideline-show-code-actions t)
+    (lsp-ui-sideline-show-diagnostics t)
+    (lsp-ui-sideline-ignore-duplicate t)
+    (lsp-diagnostics-provider :flymake)  ; 确保用 flymake
+    (lsp-ui-peek-enable t)
+    (lsp-ui-peek-always-show t)
+    (lsp-ui-peek-show-directory t))
+#+END_SRC
+
+*** 使用方法
+- 光标悬停显示文档
+- 侧边栏显示类型和诊断信息
+- =g r= : 使用 peek 预览引用
+
+
+
+
+
+** sideline
+*** 介绍
+sideline 在代码行的右侧显示额外信息，如错误、警告、文档等。提供可扩展的后端系统，支持多种信息源同时显示。
+
+*** 相关链接
+- GitHub: https://github.com/emacs-sideline/sideline
+
+*** 配置
+#+begin_src emacs-lisp
+  (use-package sideline
+  :straight t
+  :hook (flymake-mode . sideline-mode)
+  :custom
+  (sideline-backends-right '(sideline-flymake)))
+#+end_src
+
+*** 使用方法
+- 自动在代码行右侧显示 flymake 诊断信息
+- 光标移动到有问题的行时显示详细错误信息
+
+
+
+** sideline-flymake
+*** 介绍
+sideline-flymake 是 sideline 的 flymake 后端，将 flymake 的诊断信息显示在代码行右侧。比默认的悬浮提示更加直观。
+
+*** 相关链接
+- GitHub: https://github.com/emacs-sideline/sideline-flymake
+
+*** 配置
+#+begin_src emacs-lisp
+  (use-package sideline-flymake
+  :straight t
+  :after sideline flymake)
+#+end_src
+
+*** 使用方法
+- 与 sideline 配合使用，自动显示诊断信息
+- 支持显示错误、警告和提示级别的信息
+
+
+
+** flymake
+#+begin_src emacs-lisp
+  (use-package flymake
+  :straight nil
+  :hook (prog-mode . flymake-mode))
+#+end_src
+
+** lsp-nix
+#+begin_src emacs-lisp
+(use-package nix-ts-mode
+  :straight t
+  :mode "\\.nix\\'"
+  :hook (nix-ts-mode . lsp))
+#+end_src
+
+
+** lsp-pyright
+*** 介绍
+lsp-pyright 为 Python 提供基于 Pyright 的 LSP 支持。Pyright 是微软开发的高性能 Python 类型检查器，提供快速、准确的代码补全和类型检查。
+
+*** 相关链接
+- GitHub: https://github.com/emacs-lsp/lsp-pyright
+- Pyright 官方: https://github.com/microsoft/pyright
+
+*** 配置
+#+begin_src emacs-lisp
+  (use-package lsp-pyright
+  :ensure t
+  :custom (lsp-pyright-langserver-command "pyright") ;; or basedpyright
+  :hook (python-ts-mode . (lambda ()
+                          (require 'lsp-pyright)
+                          (lsp))))  ; or lsp-deferred
+#+end_src
+
+*** 使用方法
+- 在 Python 文件中自动启动
+- 需要先安装 Pyright: =npm install -g pyright=
+- 提供类型检查、自动补全、重构等功能
+
+** lsp-java
+*** 介绍
+为 Java 开发提供 LSP 支持，基于 Eclipse JDT Language Server，支持 Maven 和 Gradle 项目。
+
+*** 相关链接
+- GitHub: https://github.com/emacs-lsp/lsp-java
+
+*** 配置
+#+BEGIN_SRC emacs-lisp
+(use-package lsp-java
+  :straight t
+  :after lsp-mode
+  :hook (java-ts-mode . lsp))
+#+END_SRC
+
+*** 使用方法
+- 首次打开 Java 项目会自动下载 language server
+- 支持 Maven/Gradle 项目导入
+- 所有 LSP 功能可用
+
+** treesit-auto
+*** 介绍
+treesit-auto 自动管理 tree-sitter 语法解析器，无需手动配置。tree-sitter 提供更准确的语法高亮和代码分析。
+
+*** 相关链接
+- GitHub: https://github.com/renzmann/treesit-auto
+- Tree-sitter: https://tree-sitter.github.io/
+
+*** 配置
+#+BEGIN_SRC emacs-lisp
+(use-package treesit-auto
+  :straight t
+  :hook (after-init . global-treesit-auto-mode)
+  :config
+  (setq treesit-auto-install 'prompt))  ; 提示安装语法
+#+END_SRC
+
+*** 使用方法
+- 打开支持的文件时自动启用 tree-sitter
+- 首次使用某语言时提示安装语法
+- =M-x treesit-auto-install-all= : 安装所有语法
+
+*** 支持的语言
+50+ 种语言，包括：
+- C, C++, Python, Java, Go, Rust, Ruby, PHP
+- JavaScript, TypeScript, HTML, CSS
+- Bash, JSON, YAML, Markdown
+- 等等...
+
+
+
+
+* AI
+
+** gpt
+#+begin_src emacs-lisp
+(use-package gptel
+  :straight t
+   :config
+;; OPTIONAL configuration
+(setq gptel-default-mode 'org-mode)
+(setq gptel-model 'gpt-4o-mini
+      gptel-backend (gptel-make-gh-copilot "Copilot"))
+
+(gptel-make-gh-copilot "Copilot"))
+
+(use-package mcp
+  :straight t)
+
+(require 'gptel-integrations)
+
+  (setq mcp-hub-servers
+        '(("github"
+           :command "github-mcp-server"
+           :args ("stdio"))))
+
+(use-package gptel-commit
+  :straight t
+  :after (gptel magit)
+  :custom
+  (gptel-commit-stream t))
+#+end_src
+
+
+
+
+
+
+
+
+** copilot
+*** 介绍
+copilot.el 是 GitHub Copilot 的 Emacs 客户端，支持 AI 自动补全代码。它可以在编程模式下自动激活，提供智能代码建议，提升开发效率。
+
+*** 相关链接
+- GitHub: https://github.com/copilot-emacs/copilot.el
+
+*** 配置
+#+begin_src emacs-lisp
+(use-package copilot
+  :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
+  :ensure t
+  ;; 不自动启用 copilot-mode
+  :commands (copilot-mode)
+  :config
+  ;; 禁用缩进警告
+  (setq copilot-disable-predicates 
+        '(copilot-hide-completion-on-escape
+          copilot-hide-completion-on-comment
+          copilot-hide-completion-on-string))
+  (setq copilot-indent-offset-warning-disable t)
+  ;; 显示设置
+  (setq copilot-enable-predicates '(copilot-hide-completion-on-escape))
+  (setq copilot-idle-delay 0.5))
+#+end_src
+
+*** 使用方法
+- 在编程模式下自动启用 Copilot，无需手动启动
+- 输入代码时自动显示 AI 补全建议
+- 支持通过快捷键接受、拒绝或切换建议
+- 可自定义显示和触发条件，适应不同编程习惯
+
+
+* 附录
+
+** 包管理常用命令速查
+
+*** straight.el 命令
+- =M-x straight-pull-all= : 更新所有包
+- =M-x straight-pull-package= : 更新单个包
+- =M-x straight-rebuild-all= : 重建所有包
+- =M-x straight-rebuild-package= : 重建单个包
+- =M-x straight-freeze-versions= : 创建版本锁定文件
+- =M-x straight-thaw-versions= : 从锁定文件恢复版本
+- =M-x straight-check-all= : 检查所有包状态
+- =M-x straight-check-package= : 检查单个包状态
+
+** 问题排查
+
+*** 如果某个包加载失败
+1. 检查: =M-x straight-check-package=
+2. 重建: =M-x straight-rebuild-package=
+3. 查看日志: 切换到 =*straight-process*= 缓冲区
+
+*** 如果启动时出错
+#+BEGIN_SRC bash
+# 使用 debug 模式启动
+emacs --debug-init
+#+END_SRC
+
+*** 重置配置
+#+BEGIN_SRC bash
+# 删除 straight 目录重新开始
+rm -rf ~/.emacs.d/straight/
+# 重启 Emacs
+#+END_SRC
+
+** 配置文件位置
+
+- 主配置: =~/.emacs.d/config.org=
+- 初始化: =~/.emacs.d/init.el=
+- 包目录: =~/.emacs.d/straight/=
+- 备份: =~/.emacs.d/config.org.backup-*=
+
+** 相关资源
+
+*** 学习资源
+- Emacs 官网: https://www.gnu.org/software/emacs/
+- Emacs Wiki: https://www.emacswiki.org/
+- Emacs China: https://emacs-china.org/
+- Mastering Emacs: https://www.masteringemacs.org/
+
+*** 配置参考
+- Doom Emacs: https://github.com/doomemacs/doomemacs
+- Spacemacs: https://www.spacemacs.org/
+- Purcell's Emacs: https://github.com/purcell/emacs.d
+
+*** 包仓库
+- MELPA: https://melpa.org/
+- GNU ELPA: https://elpa.gnu.org/
+- straight.el recipes: https://github.com/radian-software/straight.el/blob/develop/README.md#recipe-format
+
+
+** 待要安装的插件
+- 代码补全与 LSP: copilot, copilot-chat,
+- 其他: wgrep, sis, magit-todos
+
+
+
+
+*** TODO which-key设置标签
+
+*** DONE git设置
+
+*** DONE undo设置
+
+*** DONE side错误显示设置
+
+*** DONE signature设置
+
+*** DONE C-l C-h 在n和v模式下设置
+
+*** DONE dashboard 设置
+
+*** DONE latex补全引擎设置，以及latex显示
+
+*** DONE evil-expand
+
+*** DONE search keymap & plugins
+
+*** DONE auctex-config & latex-preview
+
+*** DONE seting windows enlarge&shrink 
+
+
+
+

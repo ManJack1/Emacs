@@ -4,11 +4,10 @@
 # 保留配置文件
 !.gitignore
 !init.el
-!early-init.el
-!lisp/
-!lisp/**
+!config.org
+!config.el
 !snippets/
 !snippets/**
-!girl.jpg
+!*.jpg
 !README.md
 
