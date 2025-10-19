@@ -985,7 +985,7 @@ diff-hl 在编辑器边缘（fringe）显示 Git 差异标记，实时显示文�
 *** 配置
 #+begin_src emacs-lisp
 (use-package diff-hl
-  :ensure t
+  :straight t
   :init
   (diff-hl-flydiff-mode)
   (global-diff-hl-mode))
@@ -1045,7 +1045,7 @@ super-save 提供智能自动保存功能，在切换窗口、buffer 或空闲�
 *** 配置
 #+begin_src emacs-lisp
 (use-package super-save
-  :ensure t
+  :straight t
   :hook (after-init . super-save-mode)
   :config
   (setq super-save-auto-save-when-idle t
@@ -2715,7 +2715,7 @@ lsp-pyright 为 Python 提供基于 Pyright 的 LSP 支持。Pyright 是微软�
 *** 配置
 #+begin_src emacs-lisp
   (use-package lsp-pyright
-  :ensure t
+  :straight t
   :custom (lsp-pyright-langserver-command "pyright") ;; or basedpyright
   :hook (python-ts-mode . (lambda ()
                           (require 'lsp-pyright)
@@ -2864,7 +2864,7 @@ copilot.el 是 GitHub Copilot 的 Emacs 客户端，支持 AI 自动补全代码
 #+begin_src emacs-lisp
 (use-package copilot
   :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
-  :ensure t
+  :straight t
   ;; 不自动启用 copilot-mode
   :commands (copilot-mode)
   :config

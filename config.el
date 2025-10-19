@@ -447,7 +447,7 @@
   (setq magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
 (use-package diff-hl
-  :ensure t
+  :straight t
   :init
   (diff-hl-flydiff-mode)
   (global-diff-hl-mode))
@@ -468,7 +468,7 @@
   (pdf-view-mode . pdf-view-fit-page-to-window))
 
 (use-package super-save
-  :ensure t
+  :straight t
   :hook (after-init . super-save-mode)
   :config
   (setq super-save-auto-save-when-idle t
@@ -1363,7 +1363,7 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   :hook (nix-ts-mode . lsp))
 
   (use-package lsp-pyright
-  :ensure t
+  :straight t
   :custom (lsp-pyright-langserver-command "pyright") ;; or basedpyright
   :hook (python-ts-mode . (lambda ()
                           (require 'lsp-pyright)
@@ -1408,7 +1408,7 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
 
 (use-package copilot
   :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
-  :ensure t
+  :straight t
   ;; 不自动启用 copilot-mode
   :commands (copilot-mode)
   :config
