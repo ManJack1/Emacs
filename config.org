@@ -84,9 +84,15 @@
 #+LATEX: \newpage
 
 
-* 脚本
+* 自定义函数脚本
 
-** toggle-eat
+本节包含所有自定义的实用函数，用于增强 Emacs 的功能和便利性。
+
+** 终端切换函数
+*** 终端切换函数
+*** toggle-eat
+快速切换到 eat 终端并在再次调用时返回之前的缓冲区。
+
 #+begin_src emacs-lisp
 (defun toggle-eat ()
   "切换 eat 终端，再次按下返回之前的 buffer"
@@ -101,9 +107,16 @@
           (switch-to-buffer eat-buffer)))))
 #+end_src
 
+*** 使用方法
+- 键绑定: =C-/=
+- 首次按下切换到终端，再次按下返回原缓冲区
 
 
-** load-modus-theme-based-on-time
+
+** 主题自动切换函数
+*** load-modus-theme-based-on-time
+根据当前时间自动切换 Modus 主题的深色和浅色模式。
+
 #+begin_src emacs-lisp
 (defun my/auto-switch-modus-theme ()
   "根据时间自动切换 Modus 主题"
@@ -113,12 +126,18 @@
       (load-theme 'modus-operandi-tinted t))))
 #+end_src
 
+*** 使用说明
+- 22:00-06:00 自动切换为深色主题 (modus-vivendi)
+- 06:00-22:00 自动切换为浅色主题 (modus-operandi-tinted)
+- 配合 modus-themes 包使用
 
 
 
 
 
-** org-math-preview-on-save
+** Org 数学预览函数
+*** org-math-preview-on-save
+在保存 Org 文件时自动预览数学公式（排除 config.org）。
 
 #+begin_src emacs-lisp
 (defun my/org-math-preview-on-save ()
@@ -137,9 +156,17 @@
 (add-hook 'before-save-hook #'my/org-math-preview-on-save)
 #+end_src
 
+*** 使用说明
+- 打开 org 文件时自动预览数学公式
+- 保存时自动更新预览
+- config.org 被排除在外，避免干扰配置文件
 
 
-** set-transparency
+
+** 透明度设置函数
+*** set-transparency
+根据不同操作系统设置窗口透明度。
+
 #+begin_src emacs-lisp
 ;; 全局透明度设置
 ;; 0 = 完全透明，100 = 不透明
@@ -155,9 +182,16 @@
 
 #+end_src
 
+*** 使用说明
+- macOS: 95% 透明度
+- Linux: 活动窗口 90%，非活动窗口 85%
+- 值范围: 0 (完全透明) - 100 (不透明)
 
 
-** toggle-copilot-mode
+
+** Copilot 模式切换函数
+*** toggle-copilot-mode
+快速启用或禁用 Copilot 补全。
 
 #+begin_src emacs-lisp
 (defun toggle-copilot-mode ()
@@ -171,8 +205,15 @@
     (message "Copilot mode enabled")))
 #+end_src
 
+*** 使用方法
+- 键绑定: =SPC a c t=
+- 显示当前状态消息
 
-** org-latex-preview-keys
+
+** Org LaTeX 预览快捷键
+*** org-latex-preview-keys
+为 Org 模式添加数学公式预览和清除的快捷键。
+
 #+begin_src emacs-lisp
 ;; 添加到配置中
 (with-eval-after-load 'org
@@ -185,9 +226,16 @@
     (lambda () (interactive) (math-preview-clear-all))))
 #+end_src
 
+*** 使用方法
+- =C-c C-p= : 预览所有数学公式
+- =C-c C-r= : 清除所有预览
 
 
-** auto-tangle-config
+
+** 自动 Tangle 配置函数
+*** auto-tangle-config
+保存 config.org 时自动执行 org-babel-tangle 生成 config.el。
+
 #+begin_src emacs-lisp
 (defun my/auto-tangle-config ()
   "自动在保存 config.org 时执行 org-babel-tangle。"
@@ -199,9 +247,17 @@
 (add-hook 'after-save-hook #'my/auto-tangle-config)
 #+end_src
 
+*** 使用说明
+- 保存 config.org 时自动生成 config.el
+- 无需手动执行 =org-babel-tangle=
+- 不会弹出确认提示
 
 
-** copy-path()
+
+** 文件路径复制函数
+*** copy-path
+复制当前文件的完整路径或文件名到剪贴板。
+
 #+begin_src emacs-lisp
   (defun copy-file-path ()
   "Copy current file absolute path to clipboard."
@@ -225,7 +281,14 @@
       (error "Current buffer is not associated with a file"))))
 #+end_src
 
-** toggle-lsp-ui()
+*** 使用方法
+- =M-x copy-file-path= 或 =SPC c p= : 复制完整路径
+- =M-x copy-file-name= : 仅复制文件名
+
+** LSP UI 侧边栏切换函数
+*** toggle-lsp-ui
+切换 lsp-ui-imenu 侧边栏的显示和隐藏。
+
 #+begin_src emacs-lisp
   ;; LSP imenu 切换函数
   (defun my/toggle-lsp-ui-imenu ()
@@ -236,8 +299,15 @@
       (lsp-ui-imenu)))
 #+end_src
 
+*** 使用方法
+- 键绑定: =SPC c s=
+- 显示当前文件的符号树结构
 
-** lsp-goto-prev-param()
+
+** LSP 参数导航函数
+这些函数基于 tree-sitter 实现函数参数间的快速跳转。
+
+*** lsp-goto-prev-param
 #+begin_src emacs-lisp
 ;; 参数导航（基于 treesitter）
 (defun lsp-goto-next-param ()
@@ -250,7 +320,9 @@
 #+end_src
 
 
-** lsp-goto-next-param()
+*** lsp-goto-next-param
+跳转到下一个函数参数。
+
 #+begin_src emacs-lisp
 (defun lsp-goto-prev-param ()
   "跳转到前一个参数"
@@ -261,10 +333,17 @@
         (treesit-search-backward node "parameter_declaration" t)))))
 #+end_src
 
+*** 使用说明
+- 需要启用 tree-sitter 模式
+- 用于在函数参数之间快速导航
+
 
  
 
-** smart-tab
+** 智能 Tab 键函数
+*** smart-tab
+智能 TAB 键实现，优先级：YASnippet > Copilot > 普通缩进。
+
 #+begin_src emacs-lisp
 ;; 清空所有 Shift-TAB 绑定
 (with-eval-after-load 'company
@@ -321,6 +400,14 @@
     (indent-for-tab-command))))
 
 #+end_src
+
+*** 使用说明
+- =TAB= : 根据上下文智能选择行为
+  1. 如果是 snippet 缩写，则展开
+  2. 如果在 snippet 中，则跳转到下一个字段
+  3. 如果 Copilot 有建议，则接受建议
+  4. 否则执行普通缩进
+- =Shift-TAB= : YASnippet 反向跳转
 
 
 
@@ -490,7 +577,14 @@ use-package 是一个声明式包配置宏，简化包的安装、配置和延�
 
 
 
-**  colorful-mode
+** colorful-mode
+*** 介绍
+colorful-mode 在代码中直接显示颜色值的实际颜色，支持 HEX、RGB、HSL 等多种格式。对前端开发和主题配置特别有用。
+
+*** 相关链接
+- GitHub: https://github.com/DevelopmentCool2449/colorful-mode
+
+*** 配置
 #+begin_src emacs-lisp
 (use-package colorful-mode
   :straight t
@@ -501,6 +595,10 @@ use-package 是一个声明式包配置宏，简化包的安装、配置和延�
   (colorful-only-strings 'only-prog)  ; 只在字符串中高亮
   (css-fontify-colors nil))           ; 禁用 CSS 内置的颜色渲染
 #+end_src
+
+*** 使用方法
+- 在代码中输入颜色值（如 #FF5733）会自动显示颜色
+- 支持编程模式下的字符串内颜色显示
 
 ** doom-themes
 *** 介绍
@@ -537,6 +635,14 @@ doom-themes 是一个丰富的主题集合，包含 25+ 个精心设计的高对
 - 推荐主题: doom-one, doom-molokai, doom-nord, doom-tomorrow-night
 
 ** modus-themes
+*** 介绍
+Modus 是 Emacs 内置的高对比度主题集，由 Protesilaos Stavrou 开发。提供深色 (vivendi) 和浅色 (operandi) 两个变体，符合 WCAG AAA 无障碍标准，适合长时间阅读和编程。
+
+*** 相关链接
+- 官网: https://protesilaos.com/emacs/modus-themes
+- 手册: https://protesilaos.com/emacs/modus-themes
+
+*** 配置
 #+begin_src emacs-lisp
 (use-package modus-themes
   :straight t
@@ -546,6 +652,10 @@ doom-themes 是一个丰富的主题集合，包含 25+ 个精心设计的高对
   (run-at-time "06:00" 86400 #'my/auto-switch-modus-theme)  ; 每天早上6点
   (run-at-time "22:00" 86400 #'my/auto-switch-modus-theme)) ; 每天晚上10点
 #+end_src
+
+*** 使用方法
+- 自动根据时间切换主题（22:00-06:00 深色，06:00-22:00 浅色）
+- 手动切换: =M-x load-theme RET modus-vivendi RET= 或 =modus-operandi=
 
 
 
@@ -762,7 +872,13 @@ neotree 是一个侧边文件树浏览器，类似 VS Code 的资源管理器，
 
 
 ** sis-change-input-method
+*** 介绍
+sis (Smart Input Source) 智能输入法管理工具，自动在不同模式和上下文中切换输入法。支持 macOS 和 Linux (fcitx5)，提供 inline、context、respect 等多种模式。
 
+*** 相关链接
+- GitHub: https://github.com/laishulu/emacs-smart-input-source
+
+*** 配置
 #+begin_src emacs-lisp
 (use-package sis
   :straight t
@@ -785,7 +901,18 @@ neotree 是一个侧边文件树浏览器，类似 VS Code 的资源管理器，
   (sis-global-inline-mode t))
 #+end_src
 
+*** 使用说明
+- macOS 配置为 ABC 英文和微信输入法
+- Linux 配置为 fcitx5
+- 启用光标颜色模式：不同输入法显示不同光标颜色
+- respect 模式：在切换 buffer 时保持之前的输入法状态
+- inline 模式：在行内自动切换输入法
+
 ** savehist
+*** 介绍
+savehist 是 Emacs 内置包，用于保存 minibuffer 历史记录。让你在重启 Emacs 后仍能使用之前的命令历史、搜索历史等。
+
+*** 配置
 #+begin_src emacs-lisp
 (use-package savehist
   :hook (after-init . savehist-mode)
@@ -795,9 +922,18 @@ neotree 是一个侧边文件树浏览器，类似 VS Code 的资源管理器，
         savehist-additional-variables '(kill-ring search-ring regexp-search-ring)))                            ;; 启用 savehist
 #+end_src
 
+*** 使用说明
+- 保存最近 1000 条历史记录
+- 每 5 分钟自动保存一次
+- 额外保存 kill-ring 和搜索历史
+
 
 
 ** saveplace
+*** 介绍
+saveplace 是 Emacs 内置包，记住每个文件上次访问时光标的位置。重新打开文件时自动跳转到上次的位置。
+
+*** 配置
 #+begin_src emacs-lisp
 (use-package saveplace
   :hook (after-init . save-place-mode)
@@ -805,8 +941,20 @@ neotree 是一个侧边文件树浏览器，类似 VS Code 的资源管理器，
   (setq save-place-file (expand-file-name "saveplace" user-emacs-directory)))                           ;; 启用 saveplace
 #+end_src
 
+*** 使用说明
+- 自动保存每个文件的光标位置
+- 数据保存在 ~/.emacs.d/saveplace 文件中
+
 
 ** magit
+*** 介绍
+Magit 是 Emacs 中最强大的 Git 客户端，提供完整的 Git 功能界面。通过直观的菜单和快捷键，可以执行所有 Git 操作，包括 commit、branch、merge、rebase 等。
+
+*** 相关链接
+- 官网: https://magit.vc/
+- 手册: https://magit.vc/manual/
+
+*** 配置
 #+begin_src emacs-lisp
 (use-package magit
   :config
@@ -814,10 +962,50 @@ neotree 是一个侧边文件树浏览器，类似 VS Code 的资源管理器，
   (setq magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 #+end_src
 
+*** 使用方法
+- 键绑定: =SPC g g= 打开 Magit 状态界面
+- 在 Magit 界面中:
+  - =s= : stage 文件
+  - =u= : unstage 文件
+  - =c= : commit 菜单
+  - =P= : push 菜单
+  - =F= : pull 菜单
+  - =b= : branch 菜单
+  - =l= : log 菜单
+  - =?= : 显示帮助
 
+** diff-hl
+*** 介绍
+diff-hl 在编辑器边缘（fringe）显示 Git 差异标记，实时显示文件的修改、添加、删除行。支持与 Magit 集成，提供即时的版本控制反馈。flydiff 模式可以在编辑时实时更新差异标记。
 
+*** 相关链接
+- GitHub: https://github.com/dgutov/diff-hl
+
+*** 配置
+#+begin_src emacs-lisp
+(use-package diff-hl
+  :ensure t
+  :init
+  (diff-hl-flydiff-mode)
+  (global-diff-hl-mode))
+#+end_src
+
+*** 使用方法
+- 在 fringe 自动显示 Git 差异标记
+- 绿色: 新增行
+- 蓝色: 修改行
+- 红色: 删除行
+- =M-x diff-hl-diff-goto-hunk= : 跳转到差异处
+- =M-x diff-hl-revert-hunk= : 还原当前修改块
 
 ** pdf-tools
+*** 介绍
+pdf-tools 是 Emacs 的强大 PDF 阅读器，提供比 DocView 更好的性能和功能。支持注释、搜索、链接跳转、夜间模式等。
+
+*** 相关链接
+- GitHub: https://github.com/vedang/pdf-tools
+
+*** 配置
 #+begin_src emacs-lisp
 (use-package pdf-tools
   :straight t
@@ -835,9 +1023,25 @@ neotree 是一个侧边文件树浏览器，类似 VS Code 的资源管理器，
   (pdf-view-mode . pdf-view-fit-page-to-window))
 #+end_src
 
+*** 使用方法
+- 自动处理 .pdf 文件
+- =n/p= : 下一页/上一页
+- =+/-= : 放大/缩小
+- =W= : 自适应宽度
+- =H= : 自适应高度
+- =C-s= : 搜索
+- =o= : 打开目录大纲
+
 
 
 ** super-save
+*** 介绍
+super-save 提供智能自动保存功能，在切换窗口、buffer 或空闲时自动保存文件。比 Emacs 内置的自动保存更加智能和可靠。
+
+*** 相关链接
+- GitHub: https://github.com/bbatsov/super-save
+
+*** 配置
 #+begin_src emacs-lisp
 (use-package super-save
   :ensure t
@@ -848,6 +1052,78 @@ neotree 是一个侧边文件树浏览器，类似 VS Code 的资源管理器，
         auto-save-default nil))
 #+end_src
 
+*** 使用说明
+- 空闲时自动保存
+- 静默模式，不显示保存消息
+- 禁用默认的自动保存机制
+
+** 终端工具
+
+*** eat
+**** 介绍
+eat (Emulate A Terminal) 是一个现代化的终端模拟器，比 term.el 和 ansi-term 更快更完整。完全在 Emacs Lisp 中实现，支持完整的 ANSI 转义序列、真彩色、鼠标操作等。与 eshell 完美集成。
+
+**** 相关链接
+- Codeberg: https://codeberg.org/akib/emacs-eat
+
+**** 配置
+#+begin_src emacs-lisp
+(use-package eat
+  :straight (eat :type git
+                 :host codeberg
+                 :repo "akib/emacs-eat"
+                 :files ("*.el" 
+                         ("e" "e/*") 
+                         "*.texi" 
+                         "*.ti" 
+                         ("terminfo/e" "e/*") 
+                         "*.info"))
+  :custom
+  ;; Use a more compatible terminal type
+  (eat-term-name "xterm-256color")  ; or "eterm-color"
+  :config
+  (add-hook 'eshell-first-time-mode-hook #'eat-eshell-mode))
+#+end_src
+
+**** 使用方法
+- =M-x eat= : 打开新的终端
+- =M-x eshell= : 打开 eshell (自动启用 eat)
+- 支持完整的终端功能，包括 vim、htop 等程序
+- 在 eshell 中提供更好的命令行体验
+
+*** vterm
+**** 介绍
+vterm 是基于 libvterm 的高性能终端模拟器，比 term.el 和 ansi-term 更快更完整。需要编译 C 模块，提供接近原生终端的体验。
+
+**** 相关链接
+- GitHub: https://github.com/akermu/emacs-libvterm
+
+**** 配置
+#+begin_src emacs-lisp
+(use-package vterm
+  :straight t
+  :config
+  (setq vterm-max-scrollback 10000))
+#+end_src
+
+**** 使用方法
+- =M-x vterm= : 打开 vterm 终端
+- 最大滚动回溯行数设置为 10000
+- 支持完整的 ANSI 转义序列和真彩色
+
+*** transient
+**** 介绍
+transient 是一个用于创建临时弹出菜单的框架，类似 Magit 的菜单系统。许多现代 Emacs 包依赖它来提供交互式命令界面。
+
+**** 相关链接
+- GitHub: https://github.com/magit/transient
+
+**** 配置
+#+begin_src emacs-lisp
+(use-package transient
+  :straight t
+  :demand t)
+#+end_src
 
 ** which-key
 *** 介绍
@@ -1383,6 +1659,13 @@ embark 提供上下文动作菜单，对选中的文本、文件或符号执行�
 - 选择文件后按 =C-.= 可以复制、删除、重命名等
 
 ** wgrep
+*** 介绍
+wgrep 允许你直接在 grep/rgrep/ag 的搜索结果中编辑文本，编辑会同步到源文件。配合 consult-ripgrep 等搜索工具使用非常强大。
+
+*** 相关链接
+- GitHub: https://github.com/mhayashi1120/Emacs-wgrep
+
+*** 配置
 #+begin_src emacs-lisp
 (use-package wgrep
   :straight t
@@ -1391,6 +1674,12 @@ embark 提供上下文动作菜单，对选中的文本、文件或符号执行�
   (setq wgrep-enable-key "e"))
 (add-hook 'grep-mode-hook 'wgrep-setup)
 #+end_src
+
+*** 使用方法
+- 在搜索结果 buffer 中按 =e= 进入编辑模式
+- 直接修改搜索结果
+- =C-c C-c= : 应用修改到所有文件
+- =C-c C-k= : 取消修改
 
 
 
@@ -2056,6 +2345,13 @@ org-download 简化在 org-mode 中插入图片的流程，支持从剪贴板、
 
 
 ** procress
+*** 介绍
+procress 为 AUCTeX 提供编译进度的可视化显示，在 LaTeX 编译过程中显示进度条和状态图标，让你实时了解编译进度。
+
+*** 相关链接
+- GitHub: https://github.com/haji-ali/procress
+
+*** 配置
 #+begin_src emacs-lisp
 (use-package procress
   :straight (:host github :repo "haji-ali/procress")
@@ -2066,11 +2362,22 @@ org-download 简化在 org-mode 中插入图片的流程，支持从剪贴板、
   (procress-load-default-svg-images))
 #+end_src
 
+*** 使用方法
+- LaTeX 编译时自动显示进度
+- 在 mode-line 显示编译状态图标
+
 ** helpful
+*** 介绍
+helpful 提供更友好、更详细的帮助文档界面。相比内置的 describe-* 命令，helpful 显示更多有用信息，如源代码、引用位置、快捷键等。
+
+*** 相关链接
+- GitHub: https://github.com/Wilfred/helpful
+
+*** 配置
 #+begin_src emacs-lisp
 (use-package helpful
   :defer 3
-  :bind ; 这里更好的选择可能是用 [remap]
+  :bind
   (([remap describe-function] . #'helpful-callable)
    ([remap describe-variable] . #'helpful-variable)
    ([remap describe-key] . #'helpful-key)
@@ -2079,16 +2386,26 @@ org-download 简化在 org-mode 中插入图片的流程，支持从剪贴板、
    ("C-h C-d" . #'helpful-at-point)
    ("C-h F" . #'helpful-function))
   :config
-  (add-hook 'helpful-mode-hook 'visual-line-mode)) ; 侧窗显示的帮助界面需要自动换行
+  (add-hook 'helpful-mode-hook 'visual-line-mode))
 #+end_src
 
+*** 使用方法
+- 替代所有原生的 describe-* 命令
+- =C-h f= : 查看函数帮助
+- =C-h v= : 查看变量帮助
+- =C-h k= : 查看按键绑定
+- =C-h C-d= : 查看光标处符号的帮助
 
-** lass
 
-#+begin_src emacs-lisp 
-;; 支持跳转的简单 LAAS 吸取函数
+** laas (LaTeX Auto-Activating Snippets)
+*** 介绍
+laas 为 LaTeX 和 Org 模式提供自动激活的代码片段系统，无需按 TAB 展开。输入特定字符序列后自动替换，极大提升数学公式和 LaTeX 输入效率。
 
+*** 相关链接
+- GitHub: https://github.com/tecosaur/LaTeX-auto-activating-snippets
 
+*** 配置
+#+begin_src emacs-lisp
 (use-package laas
   :straight t
   :hook ((LaTeX-mode . laas-mode) (org-mode . laas-mode))
@@ -2207,6 +2524,47 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
 
 
 #+end_src
+
+*** 使用说明
+
+*基础 snippets（在数学环境中）*
+- =qq= : \quad
+- =c..= : \cdots
+- =le= : \leq
+- =ra= : \Rightarrow
+- =oo= : \infty
+- =-oo= : -\infty
+- =int= : \int
+- =;;= : &
+- =\\= : \\
+
+*大O记号*
+- =On= : O(n)
+- =O1= : O(1)
+- =Olog= : O(\log n)
+- =Olon= : O(n \log n)
+
+*模板 snippets*
+- =sum= : 求和符号模板 \sum\limits_{$1}^{$2} $0
+- =prod= : 连乘符号模板 \prod\limits_{$1}^{$2} $0
+- =ff= : 分数模板 \frac{$1}{$2} $0
+- =lc= : 括号 \left( $1 \right) $0
+- =bmat= : 矩阵 \begin{bmatrix} $1 \end{bmatrix} $0
+- =xsp= : 幂级数展开模板
+- =xas= : 求和展开模板
+
+*吸取 snippets（会吸取前面的字符）*
+- =xsub= : 转换为下标 x_{$1}
+- =xpow= : 转换为上标 x^{$1}
+- =xbc= : 添加括号 x($0)
+- =Abb= : 黑板体 \mathbb{A}
+- =Abf= : 粗体 \mathbf{A}
+- =xhat= : 帽子 \hat{x}
+- =qq= : 对前面内容包裹平方根 \sqrt{x}
+
+*非数学环境*
+- =ii= : 行内公式 \( $0 \)
+- =dd= : 独立公式 \[ $0 \]
 
 
 
@@ -2420,9 +2778,18 @@ treesit-auto 自动管理 tree-sitter 语法解析器，无需手动配置。tre
 
 
 
-* AI
+* AI 辅助编程
 
-** gpt
+AI 相关工具配置，包括 GPT、Copilot 等智能编程助手。
+
+** gptel
+*** 介绍
+gptel 是 Emacs 的通用 LLM 客户端，支持 ChatGPT、Claude、Gemini 等多种 AI 模型。可以在 Emacs 中直接与 AI 对话、重写代码、生成提交信息等。
+
+*** 相关链接
+- GitHub: https://github.com/karthink/gptel
+
+*** 配置
 #+begin_src emacs-lisp
 (use-package gptel
   :straight t
@@ -2434,22 +2801,49 @@ treesit-auto 自动管理 tree-sitter 语法解析器，无需手动配置。tre
 
 (gptel-make-gh-copilot "Copilot"))
 
+#+end_src
+
+*** 使用方法
+- =SPC a a= : 打开 gptel 对话
+- =SPC a m= : 打开 gptel 菜单
+- =SPC a r= (Visual 模式): 重写选中的文本
+- =SPC a d= : 将选中内容添加到对话上下文
+- =SPC a t= : gptel 工具菜单
+- =SPC g c= : 生成 Git 提交信息
+
+** mcp (Model Context Protocol)
+*** 介绍
+MCP 为 AI 模型提供标准化的上下文协议，让 AI 能够更好地理解项目结构和代码上下文。
+
+*** 配置
+#+begin_src emacs-lisp
 (use-package mcp
   :straight t)
 
 (require 'gptel-integrations)
 
-  (setq mcp-hub-servers
-        '(("github"
-           :command "github-mcp-server"
-           :args ("stdio"))))
+(setq mcp-hub-servers
+      '(("github"
+         :command "github-mcp-server"
+         :args ("stdio"))))
+#+end_src
 
+** gptel-commit
+*** 介绍
+gptel-commit 集成 gptel 和 magit，使用 AI 自动生成符合规范的 Git 提交信息。
+
+*** 配置
+#+begin_src emacs-lisp
 (use-package gptel-commit
   :straight t
   :after (gptel magit)
   :custom
   (gptel-commit-stream t))
 #+end_src
+
+*** 使用方法
+- 在 magit commit 界面使用 =SPC g c= 生成提交信息
+- AI 会根据 diff 内容生成合适的提交描述
 
 
 
@@ -2489,6 +2883,29 @@ copilot.el 是 GitHub Copilot 的 Emacs 客户端，支持 AI 自动补全代码
 - 输入代码时自动显示 AI 补全建议
 - 支持通过快捷键接受、拒绝或切换建议
 - 可自定义显示和触发条件，适应不同编程习惯
+
+** claude-code-ide
+*** 介绍
+claude-code-ide 将 Claude AI 集成到 Emacs 中，提供智能代码补全、重构和对话功能。支持通过 MCP 协议与 Claude 交互。
+
+*** 相关链接
+- GitHub: https://github.com/manzaltu/claude-code-ide.el
+
+*** 配置
+#+begin_src emacs-lisp
+(use-package claude-code-ide
+  :straight (:type git :host github :repo "manzaltu/claude-code-ide.el")
+  :bind ("C-c C-'" . claude-code-ide-menu)
+  :config
+  (claude-code-ide-emacs-tools-setup))
+#+end_src
+
+*** 使用方法
+- =SPC c a= : 启动 claude-code-ide
+- =SPC c t= : 停止当前任务
+- =SPC c r= : 恢复任务
+- =SPC c c= : 继续对话
+- =C-c C-'= : 打开 Claude IDE 菜单
 
 
 * 附录
@@ -2551,97 +2968,49 @@ rm -rf ~/.emacs.d/straight/
 - straight.el recipes: https://github.com/radian-software/straight.el/blob/develop/README.md#recipe-format
 
 
+** 开发工具集成
+
+本配置集成了多种开发工具，提供完整的 IDE 体验:
+
+*** Git 版本控制
+- Magit: 强大的 Git 界面
+- diff-hl: 实时显示文件差异
+- gptel-commit: AI 生成提交信息
+
+*** 终端工具
+- eat: 现代化终端模拟器  
+- vterm: 高性能终端
+- eshell: Emacs shell
+
+*** AI 辅助
+- copilot: GitHub Copilot 代码补全
+- gptel: 通用 LLM 客户端
+- claude-code-ide: Claude AI 集成
+- mcp: 模型上下文协议
+
+** TODO 任务列表
+
+*** TODO which-key 设置标签
+为常用命令组添加友好的标签描述
+
+*** TODO Git 快捷键优化
+整理和优化 Git 相关的键位绑定
+
+*** TODO AI 快捷键统一
+统一 AI 工具的快捷键命名规范
+
+*** DONE 时间自动调节主题
+已实现 modus-themes 根据时间自动切换
+
+*** DONE 设置 C-/ toggle eat
+已实现终端快速切换功能
+
+
 ** 待要安装的插件
-- 代码补全与 LSP: copilot, copilot-chat,
-- 其他: wgrep, sis, magit-todos
+- 代码补全与 LSP: copilot-chat
+- 其他: magit-todos
 
 
-
-
-
-
-
-
-** diff-hl
-*** 介绍
-diff-hl 在编辑器边缘（fringe）显示 Git 差异标记,实时显示文件的修改、添加、删除行。支持与 Magit 集成,提供即时的版本控制反馈。flydiff 模式可以在编辑时实时更新差异标记。
-
-*** 相关链接
-- GitHub: https://github.com/dgutov/diff-hl
-
-*** 配置
-#+begin_src emacs-lisp
-(use-package diff-hl
-  :ensure t
-  :init
-  (diff-hl-flydiff-mode)
-  (global-diff-hl-mode))
-#+end_src
-
-*** 使用方法
-- 在 fringe 自动显示 Git 差异标记
-- 绿色: 新增行
-- 蓝色: 修改行
-- 红色: 删除行
-- =M-x diff-hl-diff-goto-hunk= : 跳转到差异处
-- =M-x diff-hl-revert-hunk= : 还原当前修改块
-
-
-** eat
-*** 介绍
-eat (Emulate A Terminal) 是一个现代化的终端模拟器,比 term.el 和 ansi-term 更快更完整。完全在 Emacs Lisp 中实现,支持完整的 ANSI 转义序列、真彩色、鼠标操作等。与 eshell 完美集成。
-
-*** 相关链接
-- Codeberg: https://codeberg.org/akib/emacs-eat
-
-*** 配置
-#+begin_src emacs-lisp
-(use-package eat
-  :straight (eat :type git
-                 :host codeberg
-                 :repo "akib/emacs-eat"
-                 :files ("*.el" 
-                         ("e" "e/*") 
-                         "*.texi" 
-                         "*.ti" 
-                         ("terminfo/e" "e/*") 
-                         "*.info"))
-  :custom
-  ;; Use a more compatible terminal type
-  (eat-term-name "xterm-256color")  ; or "eterm-color"
-  :config
-  (add-hook 'eshell-first-time-mode-hook #'eat-eshell-mode))
-#+end_src
-
-*** 使用方法
-- =M-x eat= : 打开新的终端
-- =M-x eshell= : 打开 eshell (自动启用 eat)
-- 支持完整的终端功能,包括 vim、htop 等程序
-- 在 eshell 中提供更好的命令行体验
-
-** transient & vterm  
-#+begin_src emacs-lisp
-(use-package transient
-  :straight t
-  :demand t)
-#+end_src
-
-** vterm
-#+begin_src emacs-lisp
-(use-package vterm
-  :straight t
-  :config
-  (setq vterm-max-scrollback 10000))
-#+end_src
-
-** claude-code-ide
-#+begin_src emacs-lisp
-(use-package claude-code-ide
-  :straight (:type git :host github :repo "manzaltu/claude-code-ide.el")
-  :bind ("C-c C-'" . claude-code-ide-menu) ; Set your favorite keybinding
-  :config
-  (claude-code-ide-emacs-tools-setup)) ; Optionally enable Emacs MCP tools
-#+end_src
 
 
 #+begin_src emacs-lisp
@@ -2656,12 +3025,3 @@ eat (Emulate A Terminal) 是一个现代化的终端模拟器,比 term.el 和 an
 ;;   (with-eval-after-load 'magit
 ;;     (ai-code-magit-setup-transients)))
 #+end_src
-
-
-*** TODO which-key设置标签
-
-*** git快捷键设置 与 ai 快捷键设置
-
-*** DONE 设置一个随时间调节颜色的主题
-
-*** DONE 设置一个C-/ toggle eat
