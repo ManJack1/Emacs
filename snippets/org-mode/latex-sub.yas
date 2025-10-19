@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: latex sub
-# key: sub
-# condition: (my/in-latex-context-p)
-# --
-${1:object}_{${0:sub}}

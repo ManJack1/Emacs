@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: latex lr
-# key: l()
-# condition: (my/in-latex-context-p)
-# --
-\left( $1 \rigth) $0

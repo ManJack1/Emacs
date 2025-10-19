@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: #definde
-# key: def
-# --
-#define $0
-
-

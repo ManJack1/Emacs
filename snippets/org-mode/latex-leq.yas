@@ -1,6 +1,0 @@
-# -*- mode: snippet -*-
-# name: latex leq
-# key: lq
-# condition: (my/in-latex-context-p)
-# --
-\leq

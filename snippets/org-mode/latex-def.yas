@@ -1,7 +1,0 @@
-# -*- mode: snippet -*-
-# name: latex-def
-# key: def
-# --
-#+begin_definition
-$0 
-#+end_definition
