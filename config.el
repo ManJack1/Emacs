@@ -684,6 +684,10 @@
   ;; Normal 模式键位
   (evil-define-key 'normal 'global
     
+    ;;terminal
+    (kbd "C-/") 'eat
+    (kbd "SPC g g") 'magit
+
     ;;ai
     (kbd "SPC a c t") 'toggle-copilot-mode
     (kbd "SPC a d") 'gptel-add
@@ -694,6 +698,7 @@
 
     ;; 文件操作
     (kbd "SPC f f") 'find-file
+    (kbd "SPC f g") 'consult-fd
     (kbd "C-s") 'save-buffer
     
     ;;undo
@@ -1383,3 +1388,24 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   (eat-term-name "xterm-256color")  ; or "eterm-color"
   :config
   (add-hook 'eshell-first-time-mode-hook #'eat-eshell-mode))
+
+(use-package ai-code-interface
+  :straight (:host github :repo "tninja/ai-code-interface.el")
+  :config
+  (ai-code-set-backend  'claude-code-ide) ;; use claude-code-ide as backend
+  ;; Enable global keybinding for the main menu
+  (global-set-key (kbd "C-c a") #'ai-code-menu)
+  ;; Optional: Set up Magit integration for AI commands in Magit popups
+  (with-eval-after-load 'magit
+    (ai-code-magit-setup-transients)))
+
+(use-package claude-code-ide
+  :straight (:type git :host github :repo "manzaltu/claude-code-ide.el")
+  :bind ("C-c C-'" . claude-code-ide-menu) ; Set your favorite keybinding
+  :config
+  (claude-code-ide-emacs-tools-setup)) ; Optionally enable Emacs MCP tools
+
+(use-package vterm
+  :straight t
+  :config
+  (setq vterm-max-scrollback 10000))

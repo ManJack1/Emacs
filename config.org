@@ -1437,7 +1437,6 @@ avy 提供基于字符的快速跳转功能，类似 Vim 的 EasyMotion。输入
 * 键位绑定
 
 自定义的键位绑定配置，主要基于 Evil 模式。
-asdkj
 ** Evil 键位配置
 #+BEGIN_SRC emacs-lisp
   ;;; Evil 模式键位配置（已修正）
@@ -1445,6 +1444,10 @@ asdkj
   ;; Normal 模式键位
   (evil-define-key 'normal 'global
     
+    ;;terminal
+    (kbd "C-/") 'eat
+    (kbd "SPC g g") 'magit
+
     ;;ai
     (kbd "SPC a c t") 'toggle-copilot-mode
     (kbd "SPC a d") 'gptel-add
@@ -1455,6 +1458,7 @@ asdkj
 
     ;; 文件操作
     (kbd "SPC f f") 'find-file
+    (kbd "SPC f g") 'consult-fd
     (kbd "C-s") 'save-buffer
     
     ;;undo
@@ -1606,6 +1610,9 @@ asdkj
     (kbd "y") 'neotree-copy-node
     (kbd "RET") 'neotree-enter))
 #+END_SRC
+
+
+
 
 
 * 文档编写
@@ -2512,33 +2519,18 @@ rm -rf ~/.emacs.d/straight/
 
 
 
-*** TODO which-key设置标签
-
-*** DONE git设置
-
-*** DONE undo设置
-
-*** DONE side错误显示设置
-
-*** DONE signature设置
-
-*** DONE C-l C-h 在n和v模式下设置
-
-*** DONE dashboard 设置
-
-*** DONE latex补全引擎设置，以及latex显示
-
-*** DONE evil-expand
-
-*** DONE search keymap & plugins
-
-*** DONE auctex-config & latex-preview
-
-*** DONE seting windows enlarge&shrink 
 
 
 
 
+** diff-hl
+*** 介绍
+diff-hl 在编辑器边缘（fringe）显示 Git 差异标记,实时显示文件的修改、添加、删除行。支持与 Magit 集成,提供即时的版本控制反馈。flydiff 模式可以在编辑时实时更新差异标记。
+
+*** 相关链接
+- GitHub: https://github.com/dgutov/diff-hl
+
+*** 配置
 #+begin_src emacs-lisp
 (use-package diff-hl
   :ensure t
@@ -2547,7 +2539,23 @@ rm -rf ~/.emacs.d/straight/
   (global-diff-hl-mode))
 #+end_src
 
+*** 使用方法
+- 在 fringe 自动显示 Git 差异标记
+- 绿色: 新增行
+- 蓝色: 修改行
+- 红色: 删除行
+- =M-x diff-hl-diff-goto-hunk= : 跳转到差异处
+- =M-x diff-hl-revert-hunk= : 还原当前修改块
 
+
+** eat
+*** 介绍
+eat (Emulate A Terminal) 是一个现代化的终端模拟器,比 term.el 和 ansi-term 更快更完整。完全在 Emacs Lisp 中实现,支持完整的 ANSI 转义序列、真彩色、鼠标操作等。与 eshell 完美集成。
+
+*** 相关链接
+- Codeberg: https://codeberg.org/akib/emacs-eat
+
+*** 配置
 #+begin_src emacs-lisp
 (use-package eat
   :straight (eat :type git
@@ -2566,5 +2574,47 @@ rm -rf ~/.emacs.d/straight/
   (add-hook 'eshell-first-time-mode-hook #'eat-eshell-mode))
 #+end_src
 
+*** 使用方法
+- =M-x eat= : 打开新的终端
+- =M-x eshell= : 打开 eshell (自动启用 eat)
+- 支持完整的终端功能,包括 vim、htop 等程序
+- 在 eshell 中提供更好的命令行体验
 
+
+
+
+#+begin_src emacs-lisp
+(use-package ai-code-interface
+  :straight (:host github :repo "tninja/ai-code-interface.el")
+  :config
+  (ai-code-set-backend  'claude-code-ide) ;; use claude-code-ide as backend
+  ;; Enable global keybinding for the main menu
+  (global-set-key (kbd "C-c a") #'ai-code-menu)
+  ;; Optional: Set up Magit integration for AI commands in Magit popups
+  (with-eval-after-load 'magit
+    (ai-code-magit-setup-transients)))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package claude-code-ide
+  :straight (:type git :host github :repo "manzaltu/claude-code-ide.el")
+  :bind ("C-c C-'" . claude-code-ide-menu) ; Set your favorite keybinding
+  :config
+  (claude-code-ide-emacs-tools-setup)) ; Optionally enable Emacs MCP tools
+#+end_src
+
+
+
+#+begin_src emacs-lisp
+(use-package vterm
+  :straight t
+  :config
+  (setq vterm-max-scrollback 10000))
+#+end_src
+
+
+
+*** TODO which-key设置标签
+
+*** TODO git快捷键设置 与 ai 快捷键设置
 
