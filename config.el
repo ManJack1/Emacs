@@ -732,10 +732,10 @@
   (setq avy-style 'at-full)
   (setq avy-all-windows t))
 
-  ;;; Evil 模式键位配置（已修正）
-
   ;; Normal 模式键位
   (evil-define-key 'normal 'global
+    ;;org
+    (kbd "SPC o p") 'org-latex-preview
     
     ;;terminal
     (kbd "C-/") 'toggle-eat

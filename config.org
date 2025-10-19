@@ -1765,10 +1765,10 @@ avy 提供基于字符的快速跳转功能，类似 Vim 的 EasyMotion。输入
 自定义的键位绑定配置，主要基于 Evil 模式。
 ** Evil 键位配置
 #+BEGIN_SRC emacs-lisp
-  ;;; Evil 模式键位配置（已修正）
-
   ;; Normal 模式键位
   (evil-define-key 'normal 'global
+    ;;org
+    (kbd "SPC o p") 'org-latex-preview
     
     ;;terminal
     (kbd "C-/") 'toggle-eat
@@ -2990,6 +2990,8 @@ rm -rf ~/.emacs.d/straight/
 - mcp: 模型上下文协议
 
 ** TODO 任务列表
+
+*** TODO  设置pdftool的颜色随着时间变化成modus黄和modus黑
 
 *** TODO which-key 设置标签
 为常用命令组添加友好的标签描述
