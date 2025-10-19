@@ -2383,7 +2383,7 @@ treesit-auto 自动管理 tree-sitter 语法解析器，无需手动配置。tre
    :config
 ;; OPTIONAL configuration
 (setq gptel-default-mode 'org-mode)
-(setq gptel-model 'gpt-4o-mini
+(setq gptel-model 'gpt-4o
       gptel-backend (gptel-make-gh-copilot "Copilot"))
 
 (gptel-make-gh-copilot "Copilot"))
@@ -2536,6 +2536,35 @@ rm -rf ~/.emacs.d/straight/
 
 *** DONE seting windows enlarge&shrink 
 
+
+
+
+#+begin_src emacs-lisp
+(use-package diff-hl
+  :ensure t
+  :init
+  (diff-hl-flydiff-mode)
+  (global-diff-hl-mode))
+#+end_src
+
+
+#+begin_src emacs-lisp
+(use-package eat
+  :straight (eat :type git
+                 :host codeberg
+                 :repo "akib/emacs-eat"
+                 :files ("*.el" 
+                         ("e" "e/*") 
+                         "*.texi" 
+                         "*.ti" 
+                         ("terminfo/e" "e/*") 
+                         "*.info"))
+  :custom
+  ;; Use a more compatible terminal type
+  (eat-term-name "xterm-256color")  ; or "eterm-color"
+  :config
+  (add-hook 'eshell-first-time-mode-hook #'eat-eshell-mode))
+#+end_src
 
 
 

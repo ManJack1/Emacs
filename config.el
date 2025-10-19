@@ -54,7 +54,7 @@
 
 (add-hook 'after-save-hook #'my/auto-tangle-config)
 
-(defun copy-file-path ()
+  (defun copy-file-path ()
   "Copy current file absolute path to clipboard."
   (interactive)
   (let ((file-path (buffer-file-name)))
@@ -75,13 +75,13 @@
           (message "Copied: %s" name))
       (error "Current buffer is not associated with a file"))))
 
-;; LSP imenu 切换函数
-(defun my/toggle-lsp-ui-imenu ()
-  "Toggle lsp-ui-imenu sidebar."
-  (interactive)
-  (if (get-buffer-window "*lsp-ui-imenu*")
-      (lsp-ui-imenu--kill)
-    (lsp-ui-imenu)))
+  ;; LSP imenu 切换函数
+  (defun my/toggle-lsp-ui-imenu ()
+    "Toggle lsp-ui-imenu sidebar."
+    (interactive)
+    (if (get-buffer-window "*lsp-ui-imenu*")
+        (lsp-ui-imenu--kill)
+      (lsp-ui-imenu)))
 
 ;; 参数导航（基于 treesitter）
 (defun lsp-goto-next-param ()
@@ -154,10 +154,10 @@
    (t
     (indent-for-tab-command))))
 
-;; straight.el 已在 init.el 中初始化
-;; 这里配置 use-package 的默认行为
+  ;; straight.el 已在 init.el 中初始化
+  ;; 这里配置 use-package 的默认行为
 
-(setq use-package-always-defer t)  ; 延迟加载，提高启动速度
+  (setq use-package-always-defer t)  ; 延迟加载，提高启动速度
 
 ;; 设置编程字体
 (set-face-attribute 'default nil
@@ -167,18 +167,18 @@
 ;; Set Chinese font for Han script
 (set-fontset-font t 'han "Noto Serif CJK SC")
 
-;; 关闭不必要的 UI 元素
-(tool-bar-mode -1)        ; 关闭工具栏
-(scroll-bar-mode -1)      ; 关闭滚动条
-(menu-bar-mode -1)        ; 关闭菜单栏
+  ;; 关闭不必要的 UI 元素
+  (tool-bar-mode -1)        ; 关闭工具栏
+  (scroll-bar-mode -1)      ; 关闭滚动条
+  (menu-bar-mode -1)        ; 关闭菜单栏
 
-;; 启用有用的 UI 功能
-(global-display-line-numbers-mode 1)  ; 显示行号
-(global-visual-line-mode 1)           ; 视觉行模式，软换行
-(global-hl-line-mode 1)               ; 高亮当前行
+  ;; 启用有用的 UI 功能
+  (global-display-line-numbers-mode 1)  ; 显示行号
+  (global-visual-line-mode 1)           ; 视觉行模式，软换行
+  (global-hl-line-mode 1)               ; 高亮当前行
 
-;; 启动配置
-(setq inhibit-startup-message t)      ; 关闭启动画面
+  ;; 启动配置
+  (setq inhibit-startup-message t)      ; 关闭启动画面
 
 ;;; Dashboard 配置（修复白屏和导航字母）
 ;;; Dashboard 配置（优化精简版）
@@ -269,34 +269,34 @@
   (colorful-only-strings 'only-prog)  ; 只在字符串中高亮
   (css-fontify-colors nil))           ; 禁用 CSS 内置的颜色渲染
 
-;; 主题包需要立即加载以在启动时生效
-(use-package doom-themes
-  :straight t
-  :demand t  ; 主题需要立即加载
-  :config
-  (setq doom-themes-enable-bold t      ; 启用粗体
-        doom-themes-enable-italic t)   ; 启用斜体
-  ;; 注意：这里不再加载 doom 主题，因为我们用 catppuccin 替换
-  (doom-themes-org-config))            ; 优化 org-mode 显示
+  ;; 主题包需要立即加载以在启动时生效
+  (use-package doom-themes
+    :straight t
+    :demand t  ; 主题需要立即加载
+    :config
+    (setq doom-themes-enable-bold t      ; 启用粗体
+          doom-themes-enable-italic t)   ; 启用斜体
+    ;; 注意：这里不再加载 doom 主题，因为我们用 catppuccin 替换
+    (doom-themes-org-config))            ; 优化 org-mode 显示
 
-(use-package catppuccin-theme
-  :straight t
-  :demand t  ; 主题需要立即加载
-  :config
-  ;; 可选：自定义 catppuccin 变体（默认是 'latte，可选：'frappe, 'macchiato, 'mocha）
-  (setq catppuccin-flavor 'mocha)  ; 选择深色变体
-  )      ; 加载 catppuccin 主题
+  (use-package catppuccin-theme
+    :straight t
+    :demand t  ; 主题需要立即加载
+    :config
+    ;; 可选：自定义 catppuccin 变体（默认是 'latte，可选：'frappe, 'macchiato, 'mocha）
+    (setq catppuccin-flavor 'mocha)  ; 选择深色变体
+    )      ; 加载 catppuccin 主题
 
 (use-package modus-themes
   :straight t
   :init
   (load-theme 'modus-operandi-tinted t))
 
-(use-package keycast
-  :straight t
-  :init
-  (add-to-list 'global-mode-string '("" keycast-mode-line))
-  (keycast-mode-line-mode t))
+  (use-package keycast
+    :straight t
+    :init
+    (add-to-list 'global-mode-string '("" keycast-mode-line))
+    (keycast-mode-line-mode t))
 
 (use-package doom-modeline
   :straight t
@@ -370,22 +370,22 @@
   (setq neo-smart-open t)  ; 自动展开到当前文件
   (setq neo-theme (if (display-graphic-p) 'nerd-icons 'arrow)))
 
-;; 编辑体验优化
-(auto-save-visited-mode 1)           ; 自动保存
-(show-paren-mode 1)                  ; 高亮匹配括号
-(global-auto-revert-mode 1)          ; 自动重新加载外部修改的文件
-(delete-selection-mode 1)            ; 选中文字后输入会替换
-(recentf-mode 1)                     ; 最近文件列表
+      ;; 编辑体验优化
+      (auto-save-visited-mode 1)           ; 自动保存
+      (show-paren-mode 1)                  ; 高亮匹配括号
+      (global-auto-revert-mode 1)          ; 自动重新加载外部修改的文件
+      (delete-selection-mode 1)            ; 选中文字后输入会替换
+      (recentf-mode 1)                     ; 最近文件列表
 
-;; 启用相对行号
-(global-display-line-numbers-mode 1)
-(setq display-line-numbers-type 'relative)
+      ;; 启用相对行号
+      (global-display-line-numbers-mode 1)
+      (setq display-line-numbers-type 'relative)
 
-;; 将 yes-or-no-p 替换为 y-or-n-p
-(defalias 'yes-or-no-p 'y-or-n-p)
-;; 关闭备份文件
-(setq make-backup-files nil)         ; 不创建 ~ 备份文件
-(setq auto-save-default nil)         ; 不创建 # 自动保存文件
+      ;; 将 yes-or-no-p 替换为 y-or-n-p
+      (defalias 'yes-or-no-p 'y-or-n-p)
+      ;; 关闭备份文件
+      (setq make-backup-files nil)         ; 不创建 ~ 备份文件
+      (setq auto-save-default nil)         ; 不创建 # 自动保存文件
 
 (use-package sis
   :straight t
@@ -447,29 +447,29 @@
         super-save-silent t
         auto-save-default nil))
 
-(use-package which-key
-:straight t
-:hook (after-init . which-key-mode)
-:config
-;; 快速显示（0.4 秒）
-(setq which-key-idle-delay 0.1)
-;; 在屏幕底部显示
-(setq which-key-side-window-location 'bottom)
-;; 显示宽度
-(setq which-key-side-window-max-width 0.5))
-
-(use-package evil
+  (use-package which-key
   :straight t
-  :demand t
-  :init
-  (setq evil-want-keybinding nil)  ; 避免键绑定冲突
-  (setq evil-want-C-u-scroll t)    ; C-u 向上滚动
-  (setq evil-undo-system 'undo-fu) ; 设置 undo 系统
+  :hook (after-init . which-key-mode)
   :config
-  (evil-mode 1)
-  ;; 允许 RET 在 org-mode 中跟随链接
-  (with-eval-after-load 'evil-maps
-    (define-key evil-motion-state-map (kbd "RET") nil)))
+  ;; 快速显示（0.4 秒）
+  (setq which-key-idle-delay 0.1)
+  ;; 在屏幕底部显示
+  (setq which-key-side-window-location 'bottom)
+  ;; 显示宽度
+  (setq which-key-side-window-max-width 0.5))
+
+  (use-package evil
+    :straight t
+    :demand t
+    :init
+    (setq evil-want-keybinding nil)  ; 避免键绑定冲突
+    (setq evil-want-C-u-scroll t)    ; C-u 向上滚动
+    (setq evil-undo-system 'undo-fu) ; 设置 undo 系统
+    :config
+    (evil-mode 1)
+    ;; 允许 RET 在 org-mode 中跟随链接
+    (with-eval-after-load 'evil-maps
+      (define-key evil-motion-state-map (kbd "RET") nil)))
 
 (use-package evil-collection
   :straight t
@@ -483,41 +483,41 @@
   :init
   (evil-commentary-mode))
 
-(use-package company
-   :straight t
-   :hook (after-init . global-company-mode)
-   :config
-;; 这个配置会同时显示 yasnippet、LSP、代码词汇 的补全
- (setq company-backends
-       '( (company-capf                  ; LSP/完成点
-          company-dabbrev-code          ; 代码词汇
-          company-files)
-         (company-abbrev                ; 缩写（备用）
-          company-dabbrev)))            ; 文本词汇（备用）
- 
- ;; 启用以下选项以优化多点补全体验
- (setq company-idle-delay 0.2)
- (setq company-minimum-prefix-length 1)
- (setq company-show-quick-access t)
- (setq company-tooltip-align-annotations t)
- 
- ;; 允许多个后端同时补全
- (setq company-backend-load-all-backends t)
- 
- ;; 显示补全的最大高度
- (setq company-tooltip-limit 20)
- 
- ;; 在补全菜单中显示所有后端的候选项
- (setq company-selection-wrap-around t)
- 
-   :bind (:map company-active-map
-               ("C-n" . company-select-next)
-               ("C-p" . company-select-previous)
-               ("M-<" . company-select-first)
-               ("M->" . company-select-last)
+   (use-package company
+     :straight t
+     :hook (after-init . global-company-mode)
+     :config
+  ;; 这个配置会同时显示 yasnippet、LSP、代码词汇 的补全
+   (setq company-backends
+         '( (company-capf                  ; LSP/完成点
+            company-dabbrev-code          ; 代码词汇
+            company-files)
+           (company-abbrev                ; 缩写（备用）
+            company-dabbrev)))            ; 文本词汇（备用）
+   
+   ;; 启用以下选项以优化多点补全体验
+   (setq company-idle-delay 0.2)
+   (setq company-minimum-prefix-length 1)
+   (setq company-show-quick-access t)
+   (setq company-tooltip-align-annotations t)
+   
+   ;; 允许多个后端同时补全
+   (setq company-backend-load-all-backends t)
+   
+   ;; 显示补全的最大高度
+   (setq company-tooltip-limit 20)
+   
+   ;; 在补全菜单中显示所有后端的候选项
+   (setq company-selection-wrap-around t)
+   
+     :bind (:map company-active-map
+                 ("C-n" . company-select-next)
+                 ("C-p" . company-select-previous)
+                 ("M-<" . company-select-first)
+                 ("M->" . company-select-last)
 		 ("C-<tab>" . company-complete-common-or-cycle)
-               ;; ("<tab>" . company-complete-selection)
-               ("RET" . company-complete-selection)))
+                 ;; ("<tab>" . company-complete-selection)
+                 ("RET" . company-complete-selection)))
 
 (use-package yasnippet
   :straight t
@@ -529,19 +529,19 @@
   :straight t
   :after yasnippet)
 
-(use-package undo-fu
-  :straight t
-  :demand t
-  :config
-  ;; 确保 evil 能找到 undo-fu 的函数
-  (global-unset-key (kbd "C-z"))
+  (use-package undo-fu
+    :straight t
+    :demand t
+    :config
+    ;; 确保 evil 能找到 undo-fu 的函数
+    (global-unset-key (kbd "C-z"))
 
-  ;; 使用内置的 undo 持久化（需要 Emacs 28+）
-  (setq undo-no-redo t)
-  ;; 增大 undo 限制
-  (setq undo-limit 67108864) ; 64mb
-  (setq undo-strong-limit 100663296) ; 96mb
-  (setq undo-outer-limit 1006632960)) ; 960mb
+    ;; 使用内置的 undo 持久化（需要 Emacs 28+）
+    (setq undo-no-redo t)
+    ;; 增大 undo 限制
+    (setq undo-limit 67108864) ; 64mb
+    (setq undo-strong-limit 100663296) ; 96mb
+    (setq undo-outer-limit 1006632960)) ; 960mb
 
 (use-package undo-fu-session
   :straight t
@@ -579,11 +579,11 @@
   ;; 启用全局 evil-surround 模式
   (global-evil-surround-mode 1))
 
-(use-package expand-region
-:straight t
-:bind ("C-=" . er/expand-region))
+  (use-package expand-region
+  :straight t
+  :bind ("C-=" . er/expand-region))
 
-(use-package evil-fringe-mark
+  (use-package evil-fringe-mark
     :after evil
     :config
     ;; 方案 1：evil 标记在右 fringe，bookmark 在左 fringe
@@ -638,9 +638,9 @@
   :custom
   (hl-todo-highlight-punctuation ":"))
 
-(use-package consult-todo
-:straight t
-:commands (consult-todo consult-todo-project))
+  (use-package consult-todo
+  :straight t
+  :commands (consult-todo consult-todo-project))
 
 (use-package embark
   :straight t
@@ -666,11 +666,11 @@
 (use-package windmove
   :straight nil)  ; 内置包
 
-(use-package projectile
-  :straight t
-  :hook (after-init . projectile-mode)
-  :config
-  (setq projectile-completion-system 'default))
+  (use-package projectile
+    :straight t
+    :hook (after-init . projectile-mode)
+    :config
+    (setq projectile-completion-system 'default))
 
 (use-package avy
   :straight t
@@ -679,7 +679,7 @@
   (setq avy-style 'at-full)
   (setq avy-all-windows t))
 
-;;; Evil 模式键位配置（已修正）
+  ;;; Evil 模式键位配置（已修正）
 
   ;; Normal 模式键位
   (evil-define-key 'normal 'global
@@ -1269,45 +1269,45 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   (setq lsp-nil-server-command '("nil"))
   (setq lsp-prefer-flymake nil))
 
-(use-package lsp-ui
+  (use-package lsp-ui
+    :straight t
+    :hook (lsp-mode . lsp-ui-mode)
+    :custom
+    (lsp-ui-sideline-enable t)
+    (lsp-ui-doc-position 'at-point)      ; 在光标位置显示
+    (lsp-ui-sideline-show-code-actions t)
+    (lsp-ui-sideline-show-diagnostics t)
+    (lsp-ui-sideline-ignore-duplicate t)
+    (lsp-diagnostics-provider :flymake)  ; 确保用 flymake
+    (lsp-ui-peek-enable t)
+    (lsp-ui-peek-always-show t)
+    (lsp-ui-peek-show-directory t))
+
+  (use-package sideline
   :straight t
-  :hook (lsp-mode . lsp-ui-mode)
+  :hook (flymake-mode . sideline-mode)
   :custom
-  (lsp-ui-sideline-enable t)
-  (lsp-ui-doc-position 'at-point)      ; 在光标位置显示
-  (lsp-ui-sideline-show-code-actions t)
-  (lsp-ui-sideline-show-diagnostics t)
-  (lsp-ui-sideline-ignore-duplicate t)
-  (lsp-diagnostics-provider :flymake)  ; 确保用 flymake
-  (lsp-ui-peek-enable t)
-  (lsp-ui-peek-always-show t)
-  (lsp-ui-peek-show-directory t))
+  (sideline-backends-right '(sideline-flymake)))
 
-(use-package sideline
-:straight t
-:hook (flymake-mode . sideline-mode)
-:custom
-(sideline-backends-right '(sideline-flymake)))
+  (use-package sideline-flymake
+  :straight t
+  :after sideline flymake)
 
-(use-package sideline-flymake
-:straight t
-:after sideline flymake)
-
-(use-package flymake
-:straight nil
-:hook (prog-mode . flymake-mode))
+  (use-package flymake
+  :straight nil
+  :hook (prog-mode . flymake-mode))
 
 (use-package nix-ts-mode
   :straight t
   :mode "\\.nix\\'"
   :hook (nix-ts-mode . lsp))
 
-(use-package lsp-pyright
-:ensure t
-:custom (lsp-pyright-langserver-command "pyright") ;; or basedpyright
-:hook (python-ts-mode . (lambda ()
-                        (require 'lsp-pyright)
-                        (lsp))))  ; or lsp-deferred
+  (use-package lsp-pyright
+  :ensure t
+  :custom (lsp-pyright-langserver-command "pyright") ;; or basedpyright
+  :hook (python-ts-mode . (lambda ()
+                          (require 'lsp-pyright)
+                          (lsp))))  ; or lsp-deferred
 
 (use-package lsp-java
   :straight t
@@ -1325,7 +1325,7 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
    :config
 ;; OPTIONAL configuration
 (setq gptel-default-mode 'org-mode)
-(setq gptel-model 'gpt-4o-mini
+(setq gptel-model 'gpt-4o
       gptel-backend (gptel-make-gh-copilot "Copilot"))
 
 (gptel-make-gh-copilot "Copilot"))
@@ -1361,3 +1361,25 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   ;; 显示设置
   (setq copilot-enable-predicates '(copilot-hide-completion-on-escape))
   (setq copilot-idle-delay 0.5))
+
+(use-package diff-hl
+  :ensure t
+  :init
+  (diff-hl-flydiff-mode)
+  (global-diff-hl-mode))
+
+(use-package eat
+  :straight (eat :type git
+                 :host codeberg
+                 :repo "akib/emacs-eat"
+                 :files ("*.el" 
+                         ("e" "e/*") 
+                         "*.texi" 
+                         "*.ti" 
+                         ("terminfo/e" "e/*") 
+                         "*.info"))
+  :custom
+  ;; Use a more compatible terminal type
+  (eat-term-name "xterm-256color")  ; or "eterm-color"
+  :config
+  (add-hook 'eshell-first-time-mode-hook #'eat-eshell-mode))
