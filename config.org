@@ -95,16 +95,21 @@
 
 #+begin_src emacs-lisp
 (defun toggle-eat ()
-  "切换 eat 终端，再次按下返回之前的 buffer"
+  "Toggle between eat terminal and previous buffer. Create eat terminal if not exists."
   (interactive)
   (let ((eat-buffer (get-buffer "*eat*")))
     (if (and eat-buffer (eq (current-buffer) eat-buffer))
-        (if (and (boundp 'eat-previous-buffer) (buffer-live-p eat-previous-buffer))
+        ;; Currently in eat buffer, switch back to previous
+        (if (and (boundp 'eat-previous-buffer) 
+                 (buffer-live-p eat-previous-buffer))
             (switch-to-buffer eat-previous-buffer)
           (previous-buffer))
+      ;; Store current buffer before switching
       (setq eat-previous-buffer (current-buffer))
+      ;; Switch to eat or create if not exists  
       (if eat-buffer
-          (switch-to-buffer eat-buffer)))))
+          (switch-to-buffer eat-buffer)
+        (eat)))))
 #+end_src
 
 *** 使用方法
@@ -3067,15 +3072,15 @@ rm -rf ~/.emacs.d/straight/
 
 ** TODO 任务列表
 
-*** TODO  设置pdftool的颜色随着时间变化成modus黄和modus黑
+*** DONE 设置pdftool的颜色随着时间变化成modus黄和modus黑
 
 *** TODO which-key 设置标签
 为常用命令组添加友好的标签描述
 
-*** TODO Git 快捷键优化
+*** DONE Git 快捷键优化
 整理和优化 Git 相关的键位绑定
 
-*** TODO AI 快捷键统一
+*** DONE AI 快捷键统一
 统一 AI 工具的快捷键命名规范
 
 *** DONE 时间自动调节主题

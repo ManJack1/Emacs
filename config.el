@@ -1,14 +1,19 @@
 (defun toggle-eat ()
-  "切换 eat 终端，再次按下返回之前的 buffer"
+  "Toggle between eat terminal and previous buffer. Create eat terminal if not exists."
   (interactive)
   (let ((eat-buffer (get-buffer "*eat*")))
     (if (and eat-buffer (eq (current-buffer) eat-buffer))
-        (if (and (boundp 'eat-previous-buffer) (buffer-live-p eat-previous-buffer))
+        ;; Currently in eat buffer, switch back to previous
+        (if (and (boundp 'eat-previous-buffer) 
+                 (buffer-live-p eat-previous-buffer))
             (switch-to-buffer eat-previous-buffer)
           (previous-buffer))
+      ;; Store current buffer before switching
       (setq eat-previous-buffer (current-buffer))
+      ;; Switch to eat or create if not exists  
       (if eat-buffer
-          (switch-to-buffer eat-buffer)))))
+          (switch-to-buffer eat-buffer)
+        (eat)))))
 
 (defun pdf-get-colors-for-modus ()
   "Return appropriate PDF colors for the current Modus theme or time."
