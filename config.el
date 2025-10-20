@@ -18,15 +18,15 @@
 (defun pdf-get-colors-for-modus ()
   "Return appropriate PDF colors for the current Modus theme or time."
   (cond
-   ((memq (car custom-enabled-themes) '(modus-vivendi modus-vivendi-tinted))
-    '("#eaeaea" . "#000000"))  ; 暗色主题
+   ((memq (car custom-enabled-themes) '(modus-vivendi-tinted modus-vivendi-tinted))
+    '("#FFFFFF" . "#181a1f"))  ; 暗色主题
    ((memq (car custom-enabled-themes) '(modus-operandi modus-operandi-tinted))
-    '("#1c1c1c" . "#fbf7f0"))  ; 亮色主题
+    '("#000000" . "#fbf7f0"))  ; 亮色主题
    (t  ; 根据时间决定
     (let ((hour (string-to-number (format-time-string "%H"))))
       (if (or (>= hour 22) (< hour 6))
-          '("#eaeaea" . "#181a1f")
-        '("#1c1c1c" . "#fbf7f0"))))))
+          '("#FFFFFF" . "#181a1f")
+        '("#000000" . "#fbf7f0"))))))
 
 (defun pdf-sync-theme-with-modus ()
   "Sync PDF colors with current Modus theme."
@@ -42,8 +42,8 @@
   "Toggle PDFTools between light and dark Modus themes."
   (interactive)
   (when (featurep 'pdf-view)
-    (let ((light '("#1c1c1c" . "#fbf7f0"))
-          (dark  '("#eaeaea" . "#181a1f")))
+    (let ((light '("#000000" . "#fbf7f0"))
+          (dark  '("#FFFFFF" . "#181a1f")))
       (setq pdf-view-midnight-colors
             (if (equal pdf-view-midnight-colors light) dark light))
       (pdf-view-midnight-minor-mode -1)
@@ -69,7 +69,7 @@
 (defun my/auto-switch-modus-theme ()
   (let ((hour (string-to-number (format-time-string "%H"))))
     (load-theme (if (or (>= hour 22) (< hour 6))
-                    'modus-vivendi
+                    'modus-vivendi-tinted
                   'modus-operandi-tinted) t))
   (pdf-sync-theme-with-modus))
 
@@ -77,7 +77,7 @@
   "根据时间自动切换 Modus 主题"
   (let ((hour (string-to-number (format-time-string "%H"))))
     (if (or (>= hour 22) (< hour 6))
-        (load-theme 'modus-vivendi t)
+        (load-theme 'modus-vivendi-tinted t)
       (load-theme 'modus-operandi-tinted t))))
 
 (defun my/org-math-preview-on-save ()
@@ -526,10 +526,17 @@
         ;; 禁用 pdf-view 的警告
         warning-suppress-types '((pdf-view)))
   :config
+  ;; 自动安装 pdf-tools（若 pdf-info 未运行）
   (unless (pdf-info-running-p)
     (pdf-tools-install-noverify))
-  :hook
-  (pdf-view-mode . pdf-view-fit-page-to-window))
+
+  ;; 进入 pdf-view-mode 时自动调整显示、关闭不兼容模式
+  (add-hook 'pdf-view-mode-hook
+            (lambda ()
+              (display-line-numbers-mode -1)
+              (visual-line-mode -1)
+              (hl-line-mode -1)
+              (pdf-view-fit-page-to-window))))
 
 (use-package super-save
   :straight t
