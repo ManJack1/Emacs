@@ -10,6 +10,64 @@
       (if eat-buffer
           (switch-to-buffer eat-buffer)))))
 
+(defun pdf-get-colors-for-modus ()
+  "Return appropriate PDF colors for the current Modus theme or time."
+  (cond
+   ((memq (car custom-enabled-themes) '(modus-vivendi modus-vivendi-tinted))
+    '("#eaeaea" . "#181a1f"))  ; 暗色主题
+   ((memq (car custom-enabled-themes) '(modus-operandi modus-operandi-tinted))
+    '("#1c1c1c" . "#fbf7f0"))  ; 亮色主题
+   (t  ; 根据时间决定
+    (let ((hour (string-to-number (format-time-string "%H"))))
+      (if (or (>= hour 22) (< hour 6))
+          '("#eaeaea" . "#181a1f")
+        '("#1c1c1c" . "#fbf7f0"))))))
+
+(defun pdf-sync-theme-with-modus ()
+  "Sync PDF colors with current Modus theme."
+  (when (featurep 'pdf-view)
+    (setq pdf-view-midnight-colors (pdf-get-colors-for-modus))
+    ;; 如果当前在 pdf-view-mode 中，重新启用 minor mode
+    (when (derived-mode-p 'pdf-view-mode)
+      (pdf-view-midnight-minor-mode -1)
+      (pdf-view-midnight-minor-mode 1)
+      (pdf-view-redisplay t))))
+
+(defun pdf-toggle-theme ()
+  "Toggle PDFTools between light and dark Modus themes."
+  (interactive)
+  (when (featurep 'pdf-view)
+    (let ((light '("#1c1c1c" . "#fbf7f0"))
+          (dark  '("#eaeaea" . "#181a1f")))
+      (setq pdf-view-midnight-colors
+            (if (equal pdf-view-midnight-colors light) dark light))
+      (pdf-view-midnight-minor-mode -1)
+      (pdf-view-midnight-minor-mode 1)
+      (when (derived-mode-p 'pdf-view-mode)
+        (pdf-view-redisplay t))
+      (message "PDFTools switched to %s"
+               (if (equal pdf-view-midnight-colors light)
+                   "Modus Tinted (light)"
+                 "Modus Dark")))))
+
+;; 自动同步 PDF 主题
+(add-hook 'pdf-view-mode-hook #'pdf-sync-theme-with-modus)
+
+;; 主题切换后自动同步 PDF 颜色
+(defun pdf-sync-after-theme-load (theme &rest _)
+  (when (and (symbolp theme) (string-match-p "modus-" (symbol-name theme)))
+    (run-with-timer 0.1 nil #'pdf-sync-theme-with-modus)))
+
+(advice-add 'load-theme :after #'pdf-sync-after-theme-load)
+
+;; 可选：自动根据时间切换 Modus 主题并同步 PDF
+(defun my/auto-switch-modus-theme ()
+  (let ((hour (string-to-number (format-time-string "%H"))))
+    (load-theme (if (or (>= hour 22) (< hour 6))
+                    'modus-vivendi
+                  'modus-operandi-tinted) t))
+  (pdf-sync-theme-with-modus))
+
 (defun my/auto-switch-modus-theme ()
   "根据时间自动切换 Modus 主题"
   (let ((hour (string-to-number (format-time-string "%H"))))
@@ -281,12 +339,13 @@
 
 (use-package colorful-mode
   :straight t
-  :config
-  (colorful-mode t)
   :custom
-  (colorful-use-prefix nil)           ; 直接高亮颜色
-  (colorful-only-strings 'only-prog)  ; 只在字符串中高亮
-  (css-fontify-colors nil))           ; 禁用 CSS 内置的颜色渲染
+  (colorful-use-prefix t)
+  (colorful-only-strings nil)   ;; 全局显示颜色，不仅限字符串
+  (css-fontify-colors nil)
+  :init
+  ;; 每次 buffer 切换或打开都自动启用 colorful-mode
+  (add-hook 'after-change-major-mode-hook #'colorful-mode))
 
   ;; 主题包需要立即加载以在启动时生效
   (use-package doom-themes
@@ -732,8 +791,14 @@
   (setq avy-style 'at-full)
   (setq avy-all-windows t))
 
+(with-eval-after-load 'pdf-view
+  (define-key pdf-view-mode-map (kbd "C-c C-t") #'pdf-toggle-theme))
+
   ;; Normal 模式键位
   (evil-define-key 'normal 'global
+
+
+    
     ;;org
     (kbd "SPC o p") 'org-latex-preview
     
