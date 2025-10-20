@@ -1872,7 +1872,12 @@ avy 提供基于字符的快速跳转功能，类似 Vim 的 EasyMotion。输入
     
     ;;terminal
     (kbd "C-/") 'toggle-eat
+
+    ;;git
     (kbd "SPC g g") 'magit
+    (kbd "SPC g d") 'magit-diff
+    (kbd "SPC g i") 'magit-info
+    (kbd "SPC g l") 'magit-log
 
     ;;ai
     (kbd "SPC a c t") 'toggle-copilot-mode

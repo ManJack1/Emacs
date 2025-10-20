@@ -828,7 +828,12 @@
     
     ;;terminal
     (kbd "C-/") 'toggle-eat
+
+    ;;git
     (kbd "SPC g g") 'magit
+    (kbd "SPC g d") 'magit-diff
+    (kbd "SPC g i") 'magit-info
+    (kbd "SPC g l") 'magit-log
 
     ;;ai
     (kbd "SPC a c t") 'toggle-copilot-mode
