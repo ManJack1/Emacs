@@ -1099,6 +1099,29 @@
   
   (math-preview-start-process))
 
+     (defvar my/last-math-state nil
+       "记录上一次光标是否在数学环境中")
+
+     (defun my/auto-toggle-math-preview ()
+       "光标进入数学环境时清除预览，离开时重新预览所有公式"
+       (when (and (eq major-mode 'org-mode)
+                  (not (string-equal (file-name-nondirectory (or buffer-file-name "")) "config.org")))
+         (let ((in-math (texmathp)))  ; 检查是否在数学环境中
+           ;; 只在状态变化时执行操作
+           (unless (eq in-math my/last-math-state)
+             (if in-math
+                 ;; 进入数学环境：清除光标处的预览
+                 (math-preview-clear-at-point)
+               ;; 离开数学环境：预览所有公式
+               (math-preview-all))
+             ;; 更新状态
+             (setq my/last-math-state in-math)))))
+
+     ;; 将函数添加到 post-command-hook
+     (add-hook 'org-mode-hook
+               (lambda ()
+                 (add-hook 'post-command-hook #'my/auto-toggle-math-preview nil t)))
+
 ;; 这些配置需要在 org 完全加载后才能执行
 (with-eval-after-load 'org
   ;; Retina 优化 + 自动居中

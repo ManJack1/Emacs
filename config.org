@@ -2168,6 +2168,29 @@ org-mode 是 Emacs 的杀手级功能，用于笔记、待办事项、文档编�
   (add-to-list 'window-size-change-functions #'math-preview--auto-recenter)
   
   (math-preview-start-process))
+
+     (defvar my/last-math-state nil
+       "记录上一次光标是否在数学环境中")
+
+     (defun my/auto-toggle-math-preview ()
+       "光标进入数学环境时清除预览，离开时重新预览所有公式"
+       (when (and (eq major-mode 'org-mode)
+                  (not (string-equal (file-name-nondirectory (or buffer-file-name "")) "config.org")))
+         (let ((in-math (texmathp)))  ; 检查是否在数学环境中
+           ;; 只在状态变化时执行操作
+           (unless (eq in-math my/last-math-state)
+             (if in-math
+                 ;; 进入数学环境：清除光标处的预览
+                 (math-preview-clear-at-point)
+               ;; 离开数学环境：预览所有公式
+               (math-preview-all))
+             ;; 更新状态
+             (setq my/last-math-state in-math)))))
+
+     ;; 将函数添加到 post-command-hook
+     (add-hook 'org-mode-hook
+               (lambda ()
+                 (add-hook 'post-command-hook #'my/auto-toggle-math-preview nil t)))
 #+end_src
 
 
@@ -3086,9 +3109,10 @@ rm -rf ~/.emacs.d/straight/
 *** DONE 时间自动调节主题
 已实现 modus-themes 根据时间自动切换
 
-*** DONE 设置 C-/ toggle eat
+*** TODO 设置 C-/ toggle eat
 已实现终端快速切换功能
 
+*** TODO 完善类似 org-frog 的功能，当\[ \]中间有换行的时候不好触发
 
 ** 待要安装的插件
 - 代码补全与 LSP: copilot-chat
@@ -3109,3 +3133,4 @@ rm -rf ~/.emacs.d/straight/
 ;;   (with-eval-after-load 'magit
 ;;     (ai-code-magit-setup-transients)))
 #+end_src
+
