@@ -575,6 +575,18 @@
   :straight t
   :hook (after-init . which-key-mode)
   :config
+  ;; setting-tag
+  (which-key-add-key-based-replacements "SPC a" "ai")
+  (which-key-add-key-based-replacements "SPC b" "buffer")
+  (which-key-add-key-based-replacements "SPC c" "lsp")
+  (which-key-add-key-based-replacements "SPC f" "Find-file")
+  (which-key-add-key-based-replacements "SPC s" "seach")
+  (which-key-add-key-based-replacements "SPC g" "git")
+  (which-key-add-key-based-replacements "SPC m" "mark")
+  (which-key-add-key-based-replacements "SPC o" "org")
+  (which-key-add-key-based-replacements "SPC q" "quit")
+  (which-key-add-key-based-replacements "SPC w" "window")
+  (which-key-add-key-based-replacements "SPC x" "trouble")
   ;; 快速显示（0.4 秒）
   (setq which-key-idle-delay 0.1)
   ;; 在屏幕底部显示

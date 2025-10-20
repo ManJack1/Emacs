@@ -1220,6 +1220,18 @@ which-key 在你按下一个前缀键（如 =SPC=、=C-x= 等）后，自动显�
   :straight t
   :hook (after-init . which-key-mode)
   :config
+  ;; setting-tag
+  (which-key-add-key-based-replacements "SPC a" "ai")
+  (which-key-add-key-based-replacements "SPC b" "buffer")
+  (which-key-add-key-based-replacements "SPC c" "lsp")
+  (which-key-add-key-based-replacements "SPC f" "Find-file")
+  (which-key-add-key-based-replacements "SPC s" "seach")
+  (which-key-add-key-based-replacements "SPC g" "git")
+  (which-key-add-key-based-replacements "SPC m" "mark")
+  (which-key-add-key-based-replacements "SPC o" "org")
+  (which-key-add-key-based-replacements "SPC q" "quit")
+  (which-key-add-key-based-replacements "SPC w" "window")
+  (which-key-add-key-based-replacements "SPC x" "trouble")
   ;; 快速显示（0.4 秒）
   (setq which-key-idle-delay 0.1)
   ;; 在屏幕底部显示
@@ -1227,6 +1239,7 @@ which-key 在你按下一个前缀键（如 =SPC=、=C-x= 等）后，自动显�
   ;; 显示宽度
   (setq which-key-side-window-max-width 0.5))
 #+end_src
+
 
 *** 使用方法
 - 按下任意前缀键（如 =SPC=），稍等片刻即可看到所有可用的后续按键
