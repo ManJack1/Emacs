@@ -19,7 +19,7 @@
   "Return appropriate PDF colors for the current Modus theme or time."
   (cond
    ((memq (car custom-enabled-themes) '(modus-vivendi modus-vivendi-tinted))
-    '("#eaeaea" . "#181a1f"))  ; 暗色主题
+    '("#eaeaea" . "#000000"))  ; 暗色主题
    ((memq (car custom-enabled-themes) '(modus-operandi modus-operandi-tinted))
     '("#1c1c1c" . "#fbf7f0"))  ; 亮色主题
    (t  ; 根据时间决定
