@@ -100,8 +100,8 @@
 (cond
  ;; macOS
  ((eq system-type 'darwin)
-  (set-frame-parameter (selected-frame) 'alpha '(95 . 95))
-  (add-to-list 'default-frame-alist '(alpha . (95 . 95))))
+  (set-frame-parameter (selected-frame) 'alpha '(100 . 100))
+  (add-to-list 'default-frame-alist '(alpha . (100 . 100))))
  ;; Linux
  ((eq system-type 'gnu/linux)
   (set-frame-parameter (selected-frame) 'alpha '(90 . 85)) ; 活动窗口 90%，非活动窗口 85%
