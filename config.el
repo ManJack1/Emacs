@@ -1041,18 +1041,14 @@
 (setq org-highlight-latex-and-related '(latex script entities))
 
 
-
   ;; 只改大小，用 set-face-attribute 而不是 custom-theme-set-faces
-  ;; 这样可以保留主题的颜色
-  (set-face-attribute 'org-level-1 nil :height 1.8 :weight 'bold)
-  (set-face-attribute 'org-level-2 nil :height 1.5 :weight 'bold)
-  (set-face-attribute 'org-level-3 nil :height 1.3 :weight 'bold)
-  (set-face-attribute 'org-level-4 nil :height 1.1 :weight 'bold)
-  (set-face-attribute 'org-level-5 nil :height 1.0 :weight 'bold)
-  (set-face-attribute 'org-level-6 nil :height 1.0 :weight 'normal)
-  (set-face-attribute 'org-level-7 nil :height 1.0 :weight 'normal)
-  (set-face-attribute 'org-level-8 nil :height 1.0 :weight 'normal)
-  
+(custom-set-faces
+ '(org-level-1 ((t (:height 1.8 :weight bold))))
+ '(org-level-2 ((t (:height 1.6))))
+ '(org-level-3 ((t (:height 1.4))))
+ '(org-level-4 ((t (:height 1.2))))
+ '(org-level-5 ((t (:height 1.05))))
+ '(org-level-6 ((t (:height 1.0)))))
 )
 
 (use-package auctex
@@ -1334,18 +1330,18 @@
 		    "-oo"  "-\\infty"
                     "O1" "O(1)"
                     "Olog" "O(\\log n)"
-		    ";;" "\&"
+		    "," "\&"
 		    "\\" "\\\\"
                     "Olon" "O(n \\log n)"
                     ;; bind to functions!
                     "sum" (lambda () (interactive)
-                            (yas-expand-snippet "\\sum\\limits_{$1}^{$2} $0"))
+                            (yas-expand-snippet "\\sum\\limits_{$1}^{$2} $3"))
 
                     "bmat" (lambda () (interactive)
-                            (yas-expand-snippet "\\begin{bmatrix} $1 \\end{bmatrix} $0"))
+                            (yas-expand-snippet "\\begin{bmatrix} $1 \\end{bmatrix} $2"))
 
-                    "lc" (lambda () (interactive)
-                            (yas-expand-snippet "\\left( $1 \\right) $0"))
+                    "l(" (lambda () (interactive)
+                            (yas-expand-snippet "\\left( $1 \\right"))
 
                     "xsp" (lambda () (interactive)
                             (yas-expand-snippet "$1^{$2} + $1^{2*$2} + \\dots + $1^{n*$2}"))
@@ -1431,7 +1427,7 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
                     "ii" (lambda () (interactive)
                             (yas-expand-snippet "\\\\( $0 \\\\)"))
                     "dd" (lambda () (interactive)
-                            (yas-expand-snippet "\\[ $0 \\]"))))
+                            (yas-expand-snippet "\\[\n $0 \n\\]"))))
 
 (use-package lsp-mode
   :straight t
