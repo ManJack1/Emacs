@@ -1043,11 +1043,11 @@
 
   ;; 只改大小，用 set-face-attribute 而不是 custom-theme-set-faces
 (custom-set-faces
- '(org-level-1 ((t (:height 1.8 :weight bold))))
- '(org-level-2 ((t (:height 1.6))))
- '(org-level-3 ((t (:height 1.4))))
+ '(org-level-1 ((t (:height 1.5 :weight bold))))
+ '(org-level-2 ((t (:height 1.4))))
+ '(org-level-3 ((t (:height 1.3))))
  '(org-level-4 ((t (:height 1.2))))
- '(org-level-5 ((t (:height 1.05))))
+ '(org-level-5 ((t (:height 1.1))))
  '(org-level-6 ((t (:height 1.0)))))
 )
 
