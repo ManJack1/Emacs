@@ -513,7 +513,7 @@
 
 (use-package blamer
   :straight (:host github :repo "artawower/blamer.el")
-  :bind (("s-i" . blamer-show-commit-info)) :custom
+  :custom
   (blamer-idle-time 0.3)
   (blamer-min-offset 70)
   :custom-face
@@ -851,6 +851,7 @@
     (kbd "SPC g d") 'magit-diff
     (kbd "SPC g i") 'magit-info
     (kbd "SPC g l") 'magit-log
+    (kbd "B") 'blamer-show-commit-info
 
     ;;ai
     (kbd "SPC a c t") 'toggle-copilot-mode

@@ -1062,7 +1062,7 @@ blamer.el 在代码行尾显示 Git 提交信息（作者、时间、提交摘�
 #+begin_src emacs-lisp
 (use-package blamer
   :straight (:host github :repo "artawower/blamer.el")
-  :bind (("s-i" . blamer-show-commit-info)) :custom
+  :custom
   (blamer-idle-time 0.3)
   (blamer-min-offset 70)
   :custom-face
@@ -1911,6 +1911,7 @@ avy 提供基于字符的快速跳转功能，类似 Vim 的 EasyMotion。输入
     (kbd "SPC g d") 'magit-diff
     (kbd "SPC g i") 'magit-info
     (kbd "SPC g l") 'magit-log
+    (kbd "B") 'blamer-show-commit-info
 
     ;;ai
     (kbd "SPC a c t") 'toggle-copilot-mode
@@ -2079,7 +2080,6 @@ avy 提供基于字符的快速跳转功能，类似 Vim 的 EasyMotion。输入
     (kbd "y") 'neotree-copy-node
     (kbd "RET") 'neotree-enter))
 #+END_SRC
-
 
 
 * 文档编写
