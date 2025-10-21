@@ -1439,7 +1439,10 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
          (go-mode . lsp))
   :commands lsp
   :config
+  ;;clangd-setting
   ;; 可选配置
+(when (eq system-type 'gnu/linux)
+  (setq lsp-clients-clangd-executable "/etc/profiles/per-user/manjack/bin/clangd"))
   (setq lsp-nil-server-command '("nil"))
   (setq lsp-prefer-flymake nil))
 

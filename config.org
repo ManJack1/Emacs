@@ -2719,7 +2719,10 @@ lsp-mode 是 Language Server Protocol 的 Emacs 实现，提供智能补全、�
          (go-mode . lsp))
   :commands lsp
   :config
+  ;;clangd-setting
   ;; 可选配置
+(when (eq system-type 'gnu/linux)
+  (setq lsp-clients-clangd-executable "/etc/profiles/per-user/manjack/bin/clangd"))
   (setq lsp-nil-server-command '("nil"))
   (setq lsp-prefer-flymake nil))
 #+END_SRC
