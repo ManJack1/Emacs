@@ -2551,7 +2551,7 @@ laas 为 LaTeX 和 Org 模式提供自动激活的代码片段系统，无需按
 		    "-oo"  "-\\infty"
                     "O1" "O(1)"
                     "Olog" "O(\\log n)"
-		    "," "\&"
+		    ";" "\&"
 		    "\\" "\\\\"
                     "Olon" "O(n \\log n)"
                     ;; bind to functions!
@@ -3157,6 +3157,32 @@ rm -rf ~/.emacs.d/straight/
 ;;   (with-eval-after-load 'magit
 ;;     (ai-code-magit-setup-transients)))
 #+end_src
+
+
+
+
+
+#+begin_src emacs-lisp
+(use-package blamer
+  :straight (:host github :repo "artawower/blamer.el")
+  :bind (("s-i" . blamer-show-commit-info)) :custom
+  (blamer-idle-time 0.3)
+  (blamer-min-offset 70)
+  :custom-face
+  (blamer-face ((t :foreground "#7a88cf"
+                    :background nil
+                    :height 140
+                    :italic t)))
+  :init
+(setq blamer-commit-formatter " ● %s")
+(setq blamer-author-formatter "  ✎ %s ")
+  (global-blamer-mode 1))
+#+end_src
+
+
+
+
+
 
 
 
