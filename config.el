@@ -560,6 +560,7 @@
   ;; Use a more compatible terminal type
   (eat-term-name "xterm-256color")  ; or "eterm-color"
   :config
+  (server-start) ;;enable emacs open at terminal
   (add-hook 'eshell-first-time-mode-hook #'eat-eshell-mode))
 
 (use-package vterm
