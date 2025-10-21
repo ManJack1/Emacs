@@ -511,6 +511,21 @@
   ;; 可选配置
   (setq magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
 
+(use-package blamer
+  :straight (:host github :repo "artawower/blamer.el")
+  :bind (("s-i" . blamer-show-commit-info)) :custom
+  (blamer-idle-time 0.3)
+  (blamer-min-offset 70)
+  :custom-face
+  (blamer-face ((t :foreground "#7a88cf"
+                    :background nil
+                    :height 140
+                    :italic t)))
+  :init
+(setq blamer-commit-formatter " ● %s")
+(setq blamer-author-formatter "  ✎ %s ")
+  (global-blamer-mode 1))
+
 (use-package diff-hl
   :straight t
   :init
@@ -1556,18 +1571,3 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
 ;;   ;; 可选：Magit 集成
 ;;   (with-eval-after-load 'magit
 ;;     (ai-code-magit-setup-transients)))
-
-(use-package blamer
-  :straight (:host github :repo "artawower/blamer.el")
-  :bind (("s-i" . blamer-show-commit-info)) :custom
-  (blamer-idle-time 0.3)
-  (blamer-min-offset 70)
-  :custom-face
-  (blamer-face ((t :foreground "#7a88cf"
-                    :background nil
-                    :height 140
-                    :italic t)))
-  :init
-(setq blamer-commit-formatter " ● %s")
-(setq blamer-author-formatter "  ✎ %s ")
-  (global-blamer-mode 1))

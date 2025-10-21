@@ -1051,6 +1051,36 @@ Magit 是 Emacs 中最强大的 Git 客户端，提供完整的 Git 功能界面
   - =l= : log 菜单
   - =?= : 显示帮助
 
+
+** blamer
+*** 介绍
+blamer.el 在代码行尾显示 Git 提交信息（作者、时间、提交摘要）。帮助快速了解代码变更历史，类似 VS Code 的 GitLens 插件。
+*** 相关链接
+- GitHub: https://github.com/APRhum/blamer.el
+*** 配置
+
+#+begin_src emacs-lisp
+(use-package blamer
+  :straight (:host github :repo "artawower/blamer.el")
+  :bind (("s-i" . blamer-show-commit-info)) :custom
+  (blamer-idle-time 0.3)
+  (blamer-min-offset 70)
+  :custom-face
+  (blamer-face ((t :foreground "#7a88cf"
+                    :background nil
+                    :height 140
+                    :italic t)))
+  :init
+(setq blamer-commit-formatter " ● %s")
+(setq blamer-author-formatter "  ✎ %s ")
+  (global-blamer-mode 1))
+#+end_src
+
+*** 使用方法
+- 自动在代码行尾显示 Git 提交信息
+- =s-i= : 显示当前行的完整提交信息弹窗
+
+
 ** diff-hl
 *** 介绍
 diff-hl 在编辑器边缘（fringe）显示 Git 差异标记，实时显示文件的修改、添加、删除行。支持与 Magit 集成，提供即时的版本控制反馈。flydiff 模式可以在编辑时实时更新差异标记。
@@ -3162,22 +3192,6 @@ rm -rf ~/.emacs.d/straight/
 
 
 
-#+begin_src emacs-lisp
-(use-package blamer
-  :straight (:host github :repo "artawower/blamer.el")
-  :bind (("s-i" . blamer-show-commit-info)) :custom
-  (blamer-idle-time 0.3)
-  (blamer-min-offset 70)
-  :custom-face
-  (blamer-face ((t :foreground "#7a88cf"
-                    :background nil
-                    :height 140
-                    :italic t)))
-  :init
-(setq blamer-commit-formatter " ● %s")
-(setq blamer-author-formatter "  ✎ %s ")
-  (global-blamer-mode 1))
-#+end_src
 
 
 
