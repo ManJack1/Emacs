@@ -455,12 +455,13 @@
    ((and (bound-and-true-p yas-minor-mode)
          (yas-expand)))
    
-   ;; 2. 如果 YASnippet 有活跃的占位符，尝试跳转
+   ;; 2. 如果有激活的 snippet，占位符跳转
    ((and (bound-and-true-p yas-minor-mode)
          (yas-active-snippets))
-    (or (yas-next-field)
-        ;; 如果没有下一个字段，退出 snippet
-        (yas-exit-all-snippets)))
+    (let ((field (yas--snippet-active-field (car (yas-active-snippets)))))
+      (if (and field (yas--field-next field))
+          (yas-next-field)
+        (yas-exit-all-snippets))))
    
    ;; 3. 如果 Copilot 有建议，接受建议
    ((and (bound-and-true-p copilot-mode)
