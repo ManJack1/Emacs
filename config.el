@@ -223,9 +223,6 @@
   ;; 启动配置
   (setq inhibit-startup-message t)      ; 关闭启动画面
 
-;;; Dashboard 配置（修复白屏和导航字母）
-;;; Dashboard 配置（优化精简版）
-
 (use-package dashboard
   :straight t
   :demand t
@@ -319,7 +316,15 @@
   (setq doom-themes-enable-bold t
         doom-themes-enable-italic t)
   (load-theme 'doom-one t)
-  (doom-themes-org-config))  ; 这个很重要！启用 org 的 doom 配色
+
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+  ;; Enable custom neotree theme (nerd-icons must be installed!)
+  (doom-themes-neotree-config)
+  ;; or for treemacs users
+  (doom-themes-treemacs-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
 
 ;; (use-package modus-themes
 ;;   :straight t

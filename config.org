@@ -524,9 +524,6 @@ use-package 是一个声明式包配置宏，简化包的安装、配置和延�
 :END:
 
 #+begin_src emacs-lisp
-;;; Dashboard 配置（修复白屏和导航字母）
-;;; Dashboard 配置（优化精简版）
-
 (use-package dashboard
   :straight t
   :demand t
@@ -654,7 +651,15 @@ doom-themes 是一个丰富的主题集合，包含 25+ 个精心设计的高对
   (setq doom-themes-enable-bold t
         doom-themes-enable-italic t)
   (load-theme 'doom-one t)
-  (doom-themes-org-config))  ; 这个很重要！启用 org 的 doom 配色
+
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+  ;; Enable custom neotree theme (nerd-icons must be installed!)
+  (doom-themes-neotree-config)
+  ;; or for treemacs users
+  (doom-themes-treemacs-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
 #+END_SRC
 
 
