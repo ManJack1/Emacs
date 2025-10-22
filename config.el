@@ -313,16 +313,13 @@
   ;; 每次 buffer 切换或打开都自动启用 colorful-mode
   (add-hook 'after-change-major-mode-hook #'colorful-mode))
 
-  ;; 主题包需要立即加载以在启动时生效
-  (use-package doom-themes
-    :straight t
-    :demand t  ; 主题需要立即加载
-    :config
-    (load-theme 'doom-one t)
-    (setq doom-themes-enable-bold t      ; 启用粗体
-          doom-themes-enable-italic t)   ; 启用斜体
-    ;; 注意：这里不再加载 doom 主题，因为我们用 catppuccin 替换
-    (doom-themes-org-config))            ; 优化 org-mode 显示
+(use-package doom-themes
+  :straight t
+  :init
+  (setq doom-themes-enable-bold t
+        doom-themes-enable-italic t)
+  (load-theme 'doom-one t)
+  (doom-themes-org-config))  ; 这个很重要！启用 org 的 doom 配色
 
 ;; (use-package modus-themes
 ;;   :straight t
@@ -999,27 +996,19 @@
      (latex . t)
      (org . t)))
   
-  ;; 不要每次都询问是否执行代码
   (setq org-confirm-babel-evaluate nil)
-  
-  ;; 代码块语法高亮
   (setq org-src-fontify-natively t)
   (setq org-src-tab-acts-natively t)
   (setq org-src-preserve-indentation t)
+  (setq org-highlight-latex-and-related '(latex script entities))
   
-;; 启用 Org 内联 LaTeX 高亮
-(setq org-highlight-latex-and-related '(latex script entities))
-
-
-  ;; 只改大小，用 set-face-attribute 而不是 custom-theme-set-faces
-(custom-set-faces
- '(org-level-1 ((t (:height 1.5 :weight bold))))
- '(org-level-2 ((t (:height 1.4))))
- '(org-level-3 ((t (:height 1.3))))
- '(org-level-4 ((t (:height 1.2))))
- '(org-level-5 ((t (:height 1.1))))
- '(org-level-6 ((t (:height 1.0)))))
-)
+  ;; 设置 org 标题的 doom-one 配色和字体大小
+  (set-face-attribute 'org-level-1 nil :foreground "#51afef" :height 1.5 :weight 'bold)
+  (set-face-attribute 'org-level-2 nil :foreground "#c678dd" :height 1.4)
+  (set-face-attribute 'org-level-3 nil :foreground "#98be65" :height 1.3)
+  (set-face-attribute 'org-level-4 nil :foreground "#da8548" :height 1.2)
+  (set-face-attribute 'org-level-5 nil :foreground "#5699af" :height 1.1)
+  (set-face-attribute 'org-level-6 nil :foreground "#a9a1e1" :height 1.0))
 
 (use-package auctex
   :straight t
