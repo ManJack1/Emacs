@@ -15,63 +15,23 @@
           (switch-to-buffer eat-buffer)
         (eat)))))
 
-(defun pdf-get-colors-for-modus ()
-  "Return appropriate PDF colors for the current Modus theme or time."
-  (cond
-   ((memq (car custom-enabled-themes) '(modus-vivendi-tinted modus-vivendi-tinted))
-    '("#FFFFFF" . "#181a1f"))  ; 暗色主题
-   ((memq (car custom-enabled-themes) '(modus-operandi modus-operandi-tinted))
-    '("#000000" . "#fbf7f0"))  ; 亮色主题
-   (t  ; 根据时间决定
-    (let ((hour (string-to-number (format-time-string "%H"))))
-      (if (or (>= hour 22) (< hour 6))
-          '("#FFFFFF" . "#181a1f")
-        '("#000000" . "#fbf7f0"))))))
+;; PDFTools 固定使用 doom-one 配色
+(with-eval-after-load 'pdf-view
+  ;; 设置 doom-one 风格的颜色
+  (setq pdf-view-midnight-colors '("#FFFFFF" . "#282c34"))
+  
+  ;; 打开 PDF 时自动启用配色
+  (add-hook 'pdf-view-mode-hook
+            (lambda ()
+              (pdf-view-midnight-minor-mode 1))))
 
-(defun pdf-sync-theme-with-modus ()
-  "Sync PDF colors with current Modus theme."
-  (when (featurep 'pdf-view)
-    (setq pdf-view-midnight-colors (pdf-get-colors-for-modus))
-    ;; 如果当前在 pdf-view-mode 中，重新启用 minor mode
-    (when (derived-mode-p 'pdf-view-mode)
-      (pdf-view-midnight-minor-mode -1)
-      (pdf-view-midnight-minor-mode 1)
-      (pdf-view-redisplay t))))
-
-(defun pdf-toggle-theme ()
-  "Toggle PDFTools between light and dark Modus themes."
+;; 可选：手动切换开关（如果偶尔需要原始颜色）
+(defun pdf-toggle-colors ()
+  "Toggle PDF midnight mode on/off."
   (interactive)
-  (when (featurep 'pdf-view)
-    (let ((light '("#000000" . "#fbf7f0"))
-          (dark  '("#FFFFFF" . "#181a1f")))
-      (setq pdf-view-midnight-colors
-            (if (equal pdf-view-midnight-colors light) dark light))
-      (pdf-view-midnight-minor-mode -1)
-      (pdf-view-midnight-minor-mode 1)
-      (when (derived-mode-p 'pdf-view-mode)
-        (pdf-view-redisplay t))
-      (message "PDFTools switched to %s"
-               (if (equal pdf-view-midnight-colors light)
-                   "Modus Tinted (light)"
-                 "Modus Dark")))))
-
-;; 自动同步 PDF 主题
-(add-hook 'pdf-view-mode-hook #'pdf-sync-theme-with-modus)
-
-;; 主题切换后自动同步 PDF 颜色
-(defun pdf-sync-after-theme-load (theme &rest _)
-  (when (and (symbolp theme) (string-match-p "modus-" (symbol-name theme)))
-    (run-with-timer 0.1 nil #'pdf-sync-theme-with-modus)))
-
-(advice-add 'load-theme :after #'pdf-sync-after-theme-load)
-
-;; 可选：自动根据时间切换 Modus 主题并同步 PDF
-(defun my/auto-switch-modus-theme ()
-  (let ((hour (string-to-number (format-time-string "%H"))))
-    (load-theme (if (or (>= hour 22) (< hour 6))
-                    'modus-vivendi-tinted
-                  'modus-operandi-tinted) t))
-  (pdf-sync-theme-with-modus))
+  (pdf-view-midnight-minor-mode 'toggle)
+  (when (derived-mode-p 'pdf-view-mode)
+    (pdf-view-redisplay t)))
 
 (defun my/auto-switch-modus-theme ()
   "根据时间自动切换 Modus 主题"
@@ -245,7 +205,7 @@
 ;; 设置编程字体
 (set-face-attribute 'default nil
                     :font "Iosevka Nerd Font"
-                    :height 140)
+                    :height 160)
 
 ;; Set Chinese font for Han script
 (set-fontset-font t 'han "Noto Serif CJK SC")
@@ -358,26 +318,19 @@
     :straight t
     :demand t  ; 主题需要立即加载
     :config
+    (load-theme 'doom-one t)
     (setq doom-themes-enable-bold t      ; 启用粗体
           doom-themes-enable-italic t)   ; 启用斜体
     ;; 注意：这里不再加载 doom 主题，因为我们用 catppuccin 替换
     (doom-themes-org-config))            ; 优化 org-mode 显示
 
-  (use-package catppuccin-theme
-    :straight t
-    :demand t  ; 主题需要立即加载
-    :config
-    ;; 可选：自定义 catppuccin 变体（默认是 'latte，可选：'frappe, 'macchiato, 'mocha）
-    (setq catppuccin-flavor 'mocha)  ; 选择深色变体
-    )      ; 加载 catppuccin 主题
-
-(use-package modus-themes
-  :straight t
-  :init
-  (my/auto-switch-modus-theme)
-  (run-at-time "00:00" 3600 #'my/auto-switch-modus-theme)
-  (run-at-time "06:00" 86400 #'my/auto-switch-modus-theme)  ; 每天早上6点
-  (run-at-time "22:00" 86400 #'my/auto-switch-modus-theme)) ; 每天晚上10点
+;; (use-package modus-themes
+;;   :straight t
+;;   :init
+;;   (my/auto-switch-modus-theme)
+;;   (run-at-time "00:00" 3600 #'my/auto-switch-modus-theme)
+;;   (run-at-time "06:00" 86400 #'my/auto-switch-modus-theme)  ; 每天早上6点
+;;   (run-at-time "22:00" 86400 #'my/auto-switch-modus-theme)) ; 每天晚上10点
 
   (use-package keycast
     :straight t
@@ -491,7 +444,7 @@
   ;; 启用功能
   (sis-global-cursor-color-mode t)
   (sis-global-respect-mode t)     ; 不用这个，会强制切英文
-  ;; (sis-global-context-mode t)        ; 这个会根据上下文智能切换，保持输入法
+  (sis-global-context-mode t)        ; 这个会根据上下文智能切换，保持输入法
   (sis-global-inline-mode t))
 
 (use-package savehist
@@ -833,7 +786,7 @@
   (setq avy-all-windows t))
 
 (with-eval-after-load 'pdf-view
-  (define-key pdf-view-mode-map (kbd "C-c C-t") #'pdf-toggle-theme))
+  (define-key pdf-view-mode-map (kbd "C-c C-t") #'pdf-toggle-colors))
 
   ;; Normal 模式键位
   (evil-define-key 'normal 'global
@@ -1162,6 +1115,9 @@
 
 ;; 这些配置需要在 org 完全加载后才能执行
 (with-eval-after-load 'org
+(setenv "PATH" (concat "/opt/homebrew/bin:" (getenv "PATH")))
+(setq exec-path (cons "/opt/homebrew/bin" exec-path))
+
   ;; Retina 优化 + 自动居中
   (plist-put org-format-latex-options :scale 2.0)
   
@@ -1267,14 +1223,13 @@
   (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
   (add-hook 'LaTeX-mode-hook 'turn-on-reftex))
 
-;; LaTeX 导出设置
 (setq org-latex-compiler "xelatex")
 (setq org-latex-pdf-process
       '("xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
         "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
         "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
 
-;; 使用 minted 代码高亮
+;; 使用 minted
 (setq org-latex-listings 'minted)
 
 ;; 语言映射
