@@ -227,6 +227,7 @@
   :straight t
   :demand t
   :after (centaur-tabs nerd-icons evil)
+  
   :custom
   ;; 基础设置
   (dashboard-banner-logo-title (format "GNU Emacs %s" emacs-version))
@@ -234,11 +235,17 @@
   (dashboard-center-content t)
   (dashboard-show-shortcuts t)
   (dashboard-items-default-length 20)
+  (initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
   
   ;; 显示项目
-  (dashboard-items '((recents . 5) (bookmarks . 5) (projects . 5) (agenda . 5)))
-  (dashboard-item-shortcuts '((recents . "r") (bookmarks . "m") 
-                             (agenda . "a") (projects . "p")))
+  (dashboard-items '((recents . 5) 
+                     (bookmarks . 5) 
+                     (projects . 5) 
+                     (agenda . 5)))
+  (dashboard-item-shortcuts '((recents . "r") 
+                              (bookmarks . "m") 
+                              (agenda . "a") 
+                              (projects . "p")))
   
   ;; Agenda
   (dashboard-week-agenda t)
@@ -254,51 +261,63 @@
   (dashboard-set-init-info t)
   (dashboard-set-footer t)
   (dashboard-footer-messages '("Happy Hacking!"))
-  (dashboard-footer-icon (nerd-icons-faicon "nf-fa-heart" :height 1.1 
-                                           :v-adjust -0.05 :face 'error))
-  
-  ;; 初始缓冲区
-  (initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+  (dashboard-footer-icon (nerd-icons-faicon "nf-fa-heart" 
+                                           :height 1.1 
+                                           :v-adjust -0.05 
+                                           :face 'error))
   
   :init
   ;; 导航按钮
   (setq dashboard-navigator-buttons
         `(((,(nerd-icons-faicon "nf-fa-github" :height 1.1 :v-adjust 0.0)
-            "GitHub" "Browse" (lambda (&rest _) (browse-url "https://github.com")))
+            "GitHub" "Browse" 
+            (lambda (&rest _) (browse-url "https://github.com")))
+           
            (,(nerd-icons-octicon "nf-oct-gear" :height 1.1 :v-adjust 0.0)
-            "Config" "Edit" (lambda (&rest _) (find-file (expand-file-name "config.org" user-emacs-directory))))
+            "Config" "Edit" 
+            (lambda (&rest _) 
+              (find-file (expand-file-name "config.org" user-emacs-directory))))
+           
            (,(nerd-icons-faicon "nf-fa-refresh" :height 1.1 :v-adjust 0.0)
-            "Update" "Packages" (lambda (&rest _) (straight-pull-all))))))
+            "Update" "Packages" 
+            (lambda (&rest _) (straight-pull-all))))))
   
   :config
+  (setq dashboard-image-banner-max-height 280)
+  (setq dashboard-image-banner-max-width 280)
+  (setq dashboard-startup-banner "~/.emacs.d/berserk.png")
   (dashboard-setup-startup-hook)
   
-  ;; 隐藏 tabs
-  (with-eval-after-load 'centaur-tabs
-    (add-to-list 'centaur-tabs-excluded-prefixes "*dashboard"))
+  ;; 隐藏 centaur-tabs
+  (add-to-list 'centaur-tabs-excluded-prefixes "*dashboard")
   
   ;; Evil 键绑定
   (evil-set-initial-state 'dashboard-mode 'normal)
   (evil-define-key 'normal dashboard-mode-map
-    "r" 'dashboard-jump-to-recents
-    "m" 'dashboard-jump-to-bookmarks
-    "p" 'dashboard-jump-to-projects
-    "a" 'dashboard-jump-to-agenda
-    "g" 'dashboard-refresh-buffer
-    "q" 'quit-window
-    "{" 'dashboard-previous-section
-    "}" 'dashboard-next-section
-    "j" 'widget-forward
-    "k" 'widget-backward
-    (kbd "RET") 'widget-button-press))
+    "r" #'dashboard-jump-to-recents
+    "m" #'dashboard-jump-to-bookmarks
+    "p" #'dashboard-jump-to-projects
+    "a" #'dashboard-jump-to-agenda
+    "g" #'dashboard-refresh-buffer
+    "q" #'quit-window
+    "{" #'dashboard-previous-section
+    "}" #'dashboard-next-section
+    "j" #'widget-forward
+    "k" #'widget-backward
+    (kbd "RET") #'widget-button-press))
 
 ;; Org-agenda 基础配置
-(with-eval-after-load 'org
+(use-package org
+  :defer t
+  :init
   (let ((org-dir (expand-file-name "~/org")))
-    (unless (file-directory-p org-dir) (make-directory org-dir t)))
-  (setq org-agenda-files (list (expand-file-name "~/org"))
-        org-agenda-start-on-weekday nil
-        org-agenda-span 7))
+    (unless (file-directory-p org-dir) 
+      (make-directory org-dir t)))
+  
+  :custom
+  (org-agenda-files (list (expand-file-name "~/org")))
+  (org-agenda-start-on-weekday nil)
+  (org-agenda-span 7))
 
 (use-package colorful-mode
   :straight t
@@ -1404,15 +1423,21 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
          (java-ts-mode . lsp)
          (go-mode . lsp))
   :commands lsp
+  :init
+  ;; 配置 nix-nil 服务器
+  (when (eq system-type 'darwin)
+    (setq lsp-nix-nil-server-path "/Users/luoyaohui/.nix-profile/bin/nil"))
+  
+  (when (eq system-type 'gnu/linux)
+    (setq lsp-clients-clangd-executable "/etc/profiles/per-user/manjack/bin/clangd")
+    (setq lsp-nix-nil-server-path "nil")) ;; Linux 上从 PATH 找
+  
   :config
-  ;;clangd-setting
-  ;; 可选配置
-(when (eq system-type 'gnu/linux)
-  (setq lsp-clients-clangd-executable "/etc/profiles/per-user/manjack/bin/clangd"))
-  (setq lsp-nil-server-command '("nil"))
   (setq lsp-prefer-flymake nil))
 
-(add-hook 'before-save-hook #'lsp-format-buffer)
+(add-hook 'lsp-mode-hook
+          (lambda ()
+            (add-hook 'before-save-hook #'lsp-format-buffer nil t)))
 
   (use-package lsp-ui
     :straight t
