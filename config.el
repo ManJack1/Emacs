@@ -518,13 +518,13 @@
   (blamer-min-offset 70)
   :custom-face
   (blamer-face ((t :foreground "#7a88cf"
-                    :background nil
+                    :background unspecified
                     :height 140
                     :italic t)))
   :init
-(setq blamer-commit-formatter " ● %s")
-(setq blamer-author-formatter "  ✎ %s ")
-  (global-blamer-mode 1))
+  (setq blamer-commit-formatter " ● %s")
+  (setq blamer-author-formatter "  ✎ %s ")
+  (global-blamer-mode 0))
 
 (use-package diff-hl
   :straight t
@@ -1462,6 +1462,8 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   (setq lsp-clients-clangd-executable "/etc/profiles/per-user/manjack/bin/clangd"))
   (setq lsp-nil-server-command '("nil"))
   (setq lsp-prefer-flymake nil))
+
+(add-hook 'before-save-hook #'lsp-format-buffer)
 
   (use-package lsp-ui
     :straight t

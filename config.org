@@ -1067,13 +1067,13 @@ blamer.el 在代码行尾显示 Git 提交信息（作者、时间、提交摘�
   (blamer-min-offset 70)
   :custom-face
   (blamer-face ((t :foreground "#7a88cf"
-                    :background nil
+                    :background unspecified
                     :height 140
                     :italic t)))
   :init
-(setq blamer-commit-formatter " ● %s")
-(setq blamer-author-formatter "  ✎ %s ")
-  (global-blamer-mode 1))
+  (setq blamer-commit-formatter " ● %s")
+  (setq blamer-author-formatter "  ✎ %s ")
+  (global-blamer-mode 0))
 #+end_src
 
 *** 使用方法
@@ -2756,7 +2756,10 @@ lsp-mode 是 Language Server Protocol 的 Emacs 实现，提供智能补全、�
   (setq lsp-clients-clangd-executable "/etc/profiles/per-user/manjack/bin/clangd"))
   (setq lsp-nil-server-command '("nil"))
   (setq lsp-prefer-flymake nil))
+
+(add-hook 'before-save-hook #'lsp-format-buffer)
 #+END_SRC
+
 
 *** 使用方法
 - =g d= : 跳转到定义
@@ -3007,12 +3010,6 @@ gptel-commit 集成 gptel 和 magit，使用 AI 自动生成符合规范的 Git 
 - AI 会根据 diff 内容生成合适的提交描述
 
 
-
-
-
-
-
-
 ** copilot
 *** 介绍
 copilot.el 是 GitHub Copilot 的 Emacs 客户端，支持 AI 自动补全代码。它可以在编程模式下自动激活，提供智能代码建议，提升开发效率。
@@ -3187,13 +3184,6 @@ rm -rf ~/.emacs.d/straight/
 ;;   (with-eval-after-load 'magit
 ;;     (ai-code-magit-setup-transients)))
 #+end_src
-
-
-
-
-
-
-
 
 
 
