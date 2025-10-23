@@ -64,8 +64,8 @@
   (add-to-list 'default-frame-alist '(alpha . (100 . 100))))
  ;; Linux
  ((eq system-type 'gnu/linux)
-  (set-frame-parameter (selected-frame) 'alpha '(90 . 85)) ; 活动窗口 90%，非活动窗口 85%
-  (add-to-list 'default-frame-alist '(alpha . (90 . 85)))))
+  (set-frame-parameter (selected-frame) 'alpha '(100 . 100)) ; 活动窗口 90%，非活动窗口 85%
+  (add-to-list 'default-frame-alist '(alpha . (100 . 100)))))
 
 (defun toggle-copilot-mode ()
   "Toggle copilot-mode on or off."
