@@ -283,8 +283,8 @@
             (lambda (&rest _) (straight-pull-all))))))
   
   :config
-  (setq dashboard-image-banner-max-height 280)
-  (setq dashboard-image-banner-max-width 280)
+  (setq dashboard-image-banner-max-height 350)
+  (setq dashboard-image-banner-max-width 350)
   (setq dashboard-startup-banner "~/.emacs.d/berserk.png")
   (dashboard-setup-startup-hook)
   

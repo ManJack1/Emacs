@@ -584,8 +584,8 @@ use-package 是一个声明式包配置宏，简化包的安装、配置和延�
             (lambda (&rest _) (straight-pull-all))))))
   
   :config
-  (setq dashboard-image-banner-max-height 280)
-  (setq dashboard-image-banner-max-width 280)
+  (setq dashboard-image-banner-max-height 350)
+  (setq dashboard-image-banner-max-width 350)
   (setq dashboard-startup-banner "~/.emacs.d/berserk.png")
   (dashboard-setup-startup-hook)
   
