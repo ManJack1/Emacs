@@ -64,8 +64,8 @@
   (add-to-list 'default-frame-alist '(alpha . (100 . 100))))
  ;; Linux
  ((eq system-type 'gnu/linux)
-  (set-frame-parameter (selected-frame) 'alpha '(90 . 85)) ; 活动窗口 90%，非活动窗口 85%
-  (add-to-list 'default-frame-alist '(alpha . (90 . 85)))))
+  (set-frame-parameter (selected-frame) 'alpha '(100 . 100)) ; 活动窗口 90%，非活动窗口 85%
+  (add-to-list 'default-frame-alist '(alpha . (100 . 100)))))
 
 (defun toggle-copilot-mode ()
   "Toggle copilot-mode on or off."
@@ -1554,3 +1554,13 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
 ;;   ;; 可选：Magit 集成
 ;;   (with-eval-after-load 'magit
 ;;     (ai-code-magit-setup-transients)))
+
+(use-package org-sliced-images
+  :straight t
+  :config
+  (org-sliced-images-mode 1))
+
+(use-package beacon
+  :straight t
+  :config
+  (beacon-mode 1))
