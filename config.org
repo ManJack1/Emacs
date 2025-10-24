@@ -3157,6 +3157,17 @@ rm -rf ~/.emacs.d/straight/
 
 
 
+#+begin_src emacs-lisp
+(use-package org-sliced-images
+  :straight t
+  :config
+  (org-sliced-images-mode 1))
+#+end_src
 
-
+#+begin_src emacs-lisp
+(use-package beacon
+  :straight t
+  :config
+  (beacon-mode 1))
+#+end_src
 

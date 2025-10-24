@@ -1548,3 +1548,13 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
 ;;   ;; 可选：Magit 集成
 ;;   (with-eval-after-load 'magit
 ;;     (ai-code-magit-setup-transients)))
+
+(use-package org-sliced-images
+  :straight t
+  :config
+  (org-sliced-images-mode 1))
+
+(use-package beacon
+  :straight t
+  :config
+  (beacon-mode 1))
