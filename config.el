@@ -205,7 +205,7 @@
 ;; 设置编程字体
 (set-face-attribute 'default nil
                     :font "Iosevka Nerd Font"
-                    :height 160)
+                    :height 155)
 
 ;; Set Chinese font for Han script
 (set-fontset-font t 'han "Noto Serif CJK SC")
@@ -283,8 +283,8 @@
             (lambda (&rest _) (straight-pull-all))))))
   
   :config
-  (setq dashboard-image-banner-max-height 350)
-  (setq dashboard-image-banner-max-width 350)
+  (setq dashboard-image-banner-max-height 300)
+  (setq dashboard-image-banner-max-width 300)
   (setq dashboard-startup-banner "~/.emacs.d/berserk.png")
   (dashboard-setup-startup-hook)
   
@@ -428,8 +428,16 @@
   :hook (after-init . (lambda ()
                         (global-set-key [f3] 'neotree-toggle)))
   :config
+  (setq neo-window-width 40)  ; 设置固定宽度为30列
   (setq neo-smart-open t)  ; 自动展开到当前文件
-  (setq neo-theme (if (display-graphic-p) 'nerd-icons 'arrow)))
+  (setq neo-theme (if (display-graphic-p) 'nerd-icons 'arrow))
+  
+  ;; 禁止换行，截断长文件名
+  (setq neo-window-fixed-size nil)  ; 允许窗口宽度调整
+  (add-hook 'neo-after-create-hook
+            (lambda (&rest _)
+              (setq truncate-lines t)  ; 截断长行，不换行
+              (setq word-wrap nil))))  ; 禁用自动换行
 
       ;; 编辑体验优化
       (auto-save-visited-mode 1)           ; 自动保存
@@ -828,7 +836,7 @@
     (kbd "B") 'blamer-show-commit-info
 
     ;;ai
-    (kbd "SPC a c t") 'toggle-copilot-mode
+    (kbd "SPC c e") 'toggle-copilot-mode
     (kbd "SPC a d") 'gptel-add
     (kbd "SPC a a") 'gptel
     (kbd "SPC a m") 'gptel-menu
@@ -1518,9 +1526,7 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
 
 (use-package copilot
   :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
-  :straight t
-  ;; 不自动启用 copilot-mode
-  :commands (copilot-mode)
+  :hook ((prog-mode org-mode) . copilot-mode)  ; 在编程模式和 org-mode 下自动启用
   :config
   ;; 禁用缩进警告
   (setq copilot-disable-predicates 
