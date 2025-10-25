@@ -1008,7 +1008,7 @@
   :config
   (setq org-startup-with-inline-images t)
   (setq org-image-align 'center)
-  (setq org-image-actual-width '(250))
+  (setq org-image-actual-width '(1000))
   (setq org-directory "~/org"
         org-startup-indented t
         org-hide-emphasis-markers t)
@@ -1526,7 +1526,7 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
 
 (use-package copilot
   :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
-  :hook ((prog-mode org-mode) . copilot-mode)  ; 在编程模式和 org-mode 下自动启用
+  ;; :hook (prog-mode  . copilot-mode)  ; 在编程模式和 org-mode 下自动启用
   :config
   ;; 禁用缩进警告
   (setq copilot-disable-predicates 

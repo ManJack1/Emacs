@@ -2080,7 +2080,7 @@ org-mode 是 Emacs 的杀手级功能，用于笔记、待办事项、文档编�
   :config
   (setq org-startup-with-inline-images t)
   (setq org-image-align 'center)
-  (setq org-image-actual-width '(250))
+  (setq org-image-actual-width '(1000))
   (setq org-directory "~/org"
         org-startup-indented t
         org-hide-emphasis-markers t)
@@ -2998,7 +2998,7 @@ copilot.el 是 GitHub Copilot 的 Emacs 客户端，支持 AI 自动补全代码
 #+begin_src emacs-lisp
 (use-package copilot
   :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
-  :hook ((prog-mode org-mode) . copilot-mode)  ; 在编程模式和 org-mode 下自动启用
+  ;; :hook (prog-mode  . copilot-mode)  ; 在编程模式和 org-mode 下自动启用
   :config
   ;; 禁用缩进警告
   (setq copilot-disable-predicates 
