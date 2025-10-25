@@ -869,10 +869,10 @@
     (kbd "SPC w j") 'shrink-window
     (kbd "SPC w l") 'enlarge-window-horizontally
     (kbd "SPC w h") 'shrink-window-horizontally
-    (kbd "C-h") 'windmove-left
-    (kbd "C-j") 'windmove-down
-    (kbd "C-k") 'windmove-up
-    (kbd "C-l") 'windmove-right
+    (kbd "C-h") 'evil-window-left
+    (kbd "C-j") 'evil-window-down
+    (kbd "C-k") 'evil-window-up
+    (kbd "C-l") 'evil-window-right
     
     ;; 缓冲区管理
     (kbd "SPC b d") 'evil-delete-buffer
