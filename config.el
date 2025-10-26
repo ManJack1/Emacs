@@ -869,10 +869,10 @@
     (kbd "SPC w j") 'shrink-window
     (kbd "SPC w l") 'enlarge-window-horizontally
     (kbd "SPC w h") 'shrink-window-horizontally
-    (kbd "C-h") 'windmove-left
-    (kbd "C-j") 'windmove-down
-    (kbd "C-k") 'windmove-up
-    (kbd "C-l") 'windmove-right
+    (kbd "C-h") 'evil-window-left
+    (kbd "C-j") 'evil-window-down
+    (kbd "C-k") 'evil-window-up
+    (kbd "C-l") 'evil-window-right
     
     ;; 缓冲区管理
     (kbd "SPC b d") 'evil-delete-buffer
@@ -1526,7 +1526,7 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
 
 (use-package copilot
   :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
-  :hook ((prog-mode org-mode) . copilot-mode)  ; 在编程模式和 org-mode 下自动启用
+  ;; :hook (prog-mode  . copilot-mode)  ; 在编程模式和 org-mode 下自动启用
   :config
   ;; 禁用缩进警告
   (setq copilot-disable-predicates 

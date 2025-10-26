@@ -486,6 +486,7 @@ use-package 是一个声明式包配置宏，简化包的安装、配置和延�
 *** 配置说明
 本配置已设置 =straight-use-package-by-default t= ，所有 use-package 声明会自动使用 straight.el 安装包。
 
+
 * 界面美化
 提升 Emacs 的视觉体验，包括主题、状态栏、标签栏、图标等。
 ** 基础设置
@@ -900,6 +901,7 @@ neotree 是一个侧边文件树浏览器，类似 VS Code 的资源管理器，
   - =a= : 创建文件
   - =d= : 删除文件
   - =r= : 重命名文件
+
 
 * 编辑增强
 
@@ -1925,10 +1927,10 @@ avy 提供基于字符的快速跳转功能，类似 Vim 的 EasyMotion。输入
     (kbd "SPC w j") 'shrink-window
     (kbd "SPC w l") 'enlarge-window-horizontally
     (kbd "SPC w h") 'shrink-window-horizontally
-    (kbd "C-h") 'windmove-left
-    (kbd "C-j") 'windmove-down
-    (kbd "C-k") 'windmove-up
-    (kbd "C-l") 'windmove-right
+    (kbd "C-h") 'evil-window-left
+    (kbd "C-j") 'evil-window-down
+    (kbd "C-k") 'evil-window-up
+    (kbd "C-l") 'evil-window-right
     
     ;; 缓冲区管理
     (kbd "SPC b d") 'evil-delete-buffer
@@ -2696,7 +2698,6 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
 - =dd= : 独立公式 \[ $0 \]
 
 
-
 * 编程开发
 
 LSP、tree-sitter 和各种编程语言支持。
@@ -2920,9 +2921,7 @@ treesit-auto 自动管理 tree-sitter 语法解析器，无需手动配置。tre
 
 
 * AI 辅助编程
-
 AI 相关工具配置，包括 GPT、Copilot 等智能编程助手。
-
 ** gptel
 *** 介绍
 gptel 是 Emacs 的通用 LLM 客户端，支持 ChatGPT、Claude、Gemini 等多种 AI 模型。可以在 Emacs 中直接与 AI 对话、重写代码、生成提交信息等。
@@ -2986,7 +2985,6 @@ gptel-commit 集成 gptel 和 magit，使用 AI 自动生成符合规范的 Git 
 - 在 magit commit 界面使用 =SPC g c= 生成提交信息
 - AI 会根据 diff 内容生成合适的提交描述
 
-
 ** copilot
 *** 介绍
 copilot.el 是 GitHub Copilot 的 Emacs 客户端，支持 AI 自动补全代码。它可以在编程模式下自动激活，提供智能代码建议，提升开发效率。
@@ -2998,7 +2996,7 @@ copilot.el 是 GitHub Copilot 的 Emacs 客户端，支持 AI 自动补全代码
 #+begin_src emacs-lisp
 (use-package copilot
   :straight (:host github :repo "copilot-emacs/copilot.el" :files ("*.el"))
-  :hook ((prog-mode org-mode) . copilot-mode)  ; 在编程模式和 org-mode 下自动启用
+  ;; :hook (prog-mode  . copilot-mode)  ; 在编程模式和 org-mode 下自动启用
   :config
   ;; 禁用缩进警告
   (setq copilot-disable-predicates 
@@ -3042,9 +3040,7 @@ claude-code-ide 将 Claude AI 集成到 Emacs 中，提供智能代码补全、�
 
 
 * 附录
-
 ** 包管理常用命令速查
-
 *** straight.el 命令
 - =M-x straight-pull-all= : 更新所有包
 - =M-x straight-pull-package= : 更新单个包
@@ -3054,9 +3050,7 @@ claude-code-ide 将 Claude AI 集成到 Emacs 中，提供智能代码补全、�
 - =M-x straight-thaw-versions= : 从锁定文件恢复版本
 - =M-x straight-check-all= : 检查所有包状态
 - =M-x straight-check-package= : 检查单个包状态
-
 ** 问题排查
-
 *** 如果某个包加载失败
 1. 检查: =M-x straight-check-package=
 2. 重建: =M-x straight-rebuild-package=
@@ -3076,35 +3070,12 @@ rm -rf ~/.emacs.d/straight/
 #+END_SRC
 
 ** 配置文件位置
-
 - 主配置: =~/.emacs.d/config.org=
 - 初始化: =~/.emacs.d/init.el=
 - 包目录: =~/.emacs.d/straight/=
 - 备份: =~/.emacs.d/config.org.backup-*=
-
-** 相关资源
-
-*** 学习资源
-- Emacs 官网: https://www.gnu.org/software/emacs/
-- Emacs Wiki: https://www.emacswiki.org/
-- Emacs China: https://emacs-china.org/
-- Mastering Emacs: https://www.masteringemacs.org/
-
-*** 配置参考
-- Doom Emacs: https://github.com/doomemacs/doomemacs
-- Spacemacs: https://www.spacemacs.org/
-- Purcell's Emacs: https://github.com/purcell/emacs.d
-
-*** 包仓库
-- MELPA: https://melpa.org/
-- GNU ELPA: https://elpa.gnu.org/
-- straight.el recipes: https://github.com/radian-software/straight.el/blob/develop/README.md#recipe-format
-
-
 ** 开发工具集成
-
 本配置集成了多种开发工具，提供完整的 IDE 体验:
-
 *** Git 版本控制
 - Magit: 强大的 Git 界面
 - diff-hl: 实时显示文件差异
@@ -3122,7 +3093,6 @@ rm -rf ~/.emacs.d/straight/
 - mcp: 模型上下文协议
 
 ** TODO 任务列表
-
 *** DONE 设置pdftool的颜色随着时间变化成modus黄和modus黑
 
 *** DONE which-key 设置标签
