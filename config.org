@@ -2080,7 +2080,7 @@ org-mode 是 Emacs 的杀手级功能，用于笔记、待办事项、文档编�
   :config
   (setq org-startup-with-inline-images t)
   (setq org-image-align 'center)
-  (setq org-image-actual-width '(250))
+  (setq org-image-actual-width '(800))
   (setq org-directory "~/org"
         org-startup-indented t
         org-hide-emphasis-markers t)
