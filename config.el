@@ -1008,7 +1008,7 @@
   :config
   (setq org-startup-with-inline-images t)
   (setq org-image-align 'center)
-  (setq org-image-actual-width '(1000))
+  (setq org-image-actual-width '(800))
   (setq org-directory "~/org"
         org-startup-indented t
         org-hide-emphasis-markers t)
