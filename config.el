@@ -1498,6 +1498,41 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   :config
   (setq treesit-auto-install 'prompt))  ; 提示安装语法
 
+;; (use-package ai-code-interface
+;;   :straight (:host github :repo "tninja/ai-code-interface.el")
+;;   :after claude-code-ide
+;;   :bind ("C-c a" . ai-code-menu)
+;;   :config
+;;   (ai-code-set-backend 'claude-code-ide)
+  
+;;   ;; 可选：Magit 集成
+;;   (with-eval-after-load 'magit
+;;     (ai-code-magit-setup-transients)))
+
+(use-package org-sliced-images
+  :straight t
+  :config
+  (org-sliced-images-mode 1))
+
+(use-package beacon
+  :straight t
+  :config
+  (beacon-mode 1))
+
+(defun my-window-resize ()
+  "窗口调整模式，连按 h/j/k/l"
+  (interactive)
+  (message "使用 h/j/k/l 调整窗口大小")
+  (set-transient-map
+   (let ((map (make-sparse-keymap)))
+     (define-key map "h" (lambda () (interactive) (shrink-window-horizontally 3) (my-window-resize)))
+     (define-key map "j" (lambda () (interactive) (shrink-window 3) (my-window-resize)))
+     (define-key map "k" (lambda () (interactive) (enlarge-window 3) (my-window-resize)))
+     (define-key map "l" (lambda () (interactive) (enlarge-window-horizontally 3) (my-window-resize)))
+     map)))
+
+(global-set-key (kbd "C-c w") 'my-window-resize)
+
 (use-package gptel
   :straight t
    :config
@@ -1544,23 +1579,16 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   :config
   (claude-code-ide-emacs-tools-setup))
 
-;; (use-package ai-code-interface
-;;   :straight (:host github :repo "tninja/ai-code-interface.el")
-;;   :after claude-code-ide
-;;   :bind ("C-c a" . ai-code-menu)
-;;   :config
-;;   (ai-code-set-backend 'claude-code-ide)
-  
-;;   ;; 可选：Magit 集成
-;;   (with-eval-after-load 'magit
-;;     (ai-code-magit-setup-transients)))
-
-(use-package org-sliced-images
+(use-package evil-matchit
   :straight t
   :config
-  (org-sliced-images-mode 1))
+  (global-evil-matchit-mode 1)
+  )
 
-(use-package beacon
+(use-package evil-anzu
   :straight t
-  :config
-  (beacon-mode 1))
+  :after evil
+  :diminish
+  :demand t
+  :init
+  (global-anzu-mode t))
