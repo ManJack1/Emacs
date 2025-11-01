@@ -1592,3 +1592,6 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   :demand t
   :init
   (global-anzu-mode t))
+
+(use-package kdl-mode
+  :straight t)

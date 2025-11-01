@@ -3188,3 +3188,9 @@ rm -rf ~/.emacs.d/straight/
 #+end_src
 
 
+
+#+begin_src emacs-lisp
+(use-package kdl-mode
+  :straight t)
+#+end_src
+
