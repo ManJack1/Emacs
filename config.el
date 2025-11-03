@@ -858,193 +858,232 @@
   (setq avy-style 'at-full)
   (setq avy-all-windows t))
 
-(with-eval-after-load 'pdf-view
-  (define-key pdf-view-mode-map (kbd "C-c C-t") #'pdf-toggle-colors))
-
-  ;; Normal 模式键位
-  (evil-define-key 'normal 'global
-
-
-    
-    ;;org
-    (kbd "SPC o p") 'org-latex-preview
-    
-    ;;terminal
-    (kbd "C-/") 'toggle-eat
-
-    ;;git
-    (kbd "SPC g g") 'magit
-    (kbd "SPC g d") 'magit-diff
-    (kbd "SPC g i") 'magit-info
-    (kbd "SPC g l") 'magit-log
-    (kbd "B") 'blamer-show-commit-info
-
-    ;;ai
-    (kbd "SPC c e") 'toggle-copilot-mode
-    (kbd "SPC a d") 'gptel-add
-    (kbd "SPC a a") 'gptel
-    (kbd "SPC a m") 'gptel-menu
-    (kbd "SPC a t") 'gptel-tools
-    (kbd "SPC g c") 'gptel-commit
-    (kbd "SPC c a") 'claude-code-ide
-    (kbd "SPC c t") 'claude-code-ide-stop
-    (kbd "SPC c r") 'claude-code-ide-resume
-    (kbd "SPC c c") 'claude-code-continue
+(use-package general
+  :straight t
+  :config
+  
+  ;; ==================== 创建 Definer ====================
+  
+  ;; 全局 Leader key (SPC)
+  (general-create-definer global-leader
+    :states '(normal visual insert emacs)
+    :prefix "SPC"
+    :non-normal-prefix "C-SPC")
+  
+  ;; Normal 模式专用
+  (general-create-definer normal-leader
+    :states 'normal
+    :prefix "SPC")
+  
+  ;; Visual 模式专用
+  (general-create-definer visual-leader
+    :states 'visual
+    :prefix "SPC")
+  
+  ;; ==================== Normal 模式键绑定 ====================
+  
+  ;; 全局 Normal 模式键（不带 SPC 前缀）
+  (general-define-key
+   :states 'normal
+   "u" 'undo-only
+   "C-r" 'undo-fu-only-redo
+   "s" 'avy-goto-char
+   "S" 'avy-goto-word-1
+   "B" 'blamer-show-commit-info
+   "K" 'lsp-ui-doc-glance
+   "H" 'centaur-tabs-backward-tab
+   "L" 'centaur-tabs-forward-tab
    
-
-    ;; 文件操作
-    (kbd "SPC f f") 'find-file
-    (kbd "SPC f g") 'consult-fd
-    (kbd "C-s") 'save-buffer
+   ;; 窗口导航
+   "C-h" 'evil-window-left
+   "C-j" 'evil-window-down
+   "C-k" 'evil-window-up
+   "C-l" 'evil-window-right
+   "C-s" 'save-buffer
+   "C-/" 'toggle-eat
+   
+   ;; LSP goto
+   "g d" 'lsp-goto-type-definition
+   "g r" 'lsp-ui-peek-find-references
+   "g i" 'lsp-find-implementation
+   "g s d" 'evil-surround-delete
+   "g s r" 'evil-surround-change
+   
+   ;; Diagnostics navigation
+   "[ d" 'flymake-goto-prev-error
+   "] d" 'flymake-goto-next-error
+   "[ t" 'hl-todo-previous
+   "] t" 'hl-todo-next)
+  
+  ;; 带 SPC 前缀的 Normal 模式键
+  (normal-leader
+    ;; 快速访问
+    "SPC" 'consult-buffer
     
-    ;;undo
-    (kbd "u") 'undo-only
-    (kbd "C-r") 'undo-fu-only-redo
-
-    ;;avy
-    (kbd "s") 'avy-goto-char
-    (kbd "S") 'avy-goto-word-1
+    ;; Org (o)
+    "o" '(:ignore t :which-key "org")
+    "op" 'org-latex-preview
     
-    ;; 窗口管理
-    (kbd "SPC -") 'split-window-below    ; 水平分割
-    (kbd "SPC |") 'split-window-right   ; 垂直分割（用 \\ 代替 |）
-    (kbd "SPC w d") 'delete-window       ; 删除窗口
-    (kbd "SPC w k") 'enlarge-window
-    (kbd "SPC w j") 'shrink-window
-    (kbd "SPC w l") 'enlarge-window-horizontally
-    (kbd "SPC w h") 'shrink-window-horizontally
-    (kbd "C-h") 'evil-window-left
-    (kbd "C-j") 'evil-window-down
-    (kbd "C-k") 'evil-window-up
-    (kbd "C-l") 'evil-window-right
+    ;; Git (g)
+    "g" '(:ignore t :which-key "git")
+    "gg" 'magit
+    "gd" 'magit-diff
+    "gi" 'magit-info
+    "gl" 'magit-log
+    "gc" 'gptel-commit
     
-    ;; 缓冲区管理
-    (kbd "SPC b d") 'evil-delete-buffer
+    ;; AI (a & c)
+    "a" '(:ignore t :which-key "ai")
+    "ad" 'gptel-add
+    "aa" 'gptel
+    "am" 'gptel-menu
+    "at" 'gptel-tools
     
-    ;; 标签管理
-    (kbd "SPC f t") 'centaur-tabs-switch-group
-    (kbd "H") 'centaur-tabs-backward-tab
-    (kbd "L") 'centaur-tabs-forward-tab
+    "c" '(:ignore t :which-key "code/ai")
+    "ce" 'toggle-copilot-mode
+    "ca" 'claude-code-ide
+    "ct" 'claude-code-ide-stop
+    "cr" 'claude-code-ide-resume
+    "cc" 'claude-code-continue
+    "cs" 'my/toggle-lsp-ui-imenu
+    "cf" 'lsp-format-buffer
+    "ca" 'lsp-execute-code-action
+    "cr" 'lsp-rename
+    "ci" 'describe-mode
+    "cp" 'copy-file-path
     
-    ;; 文件树
-    (kbd "SPC e") 'neotree-toggle
+    ;; File (f)
+    "f" '(:ignore t :which-key "file")
+    "ff" 'find-file
+    "fg" 'consult-fd
+    "ft" 'centaur-tabs-switch-group
+    "fd" 'project-find-dir
+    "fp" 'project-find-file
+    "fP" 'project-switch-project
+    "fr" 'consult-recent-file
     
-    ;; LSP
-    (kbd "g d") 'lsp-goto-type-definition
-    (kbd "g r") 'lsp-ui-peek-find-references
-    (kbd "g i") 'lsp-find-implementation
-    (kbd "SPC c s") 'my/toggle-lsp-ui-imenu
-    (kbd "SPC c f") 'lsp-format-buffer
-    (kbd "SPC c a") 'lsp-execute-code-action
-    (kbd "SPC c r") 'lsp-rename
-    (kbd "SPC c i") 'describe-mode
-    (kbd "K") 'lsp-ui-doc-glance
+    ;; Buffer (b)
+    "b" '(:ignore t :which-key "buffer")
+    "bd" 'evil-delete-buffer
     
-    ;; org-download
-    (kbd "SPC i p") 'org-download-clipboard
-    (kbd "SPC i d") 'org-download-delete
+    ;; Window (w)
+    "w" '(:ignore t :which-key "window")
+    "-" 'split-window-below
+    "|" 'split-window-right
+    "wd" 'delete-window
+    "wk" 'enlarge-window
+    "wj" 'shrink-window
+    "wl" 'enlarge-window-horizontally
+    "wh" 'shrink-window-horizontally
     
-    ;; evil-surround
-    (kbd "g s d") 'evil-surround-delete
-    (kbd "g s r") 'evil-surround-change
+    ;; File tree (e)
+    "e" 'neotree-toggle
     
-    ;; 脚本
-    (kbd "SPC c p") 'copy-file-path
+    ;; Image (i)
+    "i" '(:ignore t :which-key "image")
+    "ip" 'org-download-clipboard
+    "id" 'org-download-delete
     
-    ;; bookmark
-    (kbd "SPC m s") 'bookmark-set
-    (kbd "SPC m j") 'bookmark-jump
-    (kbd "SPC m d") 'bookmark-delete
+    ;; Bookmark (m)
+    "m" '(:ignore t :which-key "bookmark")
+    "ms" 'bookmark-set
+    "mj" 'bookmark-jump
+    "md" 'bookmark-delete
     
-    ;; 搜索和导航
-    (kbd "SPC s f") 'describe-function
-
-    ;;diagnostics
-    (kbd "SPC x x") 'lsp-treemacs-errors-list
-    (kbd "[ d") 'flymake-goto-prev-error
-    (kbd "] d") 'flymake-goto-next-error
-    (kbd "[ t") 'hl-todo-previous
-    (kbd "] t") 'hl-todo-next
-
-    ;;quit/session
-
-    (kbd "SPC q q") 'save-buffers-kill-terminal
-    (kbd "SPC q Q") 'save-buffers-kill-emacs
-
-    (kbd "SPC f d") 'project-find-dir
-    (kbd "SPC f p") 'project-find-file
-    (kbd "SPC f P") 'project-switch-project
-    (kbd "SPC f r") 'consult-recent-file
-
-
-    (kbd "SPC s e") 'consult-flymake
-    (kbd "SPC s y") 'consult-yank-pop
-    (kbd "SPC s k") 'embark-bindings
-    (kbd "SPC s t") 'hl-todo-occur
-    (kbd "SPC s T") 'hl-todo-rgrep
-    (kbd "SPC s b") 'consult-line
-    (kbd "SPC SPC") 'consult-buffer
-    (kbd "SPC s g") 'consult-ripgrep
-    (kbd "SPC s G") 'consult-git-grep
-    (kbd "SPC s n") 'yas-visit-snippet-file
-    (kbd "SPC s m") 'consult-bookmark
-    (kbd "SPC s S") 'imenu
-    (kbd "SPC s s") 'consult-imenu)
-
-  ;; Visual 模式键位
-  (evil-define-key 'visual 'global
-    ;;ai
-    (kbd "SPC a r") 'gptel-rewrite
-    (kbd "SPC a d") 'gptel-add
-    (kbd "SPC a a") 'gptel
-    (kbd "SPC a m") 'gptel-menu
-    (kbd "SPC a t") 'gptel-tools
-
-    (kbd "C-l") 'evil-end-of-line
-    (kbd "C-h") 'evil-beginning-of-line
-    (kbd "g s a") 'evil-surround-region)  ; 添加周围符号
-
-  (evil-define-key 'insert 'global
-    (kbd "C-h") 'backward-char
-    (kbd "C-l") 'forward-char  ; 向右
-    (kbd "TAB") 'smart-tab)
-
-(with-eval-after-load 'neotree
-  (evil-define-key 'normal neotree-mode-map
-    ;; h 折叠当前目录（如果是文件夹且已展开），否则进入上一级
-    (kbd "h")
-    (lambda ()
-      (interactive)
-      (let ((node (neo-buffer--get-filename-current-line)))
-        (cond
-         ;; 当前节点是目录并已展开 → 折叠
-         ((and node (file-directory-p node)
-               (neo-buffer--expanded-node-p node))
-          (neo-buffer--set-expand node nil)
-          (neo-buffer--refresh t))
-         ;; 否则回到上级目录
-         (t (neotree-select-up-node)))))
-
-    ;; l 打开文件或展开目录
-    (kbd "l")
-    (lambda ()
-      (interactive)
-      (let ((node (neo-buffer--get-filename-current-line)))
-        (when node
-          (if (file-directory-p node)
-              (progn
-                (neo-buffer--set-expand node t)
-                (neo-buffer--refresh t)
-                (neotree-next-line))
-            (neotree-enter)))))
-
-    ;; 其他常用快捷键
-    (kbd "q") 'neotree-toggle
-    (kbd "a") 'neotree-create-node
-    (kbd "d") 'neotree-delete-node
-    (kbd "r") 'neotree-rename-node
-    (kbd "y") 'neotree-copy-node
-    (kbd "RET") 'neotree-enter))
+    ;; Search (s)
+    "s" '(:ignore t :which-key "search")
+    "sf" 'describe-function
+    "se" 'consult-flymake
+    "sy" 'consult-yank-pop
+    "sk" 'embark-bindings
+    "st" 'hl-todo-occur
+    "sT" 'hl-todo-rgrep
+    "sb" 'consult-line
+    "sg" 'consult-ripgrep
+    "sG" 'consult-git-grep
+    "sn" 'yas-visit-snippet-file
+    "sm" 'consult-bookmark
+    "sS" 'imenu
+    "ss" 'consult-imenu
+    
+    ;; Diagnostics (x)
+    "x" '(:ignore t :which-key "diagnostics")
+    "xx" 'lsp-treemacs-errors-list
+    
+    ;; Quit (q)
+    "q" '(:ignore t :which-key "quit")
+    "qq" 'save-buffers-kill-terminal
+    "qQ" 'save-buffers-kill-emacs)
+  
+  ;; ==================== Visual 模式键绑定 ====================
+  
+  (general-define-key
+   :states 'visual
+   "C-l" 'evil-end-of-line
+   "C-h" 'evil-beginning-of-line
+   "g s a" 'evil-surround-region)
+  
+  (visual-leader
+    ;; AI
+    "a" '(:ignore t :which-key "ai")
+    "ar" 'gptel-rewrite
+    "ad" 'gptel-add
+    "aa" 'gptel
+    "am" 'gptel-menu
+    "at" 'gptel-tools)
+  
+  ;; ==================== Insert 模式键绑定 ====================
+  
+  (general-define-key
+   :states 'insert
+   "C-h" 'backward-char
+   "C-l" 'forward-char
+   "TAB" 'smart-tab)
+  
+  ;; ==================== PDF View 模式 ====================
+  
+  (general-define-key
+   :keymaps 'pdf-view-mode-map
+   "C-c C-t" 'pdf-toggle-colors)
+  
+  ;; ==================== Neotree 模式 ====================
+  
+  (defun my/neotree-collapse-or-up ()
+    "折叠当前目录或进入上级目录."
+    (interactive)
+    (let ((node (neo-buffer--get-filename-current-line)))
+      (cond
+       ;; 当前节点是目录并已展开 → 折叠
+       ((and node (file-directory-p node)
+             (neo-buffer--expanded-node-p node))
+        (neo-buffer--set-expand node nil)
+        (neo-buffer--refresh t))
+       ;; 否则回到上级目录
+       (t (neotree-select-up-node)))))
+  
+  (defun my/neotree-open-or-expand ()
+    "打开文件或展开目录."
+    (interactive)
+    (let ((node (neo-buffer--get-filename-current-line)))
+      (when node
+        (if (file-directory-p node)
+            (progn
+              (neo-buffer--set-expand node t)
+              (neo-buffer--refresh t)
+              (neotree-next-line))
+          (neotree-enter)))))
+  
+  (general-define-key
+   :states 'normal
+   :keymaps 'neotree-mode-map
+   "h" 'my/neotree-collapse-or-up
+   "l" 'my/neotree-open-or-expand
+   "q" 'neotree-toggle
+   "a" 'neotree-create-node
+   "d" 'neotree-delete-node
+   "r" 'neotree-rename-node
+   "y" 'neotree-copy-node
+   "RET" 'neotree-enter))
 
 (use-package org
   :straight t
@@ -1666,3 +1705,162 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   :bind ("C-c C-'" . claude-code-ide-menu)
   :config
   (claude-code-ide-emacs-tools-setup))
+
+;; ──────────────────────────────────────────────────────────────────────
+;; 1. general + 定义 global-definer（必须最先）
+;; ──────────────────────────────────────────────────────────────────────
+(use-package general
+  :straight t
+  :demand t
+  :config
+  (general-create-definer global-definer
+    :states '(normal visual insert emacs)
+    :keymaps 'override
+    :prefix ""
+    :non-normal-prefix "C-"))
+;; ──────────────────────────────────────────────────────────────────────
+;; 2. 多光标
+;; ──────────────────────────────────────────────────────────────────────
+(use-package iedit
+  :ensure t
+  :init
+  (setq iedit-toggle-key-default nil)
+  :config
+  (define-key iedit-mode-keymap (kbd "M-h") 'iedit-restrict-function)
+  (define-key iedit-mode-keymap (kbd "M-i") 'iedit-restrict-current-line))
+(use-package evil-multiedit
+  :ensure t
+  :commands (evil-multiedit-default-keybinds)
+  :init
+  (evil-multiedit-default-keybinds))
+;; ──────────────────────────────────────────────────────────────────────
+;; 3. expand-region
+;; ──────────────────────────────────────────────────────────────────────
+(use-package expand-region
+  :config
+  (defadvice er/prepare-for-more-expansions-internal
+      (around helm-ag/prepare-for-more-expansions-internal activate)
+    ad-do-it
+    (let ((new-msg (concat (car ad-return-value)
+                           ", H to highlight in buffers"
+                           ", / to search in project, "
+                           "e iedit mode in functions"
+                           "f to search in files, "
+                           "b to search in opened buffers"))
+          (new-bindings (cdr ad-return-value)))
+      (cl-pushnew
+       '("H" (lambda ()
+               (interactive)
+               (call-interactively 'zilongshanren/highlight-dwim)))
+       new-bindings)
+      (cl-pushnew
+       '("/" (lambda ()
+               (interactive)
+               (call-interactively 'my/search-project-for-symbol-at-point)))
+       new-bindings)
+      (cl-pushnew
+       '("e" (lambda ()
+               (interactive)
+               (call-interactively 'evil-multiedit-match-all)))
+       new-bindings)
+      (cl-pushnew
+       '("f" (lambda ()
+               (interactive)
+               (call-interactively 'my/er-find-file-with-text)))
+       new-bindings)
+      (cl-pushnew
+       '("b" (lambda ()
+               (interactive)
+               (call-interactively 'my/er-consult-line-with-text)))
+       new-bindings)
+      (setq ad-return-value (cons new-msg new-bindings)))))
+
+
+(defun my/er-find-file-with-text ()
+  "在 expand-region 中使用选中的文本查找文件"
+  (interactive)
+  (let ((text (when (use-region-p)
+               (buffer-substring-no-properties
+                (region-beginning) (region-end)))))
+    (deactivate-mark)
+    (if text
+        (find-file (read-file-name 
+                   (format "Find file [%s]: " text)
+                   nil nil nil text))
+      (call-interactively 'find-file))))
+
+(defun my/er-consult-line-with-text ()
+  "在 expand-region 中使用选中的文本搜索缓冲区"
+  (interactive)
+  (let ((text (when (use-region-p)
+               (buffer-substring-no-properties
+                (region-beginning) (region-end)))))
+    (deactivate-mark)
+    (if text
+        (consult-line text)
+      (call-interactively 'consult-line))))
+
+;; ──────────────────────────────────────────────────────────────────────
+;; 4. 搜索函数
+;; ──────────────────────────────────────────────────────────────────────
+;;;###autoload
+(defun my/search-project-for-symbol-at-point ()
+  (interactive)
+  (if (use-region-p)
+      (progn
+        (consult-ripgrep (project-root (project-current))
+                         (buffer-substring (region-beginning) (region-end))))))
+;; ──────────────────────────────────────────────────────────────────────
+;; 5. 全局快捷键（现在 global-definer 已定义）
+;; ──────────────────────────────────────────────────────────────────────
+(global-definer
+  "SPC hc" 'zilongshanren/clearn-highlight
+  "SPC hH" 'zilongshanren/highlight-dwim
+  "SPC v" 'er/expand-region)
+;; ──────────────────────────────────────────────────────────────────────
+;; 6. 快速替换
+;; ──────────────────────────────────────────────────────────────────────
+(defun zilongshanren/evil-quick-replace (beg end)
+  (interactive "r")
+  (when (evil-visual-state-p)
+    (evil-exit-visual-state)
+    (let ((selection (regexp-quote (buffer-substring-no-properties beg end))))
+      (setq command-string (format "%%s /%s//g" selection))
+      (minibuffer-with-setup-hook
+          (lambda () (backward-char 2))
+        (evil-ex command-string)))))
+(define-key evil-visual-state-map (kbd "C-r") 'zilongshanren/evil-quick-replace)
+;; ──────────────────────────────────────────────────────────────────────
+;; 7. highlight-global（用 straight 安装，无 quelpa）
+;; ──────────────────────────────────────────────────────────────────────
+(use-package highlight-global
+  :straight (highlight-global
+             :type git
+             :host github
+             :repo "glen-dai/highlight-global")
+  :ensure nil
+  :commands (highlight-frame-toggle)
+  :config
+  (progn
+    (setq-default highlight-faces
+                  '(('hi-red-b . 0)
+                    ('hi-aquamarine . 0)
+                    ('hi-pink . 0)
+                    ('hi-blue-b . 0)))))
+;; ──────────────────────────────────────────────────────────────────────
+;; 8. 高亮函数 + symbol-overlay
+;; ──────────────────────────────────────────────────────────────────────
+(defun zilongshanren/highlight-dwim ()
+  (interactive)
+  (if (use-region-p)
+      (progn
+        (highlight-frame-toggle)
+        (deactivate-mark))
+    (symbol-overlay-put)))
+(defun zilongshanren/clearn-highlight ()
+  (interactive)
+  (clear-highlight-frame)
+  (symbol-overlay-remove-all))
+(use-package symbol-overlay
+  :config
+  (define-key symbol-overlay-map (kbd "h") 'nil))
