@@ -420,7 +420,7 @@
   (indent-bars-treesit-scope '((python function_definition class_definition 
                                        for_statement if_statement 
                                        with_statement while_statement)))
-  :hook ((java-ts-mode python-ts-mode yaml-mode c++-ts-mode) . indent-bars-mode))
+  :hook ((kdl-mode nix-ts-mode java-ts-mode python-ts-mode yaml-mode c++-ts-mode) . indent-bars-mode))
 
 (use-package all-the-icons
   :straight t
@@ -1581,7 +1581,7 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   
   ;; 注意：kdlfmt 使用命令列表格式
   (setf (alist-get 'kdlfmt apheleia-formatters)
-        '("kdlfmt" "format" file))  ;; 这是一个列表
+      '("kdlfmt" "format" "--stdin"))
   
   (setf (alist-get 'nixpkgs-fmt apheleia-formatters)
         '("nixpkgs-fmt"))
@@ -1664,7 +1664,7 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   :straight t
    :config
 ;; OPTIONAL configuration
-(setq gptel-default-mode 'org-mode)
+;; (setq gptel-default-mode 'org-mode)
 (setq gptel-model 'gpt-4o
       gptel-backend (gptel-make-gh-copilot "Copilot"))
 
@@ -1864,3 +1864,54 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
 (use-package symbol-overlay
   :config
   (define-key symbol-overlay-map (kbd "h") 'nil))
+
+(use-package markdown-mode
+  :commands (gfm-mode markdown-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :custom
+  (markdown-header-scaling t)
+  (markdown-hide-urls t)
+  (markdown-fontify-code-blocks-natively t)
+  :custom-face
+  (markdown-header-delimiter-face ((t (:foreground "#616161" :height 0.9))))
+  (markdown-header-face-1 ((t (:height 1.6 :foreground "#A3BE8C" :weight extra-bold :inherit markdown-header-face))))
+  (markdown-header-face-2 ((t (:height 1.4 :foreground "#EBCB8B" :weight extra-bold :inherit markdown-header-face))))
+  (markdown-header-face-3 ((t (:height 1.2 :foreground "#D08770" :weight extra-bold :inherit markdown-header-face))))
+  (markdown-header-face-4 ((t (:height 1.15 :foreground "#BF616A" :weight bold :inherit markdown-header-face))))
+  (markdown-header-face-5 ((t (:height 1.1 :foreground "#b48ead" :weight bold :inherit markdown-header-face))))
+  (markdown-header-face-6 ((t (:height 1.05 :foreground "#5e81ac" :weight semi-bold :inherit markdown-header-face))))
+  :config
+  (defvar nb/current-line '(0 . 0)
+    "(start . end) of current line in current buffer")
+  (make-variable-buffer-local 'nb/current-line)
+  
+  (defun nb/unhide-current-line (limit)
+    "Font-lock function"
+    (let ((start (max (point) (car nb/current-line)))
+          (end (min limit (cdr nb/current-line))))
+      (when (< start end)
+        (remove-text-properties start end
+                                '(invisible t display "" composition ""))
+        (goto-char limit)
+        t)))
+  
+  (defun nb/refontify-on-linemove ()
+    "Post-command-hook"
+    (let* ((start (line-beginning-position))
+           (end (line-beginning-position 2))
+           (needs-update (not (equal start (car nb/current-line)))))
+      (setq nb/current-line (cons start end))
+      (when needs-update
+        (font-lock-fontify-block 3))))
+  
+  (defun nb/markdown-unhighlight ()
+    "Enable markdown concealling"
+    (interactive)
+    (markdown-toggle-markup-hiding 'toggle)
+    (font-lock-add-keywords nil '((nb/unhide-current-line)) t)
+    (add-hook 'post-command-hook #'nb/refontify-on-linemove nil t))
+  
+  :hook
+  (markdown-mode . nb/markdown-unhighlight))
