@@ -1,3 +1,17 @@
+(defun my-window-resize ()
+  "窗口调整模式，连按 h/j/k/l"
+  (interactive)
+  (message "使用 h/j/k/l 调整窗口大小")
+  (set-transient-map
+   (let ((map (make-sparse-keymap)))
+     (define-key map "h" (lambda () (interactive) (shrink-window-horizontally 3) (my-window-resize)))
+     (define-key map "j" (lambda () (interactive) (shrink-window 3) (my-window-resize)))
+     (define-key map "k" (lambda () (interactive) (enlarge-window 3) (my-window-resize)))
+     (define-key map "l" (lambda () (interactive) (enlarge-window-horizontally 3) (my-window-resize)))
+     map)))
+
+(global-set-key (kbd "C-c w") 'my-window-resize)
+
 (defun toggle-eat ()
   "Toggle between eat terminal and previous buffer. Create eat terminal if not exists."
   (interactive)
@@ -488,6 +502,11 @@
   :config
   (setq save-place-file (expand-file-name "saveplace" user-emacs-directory)))                           ;; 启用 saveplace
 
+(use-package beacon
+  :straight t
+  :init
+  (beacon-mode 1))
+
 (use-package magit
   :config
   ;; 可选配置
@@ -555,11 +574,22 @@
                          ("terminfo/e" "e/*") 
                          "*.info"))
   :custom
-  ;; Use a more compatible terminal type
-  (eat-term-name "xterm-256color")  ; or "eterm-color"
+  (eat-term-name "xterm-256color")
   :config
-  (server-start) ;;enable emacs open at terminal
-  (add-hook 'eshell-first-time-mode-hook #'eat-eshell-mode))
+  (server-start)
+  (add-hook 'eshell-first-time-mode-hook #'eat-eshell-mode)
+  
+  ;; Evil 模式配置
+  (evil-set-initial-state 'eat-mode 'emacs)  ; eat 中默认用 emacs 状态
+  
+  ;; 或者如果想在 eat 中用 normal 模式
+  (add-hook 'eat-mode-hook
+            (lambda ()
+              ;; 在 insert 状态下可以正常输入
+              (evil-local-set-key 'normal (kbd "p") 'eat-yank)
+              (evil-local-set-key 'normal (kbd "P") 'eat-yank)
+              ;; Ctrl+Shift+V 也能粘贴
+              (local-set-key (kbd "C-S-v") 'eat-yank))))
 
 (use-package vterm
   :straight t
@@ -611,6 +641,20 @@
   :after evil
   :init
   (evil-collection-init))
+
+(use-package evil-matchit
+  :straight t
+  :config
+  (global-evil-matchit-mode 1)
+  )
+
+(use-package evil-anzu
+  :straight t
+  :after evil
+  :diminish
+  :demand t
+  :init
+  (global-anzu-mode t))
 
 (use-package evil-commentary
   :straight t
@@ -1196,6 +1240,20 @@
   
   (advice-add 'org--make-preview-overlay :after #'my/org-latex-preview-setup))
 
+(use-package org-sliced-images
+  :straight t
+  :after org
+  :config
+  ;; 启用全局模式
+  (org-sliced-images-mode 1)
+  
+  ;; 自定义选项
+  ;; 如果使用 org-indent-mode 或行号，建议启用这个
+  (setq org-sliced-images-round-image-height t)
+  
+  ;; 可选：自动清理占位符行
+  (setq org-sliced-images-consume-dummies t))
+
 (use-package org-superstar
   :straight t
   :after org
@@ -1432,20 +1490,71 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
          (go-mode . lsp))
   :commands lsp
   :init
-  ;; 配置 nix-nil 服务器
   (when (eq system-type 'darwin)
     (setq lsp-nix-nil-server-path "/Users/luoyaohui/.nix-profile/bin/nil"))
   
   (when (eq system-type 'gnu/linux)
     (setq lsp-clients-clangd-executable "/etc/profiles/per-user/manjack/bin/clangd")
-    (setq lsp-nix-nil-server-path "nil")) ;; Linux 上从 PATH 找
+    (setq lsp-nix-nil-server-path "nil"))
   
   :config
-  (setq lsp-prefer-flymake nil))
+  (setq lsp-prefer-flymake nil)
+  (setq lsp-enable-on-type-formatting nil)
+  (setq lsp-format-on-save nil))
 
-(add-hook 'lsp-mode-hook
-          (lambda ()
-            (add-hook 'before-save-hook #'lsp-format-buffer nil t)))
+(use-package apheleia
+  :straight t
+  :config
+  ;; 启用调试
+  (setq apheleia-log-only-errors nil)
+  (setq apheleia-log-debug-info t)
+  
+  ;; LSP 格式化函数
+  (cl-defun my/apheleia-lsp-format
+      (&key buffer scratch callback &allow-other-keys)
+    "Format BUFFER using LSP."
+    (with-current-buffer buffer
+      (if (and (bound-and-true-p lsp-mode)
+               (lsp-feature? "textDocument/formatting"))
+          (condition-case err
+              (progn
+                (lsp-format-buffer)
+                (with-current-buffer scratch
+                  (erase-buffer)
+                  (insert-buffer-substring buffer))
+                (funcall callback))
+            (error
+             (message "LSP format error: %S" err)
+             (with-current-buffer scratch
+               (erase-buffer)
+               (insert-buffer-substring buffer))
+             (funcall callback)))
+        (with-current-buffer scratch
+          (erase-buffer)
+          (insert-buffer-substring buffer))
+        (funcall callback))))
+  
+  ;; 注册所有格式化器（使用 push 或 setf）
+  (setf (alist-get 'lsp apheleia-formatters)
+        'my/apheleia-lsp-format)
+  
+  ;; 注意：kdlfmt 使用命令列表格式
+  (setf (alist-get 'kdlfmt apheleia-formatters)
+        '("kdlfmt" "format" file))  ;; 这是一个列表
+  
+  (setf (alist-get 'nixpkgs-fmt apheleia-formatters)
+        '("nixpkgs-fmt"))
+  
+  ;; 配置模式关联
+  (setf (alist-get 'c-ts-mode apheleia-mode-alist) 'clang-format)
+  (setf (alist-get 'c++-ts-mode apheleia-mode-alist) 'clang-format)
+  (setf (alist-get 'python-ts-mode apheleia-mode-alist) 'black)
+  (setf (alist-get 'go-mode apheleia-mode-alist) 'gofmt)
+  (setf (alist-get 'nix-ts-mode apheleia-mode-alist) 'nixpkgs-fmt)
+  (setf (alist-get 'kdl-mode apheleia-mode-alist) 'kdlfmt)
+  (setf (alist-get 'java-ts-mode apheleia-mode-alist) 'lsp)
+  
+  (apheleia-global-mode +1))
 
   (use-package lsp-ui
     :straight t
@@ -1474,6 +1583,9 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   (use-package flymake
   :straight nil
   :hook (prog-mode . flymake-mode))
+
+(use-package kdl-mode
+  :straight t)
 
 (use-package nix-ts-mode
   :straight t
@@ -1508,30 +1620,6 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
 ;;   ;; 可选：Magit 集成
 ;;   (with-eval-after-load 'magit
 ;;     (ai-code-magit-setup-transients)))
-
-(use-package org-sliced-images
-  :straight t
-  :config
-  (org-sliced-images-mode 1))
-
-(use-package beacon
-  :straight t
-  :config
-  (beacon-mode 1))
-
-(defun my-window-resize ()
-  "窗口调整模式，连按 h/j/k/l"
-  (interactive)
-  (message "使用 h/j/k/l 调整窗口大小")
-  (set-transient-map
-   (let ((map (make-sparse-keymap)))
-     (define-key map "h" (lambda () (interactive) (shrink-window-horizontally 3) (my-window-resize)))
-     (define-key map "j" (lambda () (interactive) (shrink-window 3) (my-window-resize)))
-     (define-key map "k" (lambda () (interactive) (enlarge-window 3) (my-window-resize)))
-     (define-key map "l" (lambda () (interactive) (enlarge-window-horizontally 3) (my-window-resize)))
-     map)))
-
-(global-set-key (kbd "C-c w") 'my-window-resize)
 
 (use-package gptel
   :straight t
@@ -1578,20 +1666,3 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   :bind ("C-c C-'" . claude-code-ide-menu)
   :config
   (claude-code-ide-emacs-tools-setup))
-
-(use-package evil-matchit
-  :straight t
-  :config
-  (global-evil-matchit-mode 1)
-  )
-
-(use-package evil-anzu
-  :straight t
-  :after evil
-  :diminish
-  :demand t
-  :init
-  (global-anzu-mode t))
-
-(use-package kdl-mode
-  :straight t)
