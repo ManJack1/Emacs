@@ -2885,6 +2885,8 @@ apheleia 是一个 Emacs 代码格式化工具，支持多种编程语言和格�
 #+begin_src emacs-lisp
 (use-package apheleia
   :straight t
+  :init
+  (apheleia-global-mode +1)
   :config
   ;; 启用调试
   (setq apheleia-log-only-errors nil)
@@ -2933,9 +2935,7 @@ apheleia 是一个 Emacs 代码格式化工具，支持多种编程语言和格�
   (setf (alist-get 'go-mode apheleia-mode-alist) 'gofmt)
   (setf (alist-get 'nix-ts-mode apheleia-mode-alist) 'nixpkgs-fmt)
   (setf (alist-get 'kdl-mode apheleia-mode-alist) 'kdlfmt)
-  (setf (alist-get 'java-ts-mode apheleia-mode-alist) 'lsp)
-  
-  (apheleia-global-mode +1))
+  (setf (alist-get 'java-ts-mode apheleia-mode-alist) 'lsp))
 #+end_src
 
 *** 使用方法

@@ -1504,6 +1504,8 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
 
 (use-package apheleia
   :straight t
+  :init
+  (apheleia-global-mode +1)
   :config
   ;; 启用调试
   (setq apheleia-log-only-errors nil)
@@ -1552,9 +1554,7 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   (setf (alist-get 'go-mode apheleia-mode-alist) 'gofmt)
   (setf (alist-get 'nix-ts-mode apheleia-mode-alist) 'nixpkgs-fmt)
   (setf (alist-get 'kdl-mode apheleia-mode-alist) 'kdlfmt)
-  (setf (alist-get 'java-ts-mode apheleia-mode-alist) 'lsp)
-  
-  (apheleia-global-mode +1))
+  (setf (alist-get 'java-ts-mode apheleia-mode-alist) 'lsp))
 
   (use-package lsp-ui
     :straight t
