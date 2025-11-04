@@ -1003,6 +1003,7 @@
     "sG" 'consult-git-grep
     "sn" 'yas-visit-snippet-file
     "sm" 'consult-bookmark
+    "sh" 'helpful-at-point
     "sS" 'imenu
     "ss" 'consult-imenu
     

@@ -2106,6 +2106,7 @@ avy 提供基于字符的快速跳转功能，类似 Vim 的 EasyMotion。输入
     "sG" 'consult-git-grep
     "sn" 'yas-visit-snippet-file
     "sm" 'consult-bookmark
+    "sh" 'helpful-at-point
     "sS" 'imenu
     "ss" 'consult-imenu
     
