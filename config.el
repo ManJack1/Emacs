@@ -1420,7 +1420,7 @@
 		    "-oo"  "-\\infty"
                     "O1" "O(1)"
                     "Olog" "O(\\log n)"
-		    ";" "\&"
+		    ";;" "\&"
 		    "\\" "\\\\"
                     "Olon" "O(n \\log n)"
                     ;; bind to functions!

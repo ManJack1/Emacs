@@ -2715,7 +2715,7 @@ laas 为 LaTeX 和 Org 模式提供自动激活的代码片段系统，无需按
 		    "-oo"  "-\\infty"
                     "O1" "O(1)"
                     "Olog" "O(\\log n)"
-		    ";" "\&"
+		    ";;" "\&"
 		    "\\" "\\\\"
                     "Olon" "O(n \\log n)"
                     ;; bind to functions!
