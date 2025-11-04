@@ -1076,6 +1076,7 @@
               (neotree-next-line))
           (neotree-enter)))))
   
+  (with-eval-after-load 'neotree
   (general-define-key
    :states 'normal
    :keymaps 'neotree-mode-map
@@ -1086,7 +1087,7 @@
    "d" 'neotree-delete-node
    "r" 'neotree-rename-node
    "y" 'neotree-copy-node
-   "RET" 'neotree-enter))
+   "RET" 'neotree-enter)))
 
 (use-package org
   :straight t
@@ -1373,15 +1374,15 @@
   (setq org-superstar-remove-leading-stars t)
   (setq org-superstar-use-with-org-bullets t))
 
-(use-package org-bars
-  :straight (org-bars :type git :host github :repo "tonyaldon/org-bars")
-  :after org
-  :hook (org-mode . org-bars-mode)
-  :config
-  ;; 星号符号配置
-  (setq org-bars-stars '(:empty "◉"
-                         :invisible "▶"
-                         :visible "▼")))
+;; (use-package org-bars
+;;   :straight (org-bars :type git :host github :repo "tonyaldon/org-bars")
+;;   :after org
+;;   :hook (org-mode . org-bars-mode)
+;;   :config
+;;   ;; 星号符号配置
+;;   (setq org-bars-stars '(:empty "◉"
+;;                          :invisible "▶"
+;;                          :visible "▼")))
 ;; 方案2: 统一的次要颜色
 ;; (setq org-bars-color-options '(:only-one-color t
 ;;                                :bar-color "#51afef")))  ;;
@@ -1437,12 +1438,37 @@
   :after org
   :hook (org-mode . org-download-enable)
   :config
-  (setq org-download-image-dir "./images")
-  (setq org-download-heading-lvl nil)
-  (setq org-download-timestamp "%Y%m%d-%H%M%S_")
-  (setq org-download-screenshot-method "screencapture -i %s")
-  (setq org-download-display-inline-images t)
-  (setq org-download-image-attr-list '("#+ATTR_ORG: :width 600")))
+  (setq org-download-image-dir "./images"
+        org-download-heading-lvl nil
+        org-download-timestamp "%Y%m%d-%H%M%S_"
+        org-download-display-inline-images t
+        org-download-image-attr-list '("#+ATTR_ORG: :width 600"))
+  
+  (setq org-download-screenshot-method
+        (cond ((eq system-type 'darwin) "screencapture -i %s")
+              ((and (eq system-type 'gnu/linux) (getenv "WAYLAND_DISPLAY"))
+               "grim -g \"$(slurp)\" %s")
+              (t "import %s")))
+  
+  ;; Wayland 剪贴板
+  (when (and (eq system-type 'gnu/linux) (getenv "WAYLAND_DISPLAY"))
+    (defun org-download-clipboard ()
+      (interactive)
+      (let* ((base (or (and (buffer-file-name) 
+                            (file-name-directory (buffer-file-name)))
+                       default-directory
+                       "~/"))
+             (dir (expand-file-name "images" base))
+             (name (format-time-string (concat org-download-timestamp "screenshot.png")))
+             (file (expand-file-name name dir)))
+        (make-directory dir t)
+        (with-temp-buffer
+          (set-buffer-multibyte nil)
+          (call-process "wl-paste" nil t nil "--type" "image/png")
+          (write-region nil nil file nil 'silent))
+        (insert (format "#+DOWNLOADED: clipboard @ %s\n#+ATTR_ORG: :width 600\n[[file:./images/%s]]\n"
+                        (format-time-string "%Y-%m-%d %H:%M:%S") name))
+        (org-display-inline-images t t)))))
 
 (use-package procress
   :straight (:host github :repo "haji-ali/procress")
@@ -1473,7 +1499,7 @@
                     ;; set condition!
                     :cond #'texmathp ; expand only while in math
 		    "qq" "\\quad"
-		    "c.." "\cdots"
+		    "c.." "\\cdots"
 		    "le" "\\leq"
                     "On" "O(n)"
 		    "ra" " \\Rightarrow "
@@ -1482,10 +1508,14 @@
 		    "-oo"  "-\\infty"
                     "O1" "O(1)"
                     "Olog" "O(\\log n)"
-		    ";" "\&"
+		    ";;" "\&"
 		    "\\" "\\\\"
                     "Olon" "O(n \\log n)"
                     ;; bind to functions!
+
+                    "bc" (lambda () (interactive)
+                            (yas-expand-snippet "($1)$0"))
+
                     "sum" (lambda () (interactive)
                             (yas-expand-snippet "\\sum\\limits_{$1}^{$2} $3"))
 
@@ -1569,17 +1599,16 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
     "bb" #'my/absorb-bb
     "bf" #'my/absorb-bf
     "pow" #'my/absorb-pow
-    "hat" #'my/absorb-hat
-    "bc" #'my/absorb-brace))
+    "hat" #'my/absorb-hat))
 
 
 (with-eval-after-load 'laas
   (aas-set-snippets 'laas-mode
                     :cond (lambda () (not (texmathp)))
                     "ii" (lambda () (interactive)
-                            (yas-expand-snippet "\\\\( $0 \\\\)"))
+                            (yas-expand-snippet "\\\\( $1 \\\\) $0"))
                     "dd" (lambda () (interactive)
-                            (yas-expand-snippet "\\[\n $0 \n\\]"))))
+                            (yas-expand-snippet "\\[\n $1 \n\\] $0"))))
 
 (use-package lsp-mode
   :straight t
@@ -1776,10 +1805,9 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   :demand t
   :config
   (general-create-definer global-definer
-    :states '(normal visual insert emacs)
+    :states '(normal visual)  ; 只在 normal 和 visual 模式
     :keymaps 'override
-    :prefix ""
-    :non-normal-prefix "C-"))
+    :prefix "SPC"))
 ;; ──────────────────────────────────────────────────────────────────────
 ;; 2. 多光标
 ;; ──────────────────────────────────────────────────────────────────────
@@ -1876,9 +1904,9 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
 ;; 5. 全局快捷键（现在 global-definer 已定义）
 ;; ──────────────────────────────────────────────────────────────────────
 (global-definer
-  "SPC hc" 'zilongshanren/clearn-highlight
-  "SPC hH" 'zilongshanren/highlight-dwim
-  "SPC v" 'er/expand-region)
+  "h c" 'zilongshanren/clearn-highlight   ; SPC h c
+  "h H" 'zilongshanren/highlight-dwim     ; SPC h H
+  "v" 'er/expand-region)                   ; SPC v
 ;; ──────────────────────────────────────────────────────────────────────
 ;; 6. 快速替换
 ;; ──────────────────────────────────────────────────────────────────────

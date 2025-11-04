@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: src-note
+# key: note
+# --
+#+begin_NOTE
+$0
+#+end_NOTE
