@@ -324,12 +324,12 @@
 (use-package org
   :defer t
   :init
-  (let ((org-dir (expand-file-name "~/org")))
+  (let ((org-dir (expand-file-name "~/.emacs.d/org")))
     (unless (file-directory-p org-dir) 
       (make-directory org-dir t)))
   
   :custom
-  (org-agenda-files (list (expand-file-name "~/org")))
+  (org-agenda-files (list (expand-file-name "~/.emacs.d/org")))
   (org-agenda-start-on-weekday nil)
   (org-agenda-span 7))
 
@@ -951,6 +951,8 @@
     "cr" 'lsp-rename
     "ci" 'describe-mode
     "cp" 'copy-file-path
+
+    "ot" 'org-todo
     
     ;; File (f)
     "f" '(:ignore t :which-key "file")
@@ -1089,13 +1091,40 @@
 (use-package org
   :straight t
   :mode ("\\.org\\'" . org-mode)
+  :bind (("C-c a" . org-agenda)
+         ("C-c c" . org-capture)
+         ("C-c l" . org-store-link))
   :config
-  (setq org-startup-with-inline-images t)
-  (setq org-image-align 'center)
-  (setq org-image-actual-width '(800))
-  (setq org-directory "~/org"
+  ;; 基础设置
+  (setq org-directory "~/.emacs.d/org/"
+        org-agenda-files '("~/.emacs.d/org/")  ; 扫描整个 org 目录
         org-startup-indented t
-        org-hide-emphasis-markers t)
+        org-hide-emphasis-markers t
+        org-startup-with-inline-images t
+        org-image-align 'center
+        org-image-actual-width '(800))
+  
+  ;; TODO 配置
+  (setq org-todo-keywords
+        '((sequence "TODO(t)" "DOING(i)" "WAITING(w)" 
+                    "|" "DONE(d)" "CANCELLED(c)")))
+  
+  (setq org-todo-keyword-faces
+        '(("TODO" . (:foreground "#ff6c6b" :weight bold))
+          ("DOING" . (:foreground "#ECBE7B" :weight bold))
+          ("WAITING" . (:foreground "#da8548" :weight bold))
+          ("DONE" . (:foreground "#98be65" :weight bold))
+          ("CANCELLED" . (:foreground "#5B6268" :weight bold))))
+  
+  ;; 日志设置
+  (setq org-log-done 'time
+        org-log-into-drawer t)
+  
+  ;; 优先级
+  (setq org-priority-faces
+        '((?A . (:foreground "#ff6c6b" :weight bold))
+          (?B . (:foreground "#ECBE7B"))
+          (?C . (:foreground "#51afef"))))
   
   ;; org-babel 配置
   (org-babel-do-load-languages
@@ -1112,19 +1141,51 @@
      (latex . t)
      (org . t)))
   
-  (setq org-confirm-babel-evaluate nil)
-  (setq org-src-fontify-natively t)
-  (setq org-src-tab-acts-natively t)
-  (setq org-src-preserve-indentation t)
+  (setq org-confirm-babel-evaluate nil
+        org-src-fontify-natively t
+        org-src-tab-acts-natively t
+        org-src-preserve-indentation t
+        org-edit-src-content-indentation 0)  ; 添加这个
+  
+  ;; LaTeX 高亮
   (setq org-highlight-latex-and-related '(latex script entities))
   
-  ;; 设置 org 标题的 doom-one 配色和字体大小
-  (set-face-attribute 'org-level-1 nil :foreground "#51afef" :height 1.5 :weight 'bold)
-  (set-face-attribute 'org-level-2 nil :foreground "#c678dd" :height 1.4)
-  (set-face-attribute 'org-level-3 nil :foreground "#98be65" :height 1.3)
-  (set-face-attribute 'org-level-4 nil :foreground "#da8548" :height 1.2)
-  (set-face-attribute 'org-level-5 nil :foreground "#5699af" :height 1.1)
-  (set-face-attribute 'org-level-6 nil :foreground "#a9a1e1" :height 1.0))
+  ;; 标题字体和颜色（doom-one 风格）
+  (set-face-attribute 'org-level-1 nil 
+                      :foreground "#51afef" 
+                      :height 1.5 
+                      :weight 'bold)
+  (set-face-attribute 'org-level-2 nil 
+                      :foreground "#c678dd" 
+                      :height 1.4)
+  (set-face-attribute 'org-level-3 nil 
+                      :foreground "#98be65" 
+                      :height 1.3)
+  (set-face-attribute 'org-level-4 nil 
+                      :foreground "#da8548" 
+                      :height 1.2)
+  (set-face-attribute 'org-level-5 nil 
+                      :foreground "#5699af" 
+                      :height 1.1)
+  (set-face-attribute 'org-level-6 nil 
+                      :foreground "#a9a1e1" 
+                      :height 1.0)
+  
+  ;; Agenda 视图设置
+  (setq org-agenda-span 7
+        org-agenda-start-on-weekday nil
+        org-agenda-start-day nil
+        org-agenda-skip-scheduled-if-done t
+        org-agenda-skip-deadline-if-done t)
+  
+  ;; Capture 模板
+  (setq org-capture-templates
+        '(("t" "Todo" entry (file+headline "~/.emacs.d/org/todo.org" "任务")
+           "* TODO %?\n  SCHEDULED: %t\n  %i\n")
+          ("n" "笔记" entry (file+headline "~/.emacs.d/org/notes.org" "笔记")
+           "* %? :NOTE:\n  %U\n  %i\n")
+          ("j" "日记" entry (file+datetree "~/.emacs.d/org/journal.org")
+           "* %?\n  %U\n  %i\n"))))
 
 (use-package auctex
   :straight t
@@ -1916,3 +1977,30 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   
   :hook
   (markdown-mode . nb/markdown-unhighlight))
+
+(use-package quickrun
+  :straight t
+  :bind (("<f5>" . quickrun)
+         ("C-<f5>" . quickrun-shell)
+         ("C-c r" . quickrun)
+         ("C-c C-r" . quickrun-region))
+  :config
+  ;; C++ 项目编译（编译所有 cpp 文件）
+  (quickrun-add-command "c++/project"
+    '((:command . "g++")
+      (:exec . "%c -std=c++17 -Wall -g *.cpp -o main && ./main")
+      (:remove . ("main")))
+    :default "c++")
+  
+  ;; C++ 单文件编译
+  (quickrun-add-command "c++/single"
+    '((:command . "g++")
+      (:exec . "%c -std=c++17 -Wall -g %s -o %n && ./%n")
+      (:remove . ("%n")))))
+
+;; C++ 模式钩子 - Main.cpp 自动使用项目模式
+(add-hook 'c++-mode-hook
+          (lambda ()
+            (when (and (buffer-file-name)
+                       (string-match-p "Main\\.cpp$" (buffer-file-name)))
+              (setq-local quickrun-option-cmdkey "c++/project"))))
