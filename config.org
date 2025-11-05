@@ -535,12 +535,16 @@ use-package 是一个声明式包配置宏，简化包的安装、配置和延�
   (menu-bar-mode -1)        ; 关闭菜单栏
 
   ;; 启用有用的 UI 功能
-  (global-display-line-numbers-mode 1)  ; 显示行号
-  (global-visual-line-mode 1)           ; 视觉行模式，软换行
-  (global-hl-line-mode 1)               ; 高亮当前行
+  (global-display-line-numbers-mode 1)
+  (global-hl-line-mode 1)
 
+  (global-visual-line-mode t)
+  (setq word-wrap t)
+  (setq word-wrap-by-category t)
   ;; 启动配置
   (setq inhibit-startup-message t)      ; 关闭启动画面
+
+
 #+END_SRC
 
 ** dashboard
@@ -1878,7 +1882,65 @@ wgrep 允许你直接在 grep/rgrep/ag 的搜索结果中编辑文本，编辑�
 - =C-c C-c= : 应用修改到所有文件
 - =C-c C-k= : 取消修改
 
+** consult
+*** 介绍
+consult 是一个强大的补全和导航工具，提供文件查找、buffer 切换、命令执行等功能。与 vertico、orderless、marginalia 完美集成。
+*** 相关链接
+- GitHub: https://github.com/minad/consult
+*** 配置
 
+#+begin_src emacs-lisp
+(use-package consult
+  :straight t
+  :config
+  ;; === 正常 buffer ===
+  (defvar my/consult--source-normal-buffer
+    (list :name     "Buffers"  ; 分隔线样式
+          :narrow   ?b
+          :category 'buffer
+          :face     'consult-buffer
+          :history  'buffer-name-history
+          :state    #'consult--buffer-state
+          :default  t
+          :items
+          (lambda ()
+            (consult--buffer-query
+             :sort 'visibility
+             :as #'buffer-name
+             :predicate
+             (lambda (buf)
+               (not (string-prefix-p "*" (buffer-name buf))))))))
+
+  ;; === 系统 buffer ===
+  (defvar my/consult--source-system-buffer
+    (list :name     "System"
+          :narrow   ?*
+          :category 'buffer
+          :face     'font-lock-comment-face
+          :history  'buffer-name-history
+          :state    #'consult--buffer-state
+          :items
+          (lambda ()
+            (consult--buffer-query
+             :sort 'visibility
+             :as #'buffer-name
+             :predicate
+             (lambda (buf)
+               (string-prefix-p "*" (buffer-name buf)))))))
+
+  (setq consult-buffer-sources
+        '(my/consult--source-normal-buffer
+          my/consult--source-system-buffer
+          consult--source-recent-file
+          consult--source-bookmark)))
+#+end_src
+
+
+*** 使用方法
+- =SPC SPC= : 切换 buffer
+- =SPC f f= : 查找文件
+- =SPC s g= : 全局搜索
+- =M-x= : 命令补全
 
 ** embark-consult
 *** 介绍
@@ -3087,6 +3149,7 @@ lsp-ui 为 lsp-mode 提供 UI 增强，包括悬浮文档、侧边信息、代�
     (lsp-ui-doc-position 'at-point)      ; 在光标位置显示
     (lsp-ui-sideline-show-code-actions t)
     (lsp-ui-sideline-show-diagnostics t)
+    (lsp-ui-sideline-show-hover t)
     (lsp-ui-sideline-ignore-duplicate t)
     (lsp-diagnostics-provider :flymake)  ; 确保用 flymake
     (lsp-ui-peek-enable t)
@@ -3259,6 +3322,23 @@ treesit-auto 自动管理 tree-sitter 语法解析器，无需手动配置。tre
 - JavaScript, TypeScript, HTML, CSS
 - Bash, JSON, YAML, Markdown
 - 等等...
+
+
+
+
+** quickrun
+*** 介绍
+quickrun 提供快速运行代码片段的功能，支持多种编程语言。可以在 Emacs 中直接执行代码并查看输出，适合测试和调试小段代码。
+
+#+begin_src emacs-lisp
+(use-package quickrun
+  :straight t)
+#+end_src
+
+*** 使用方法
+- =M-x quickrun= : 运行当前缓冲区代码
+- =M-x quickrun-region= : 运行选中代码
+- 支持多种语言，自动选择运行器
 
 
 
@@ -3697,12 +3777,6 @@ rm -rf ~/.emacs.d/straight/
   
   :hook
   (markdown-mode . nb/markdown-unhighlight))
-#+end_src
-
-
-#+begin_src emacs-lisp
-(use-package quickrun
-  :straight t)
 #+end_src
 
 

@@ -230,10 +230,12 @@
   (menu-bar-mode -1)        ; 关闭菜单栏
 
   ;; 启用有用的 UI 功能
-  (global-display-line-numbers-mode 1)  ; 显示行号
-  (global-visual-line-mode 1)           ; 视觉行模式，软换行
-  (global-hl-line-mode 1)               ; 高亮当前行
+  (global-display-line-numbers-mode 1)
+  (global-hl-line-mode 1)
 
+  (global-visual-line-mode t)
+  (setq word-wrap t)
+  (setq word-wrap-by-category t)
   ;; 启动配置
   (setq inhibit-startup-message t)      ; 关闭启动画面
 
@@ -836,6 +838,50 @@
   (setq wgrep-change-readonly-file t)
   (setq wgrep-enable-key "e"))
 (add-hook 'grep-mode-hook 'wgrep-setup)
+
+(use-package consult
+  :straight t
+  :config
+  ;; === 正常 buffer ===
+  (defvar my/consult--source-normal-buffer
+    (list :name     "Buffers"  ; 分隔线样式
+          :narrow   ?b
+          :category 'buffer
+          :face     'consult-buffer
+          :history  'buffer-name-history
+          :state    #'consult--buffer-state
+          :default  t
+          :items
+          (lambda ()
+            (consult--buffer-query
+             :sort 'visibility
+             :as #'buffer-name
+             :predicate
+             (lambda (buf)
+               (not (string-prefix-p "*" (buffer-name buf))))))))
+
+  ;; === 系统 buffer ===
+  (defvar my/consult--source-system-buffer
+    (list :name     "System"
+          :narrow   ?*
+          :category 'buffer
+          :face     'font-lock-comment-face
+          :history  'buffer-name-history
+          :state    #'consult--buffer-state
+          :items
+          (lambda ()
+            (consult--buffer-query
+             :sort 'visibility
+             :as #'buffer-name
+             :predicate
+             (lambda (buf)
+               (string-prefix-p "*" (buffer-name buf)))))))
+
+  (setq consult-buffer-sources
+        '(my/consult--source-normal-buffer
+          my/consult--source-system-buffer
+          consult--source-recent-file
+          consult--source-bookmark)))
 
 (use-package embark-consult
   :straight t
@@ -1694,6 +1740,7 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
     (lsp-ui-doc-position 'at-point)      ; 在光标位置显示
     (lsp-ui-sideline-show-code-actions t)
     (lsp-ui-sideline-show-diagnostics t)
+    (lsp-ui-sideline-show-hover t)
     (lsp-ui-sideline-ignore-duplicate t)
     (lsp-diagnostics-provider :flymake)  ; 确保用 flymake
     (lsp-ui-peek-enable t)
@@ -1739,6 +1786,9 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   :hook (after-init . global-treesit-auto-mode)
   :config
   (setq treesit-auto-install 'prompt))  ; 提示安装语法
+
+(use-package quickrun
+  :straight t)
 
 ;; (use-package ai-code-interface
 ;;   :straight (:host github :repo "tninja/ai-code-interface.el")
@@ -2005,6 +2055,3 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   
   :hook
   (markdown-mode . nb/markdown-unhighlight))
-
-(use-package quickrun
-  :straight t)
