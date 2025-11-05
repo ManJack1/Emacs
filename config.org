@@ -3702,31 +3702,7 @@ rm -rf ~/.emacs.d/straight/
 
 #+begin_src emacs-lisp
 (use-package quickrun
-  :straight t
-  :bind (("<f5>" . quickrun)
-         ("C-<f5>" . quickrun-shell)
-         ("C-c r" . quickrun)
-         ("C-c C-r" . quickrun-region))
-  :config
-  ;; C++ 项目编译（编译所有 cpp 文件）
-  (quickrun-add-command "c++/project"
-    '((:command . "g++")
-      (:exec . "%c -std=c++17 -Wall -g *.cpp -o main && ./main")
-      (:remove . ("main")))
-    :default "c++")
-  
-  ;; C++ 单文件编译
-  (quickrun-add-command "c++/single"
-    '((:command . "g++")
-      (:exec . "%c -std=c++17 -Wall -g %s -o %n && ./%n")
-      (:remove . ("%n")))))
-
-;; C++ 模式钩子 - Main.cpp 自动使用项目模式
-(add-hook 'c++-mode-hook
-          (lambda ()
-            (when (and (buffer-file-name)
-                       (string-match-p "Main\\.cpp$" (buffer-file-name)))
-              (setq-local quickrun-option-cmdkey "c++/project"))))
+  :straight t)
 #+end_src
 
 
