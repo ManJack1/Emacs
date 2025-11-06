@@ -2207,6 +2207,7 @@ avy 提供基于字符的快速跳转功能，类似 Vim 的 EasyMotion。输入
   
   (general-define-key
    :states 'insert
+   "C-/" 'toggle-eat
    "C-h" 'backward-char
    "C-l" 'forward-char
    "TAB" 'smart-tab)
@@ -2301,6 +2302,11 @@ org-mode 是 Emacs 的杀手级功能，用于笔记、待办事项、文档编�
           ("WAITING" . (:foreground "#da8548" :weight bold))
           ("DONE" . (:foreground "#98be65" :weight bold))
           ("CANCELLED" . (:foreground "#5B6268" :weight bold))))
+
+  (require 'org-checklist)
+  ;; need repeat task and properties
+  (setq org-log-done t)
+  (setq org-log-into-drawer t)
   
   ;; 日志设置
   (setq org-log-done 'time

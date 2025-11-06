@@ -1089,6 +1089,7 @@
   
   (general-define-key
    :states 'insert
+   "C-/" 'toggle-eat
    "C-h" 'backward-char
    "C-l" 'forward-char
    "TAB" 'smart-tab)
@@ -1166,6 +1167,11 @@
           ("WAITING" . (:foreground "#da8548" :weight bold))
           ("DONE" . (:foreground "#98be65" :weight bold))
           ("CANCELLED" . (:foreground "#5B6268" :weight bold))))
+
+  (require 'org-checklist)
+  ;; need repeat task and properties
+  (setq org-log-done t)
+  (setq org-log-into-drawer t)
   
   ;; 日志设置
   (setq org-log-done 'time

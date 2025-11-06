@@ -1,3 +1,8 @@
-
 * TODO learn the usage of makefile in cpp
+- [ ] 做笔记到 fancy rule 章节
 
+
+* TODO darly routine [0/3] [0%]
+- [ ] code
+- [ ] except
+- [ ] do
