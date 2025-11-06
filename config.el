@@ -1,3 +1,11 @@
+(defun open-in-sioyek ()
+  "Open the PDF file of the current buffer in Sioyek."
+  (interactive)
+  (let ((pdf-file (buffer-file-name)))
+    (if (and pdf-file (string-match-p "\\.pdf\\'" pdf-file))
+        (start-process "sioyek" nil "sioyek" pdf-file)
+      (message "The current buffer is not a PDF file"))))
+
 (defun my-window-resize ()
   "窗口调整模式，连按 h/j/k/l"
   (interactive)

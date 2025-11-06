@@ -88,6 +88,23 @@
 * 自定义函数脚本
 
 本节包含所有自定义的实用函数，用于增强 Emacs 的功能和便利性。
+
+** 打开 PDF 文件的函数
+*** open-in-sioyek
+#+begin_src emacs-lisp
+(defun open-in-sioyek ()
+  "Open the PDF file of the current buffer in Sioyek."
+  (interactive)
+  (let ((pdf-file (buffer-file-name)))
+    (if (and pdf-file (string-match-p "\\.pdf\\'" pdf-file))
+        (start-process "sioyek" nil "sioyek" pdf-file)
+      (message "The current buffer is not a PDF file"))))
+#+end_src
+
+*** 使用方法
+- 作用: 在 Sioyek 中打开当前 PDF 文件
+
+
 ** 窗口调整函数
 
 *** my-window-resize
