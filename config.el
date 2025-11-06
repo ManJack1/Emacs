@@ -1200,20 +1200,20 @@
   ;; 标题字体和颜色（doom-one 风格）
   (set-face-attribute 'org-level-1 nil 
                       :foreground "#51afef" 
-                      :height 1.5 
+                      :height 1.0 
                       :weight 'bold)
   (set-face-attribute 'org-level-2 nil 
                       :foreground "#c678dd" 
-                      :height 1.4)
+                      :height 1.0)
   (set-face-attribute 'org-level-3 nil 
                       :foreground "#98be65" 
-                      :height 1.3)
+                      :height 1.0)
   (set-face-attribute 'org-level-4 nil 
                       :foreground "#da8548" 
-                      :height 1.2)
+                      :height 1.0)
   (set-face-attribute 'org-level-5 nil 
                       :foreground "#5699af" 
-                      :height 1.1)
+                      :height 1.0)
   (set-face-attribute 'org-level-6 nil 
                       :foreground "#a9a1e1" 
                       :height 1.0)
