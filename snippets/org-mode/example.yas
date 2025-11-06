@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: example-env
+# key: ep
+# --
+
+#+begin_ep
+${1}
+#+end_ep

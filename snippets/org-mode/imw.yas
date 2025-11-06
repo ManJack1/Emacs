@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: imag-with
+# key: imw
+# --
+#+ATTR_ORG: :width ${1:600}

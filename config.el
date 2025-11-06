@@ -160,7 +160,6 @@
 (with-eval-after-load 'company
   (define-key company-active-map (kbd "S-TAB") nil)
   (define-key company-active-map (kbd "<backtab>") nil))
-
 (with-eval-after-load 'yasnippet
   (define-key yas-minor-mode-map (kbd "S-TAB") nil)
   (define-key yas-minor-mode-map (kbd "<backtab>") nil))
@@ -187,14 +186,19 @@
 (global-set-key (kbd "<backtab>") 'smart-shift-tab)
 
 (defun smart-tab ()
-  "智能 TAB 键：优先展开/跳转 YASnippet，其次 Copilot，最后正常 TAB。"
+  "智能 TAB 键：优先 org 表格，其次展开/跳转 YASnippet，再次 Copilot，最后正常 TAB。"
   (interactive)
   (cond
-   ;; 1. 如果光标在 snippet 缩写词后，尝试展开
+   ;; 1. 如果在 org-mode 表格中，使用 org 表格的 TAB 功能
+   ((and (derived-mode-p 'org-mode)
+         (org-at-table-p))
+    (org-table-next-field))
+   
+   ;; 2. 如果光标在 snippet 缩写词后，尝试展开
    ((and (bound-and-true-p yas-minor-mode)
          (yas-expand)))
    
-   ;; 2. 如果有激活的 snippet，占位符跳转
+   ;; 3. 如果有激活的 snippet，占位符跳转
    ((and (bound-and-true-p yas-minor-mode)
          (yas-active-snippets))
     (let ((field (yas--snippet-active-field (car (yas-active-snippets)))))
@@ -202,12 +206,12 @@
           (yas-next-field)
         (yas-exit-all-snippets))))
    
-   ;; 3. 如果 Copilot 有建议，接受建议
+   ;; 4. 如果 Copilot 有建议，接受建议
    ((and (bound-and-true-p copilot-mode)
          (copilot--overlay-visible))
     (copilot-accept-completion))
    
-   ;; 4. 否则执行正常的 TAB 缩进
+   ;; 5. 否则执行正常的 TAB 缩进
    (t
     (indent-for-tab-command))))
 
