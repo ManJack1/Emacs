@@ -343,6 +343,19 @@
       (make-directory org-dir t)))
   
   :custom
+ (org-agenda-custom-commands
+        '(("v" "A better agenda view"
+            ((tags "PRIORITY=\"A\""
+                    ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                    (org-agenda-overriding-header "High-priority unfinished tasks:")))
+            (tags "PRIORITY=\"B\""
+                    ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                    (org-agenda-overriding-header "Medium-priority unfinished tasks:")))
+            (tags "PRIORITY=\"C\""
+                    ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                    (org-agenda-overriding-header "Low-priority unfinished tasks:")))
+            (agenda "")
+            (alltodo "")))))
   (org-agenda-files (list (expand-file-name "~/.emacs.d/org")))
   (org-agenda-start-on-weekday nil)
   (org-agenda-span 7))
@@ -1011,6 +1024,8 @@
     "cp" 'copy-file-path
 
     "ot" 'org-todo
+    "oa" 'org-agenda
+    "oc" 'org-capture
     
     ;; File (f)
     "f" '(:ignore t :which-key "file")
@@ -1188,8 +1203,9 @@
   ;; 优先级
   (setq org-priority-faces
         '((?A . (:foreground "#ff6c6b" :weight bold))
-          (?B . (:foreground "#ECBE7B"))
-          (?C . (:foreground "#51afef"))))
+          (?B . (:foreground "#ECBE7B" :weight bold))
+          (?C . (:foreground "#51afef" :weight bold)))
+	org-aenda-block-separator 8411)
   
   ;; org-babel 配置
   (org-babel-do-load-languages
@@ -1247,10 +1263,17 @@
   (setq org-capture-templates
         '(("t" "Todo" entry (file+headline "~/.emacs.d/org/todo.org" "任务")
            "* TODO %?\n  SCHEDULED: %t\n  %i\n")
-          ("n" "笔记" entry (file+headline "~/.emacs.d/org/notes.org" "笔记")
+          ("L" "Learn Plan" entry (file+headline "~/.emacs.d/org/notes.org" "学习计划")
            "* %? :NOTE:\n  %U\n  %i\n")
-          ("j" "日记" entry (file+datetree "~/.emacs.d/org/journal.org")
+          ("j" "homework" entry (file+datetree "~/.emacs.d/org/homework.org")
            "* %?\n  %U\n  %i\n"))))
+
+(use-package org-fancy-priorities
+  :straight t
+  :hook
+  (org-mode . org-fancy-priorities-mode)
+  :config
+  (setq org-fancy-priorities-list '("󰯬 " "󰯯 " "󰯲 ")))
 
 (use-package auctex
   :straight t

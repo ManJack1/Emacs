@@ -665,10 +665,25 @@ use-package 是一个声明式包配置宏，简化包的安装、配置和延�
       (make-directory org-dir t)))
   
   :custom
+ (org-agenda-custom-commands
+        '(("v" "A better agenda view"
+            ((tags "PRIORITY=\"A\""
+                    ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                    (org-agenda-overriding-header "High-priority unfinished tasks:")))
+            (tags "PRIORITY=\"B\""
+                    ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                    (org-agenda-overriding-header "Medium-priority unfinished tasks:")))
+            (tags "PRIORITY=\"C\""
+                    ((org-agenda-skip-function '(org-agenda-skip-entry-if 'todo 'done))
+                    (org-agenda-overriding-header "Low-priority unfinished tasks:")))
+            (agenda "")
+            (alltodo "")))))
   (org-agenda-files (list (expand-file-name "~/.emacs.d/org")))
   (org-agenda-start-on-weekday nil)
   (org-agenda-span 7))
+
 #+end_src
+
 
 
 ** colorful-mode
@@ -2138,6 +2153,8 @@ avy 提供基于字符的快速跳转功能，类似 Vim 的 EasyMotion。输入
     "cp" 'copy-file-path
 
     "ot" 'org-todo
+    "oa" 'org-agenda
+    "oc" 'org-capture
     
     ;; File (f)
     "f" '(:ignore t :which-key "file")
@@ -2332,8 +2349,9 @@ org-mode 是 Emacs 的杀手级功能，用于笔记、待办事项、文档编�
   ;; 优先级
   (setq org-priority-faces
         '((?A . (:foreground "#ff6c6b" :weight bold))
-          (?B . (:foreground "#ECBE7B"))
-          (?C . (:foreground "#51afef"))))
+          (?B . (:foreground "#ECBE7B" :weight bold))
+          (?C . (:foreground "#51afef" :weight bold)))
+	org-aenda-block-separator 8411)
   
   ;; org-babel 配置
   (org-babel-do-load-languages
@@ -2391,13 +2409,38 @@ org-mode 是 Emacs 的杀手级功能，用于笔记、待办事项、文档编�
   (setq org-capture-templates
         '(("t" "Todo" entry (file+headline "~/.emacs.d/org/todo.org" "任务")
            "* TODO %?\n  SCHEDULED: %t\n  %i\n")
-          ("n" "笔记" entry (file+headline "~/.emacs.d/org/notes.org" "笔记")
+          ("L" "Learn Plan" entry (file+headline "~/.emacs.d/org/notes.org" "学习计划")
            "* %? :NOTE:\n  %U\n  %i\n")
-          ("j" "日记" entry (file+datetree "~/.emacs.d/org/journal.org")
+          ("j" "homework" entry (file+datetree "~/.emacs.d/org/homework.org")
            "* %?\n  %U\n  %i\n"))))
 #+END_SRC
 
-*** auctex
+** org-fancy-priorities
+*** 介绍
+org-fancy-priorities 用于在 org-mode 中使用自定义符号显示任务优先级，提升视觉效果和可读性。
+*** 相关链接
+- GitHub: https://github.com/harrybournis/org-fancy-priorities
+*** 配置 
+#+begin_src emacs-lisp
+(use-package org-fancy-priorities
+  :straight t
+  :hook
+  (org-mode . org-fancy-priorities-mode)
+  :config
+  (setq org-fancy-priorities-list '("󰯬 " "󰯯 " "󰯲 ")))
+#+end_src
+*** 使用方法
+- 在 org-mode 中使用 =C-c , p= 设置任务优先级
+
+
+** auctex
+
+*** 介绍
+AUCTeX 是 Emacs 中功能强大的 LaTeX 编辑环境，提供语法高亮、自动补全、预览、编译等功能。支持多种 LaTeX 发行版和工具链。
+*** 相关链接
+- 官网: https://www.gnu.org/software/auctex/
+- 文档: https://www.gnu.org/software/auctex/manual/
+*** 配置
 #+begin_src emacs-lisp
 (use-package auctex
   :straight t
@@ -2416,9 +2459,19 @@ org-mode 是 Emacs 的杀手级功能，用于笔记、待办事项、文档编�
   (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
   (setq TeX-source-correlate-start-server t))
 #+end_src
+*** 使用方法
+- =C-c C-c= : 编译 LaTeX 文档
+- =C-c C-v= : 预览生成的 PDF
+- =C-c = : 插入数学符号
+- =M-n/M-p= : 在 LaTeX 环境间导航
 
+** math-preview
 
-*** mathjax-preivew
+*** 介绍
+math-preview 是一个 Emacs 插件，用于实时预览 LaTeX 数学公式。支持行内公式和块级公式，生成 SVG 图像并嵌入缓冲区。
+*** 相关链接
+- GitLab: https://gitlab.com/matsievskiysv/math-preview
+*** 配置
 
 #+begin_src emacs-lisp
 (use-package math-preview
@@ -2496,9 +2549,13 @@ org-mode 是 Emacs 的杀手级功能，用于笔记、待办事项、文档编�
                (lambda ()
                  (add-hook 'post-command-hook #'my/auto-toggle-math-preview nil t)))
 #+end_src
+*** 使用方法
+- 在 org-mode 中输入 LaTeX 数学公式（行内用 $...$，块级用 $$...$$ 或 \[...\]）
+- 光标离开公式后，公式会自动渲染为 SVG 图像
+- 光标进入公式时，预览会被清除，方便编辑
 
 
-*** org-latex-preview
+** org-latex-preview
 
 #+begin_src emacs-lisp
 ;; 这些配置需要在 org 完全加载后才能执行
@@ -2564,7 +2621,7 @@ org-mode 是 Emacs 的杀手级功能，用于笔记、待办事项、文档编�
   (advice-add 'org--make-preview-overlay :after #'my/org-latex-preview-setup))
 #+end_src
 
-*** 使用方法
+** 使用方法
 - =C-c C-c= : 执行代码块
 - =C-c '= : 编辑代码块
 - =TAB= : 折叠/展开标题
