@@ -1180,16 +1180,18 @@
         org-image-actual-width '(800))
   
   ;; TODO 配置
-  (setq org-todo-keywords
-        '((sequence "TODO(t)" "DOING(i)" "WAITING(w)" 
-                    "|" "DONE(d)" "CANCELLED(c)")))
-  
-  (setq org-todo-keyword-faces
-        '(("TODO" . (:foreground "#ff6c6b" :weight bold))
-          ("DOING" . (:foreground "#ECBE7B" :weight bold))
-          ("WAITING" . (:foreground "#da8548" :weight bold))
-          ("DONE" . (:foreground "#98be65" :weight bold))
-          ("CANCELLED" . (:foreground "#5B6268" :weight bold))))
+(setq org-todo-keywords
+      '((sequence "TODO(t)" "DOING(i)" "WAITING(w)" "Buy(b)" "plan(p)"
+                  "|" "DONE(d)" "CANCELLED(c)")))
+
+(setq org-todo-keyword-faces
+      '(("TODO" . (:foreground "#ff6c6b" :weight bold))
+        ("DOING" . (:foreground "#ECBE7B" :weight bold))
+        ("WAITING" . (:foreground "#da8548" :weight bold))
+        ("DONE" . (:foreground "#98be65" :weight bold))
+        ("CANCELLED" . (:foreground "#5B6268" :weight bold))
+        ("Buy" . (:foreground "#51afef" :weight bold))   ; 蓝色，表示行动或采购任务
+        ("plan" . (:foreground "#c678dd" :weight bold)))) ; 紫色，表示规划/学习
 
   (require 'org-checklist)
   ;; need repeat task and properties
@@ -1260,13 +1262,18 @@
         org-agenda-skip-deadline-if-done t)
   
   ;; Capture 模板
-  (setq org-capture-templates
-        '(("t" "Todo" entry (file+headline "~/.emacs.d/org/todo.org" "任务")
-           "* TODO %?\n  SCHEDULED: %t\n  %i\n")
-          ("L" "Learn Plan" entry (file+headline "~/.emacs.d/org/notes.org" "学习计划")
-           "* %? :NOTE:\n  %U\n  %i\n")
-          ("j" "homework" entry (file+datetree "~/.emacs.d/org/homework.org")
-           "* %?\n  %U\n  %i\n"))))
+ (setq org-capture-templates
+ '(("t" "Todo" entry
+    (file+headline "~/.emacs.d/org/todo.org" "  TASK")
+    "* TODO %?\nSCHEDULED: %t\n%i\n")
+
+    ("l" "Plan" entry
+    (file+headline "~/.emacs.d/org/notes.org" "a PLAN")
+    "* plan %?\nCREATED: %U\n%i\n")
+
+    ("b" "Buy" entry
+    (file+headline "~/.emacs.d/org/buy.org" "  SHOP")
+    "* Buy %?\nCREATED: %U\n%i\n"))))
 
 (use-package org-fancy-priorities
   :straight t
