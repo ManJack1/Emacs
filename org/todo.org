@@ -1,4 +1,9 @@
 *   TASK
-** TODO [#B] 学习org基本知识
-SCHEDULED: <2025-11-07 五>
-+ https://jansky520.github.io/p/org%E5%BF%AB%E9%80%9F%E6%8C%87%E5%8D%97/
+** TODO [#B] 学习 makefile以及做完 Makefile 的笔记
+SCHEDULED: <2025-11-07 Fri>
++[[https://makefiletutorial.com/][web]] 
+** TODO [#B] 学习 org的基本知识
+SCHEDULED: <2025-11-07 Fri>
++ 学习地址：https://jansky520.github.io/p/org%E5%BF%AB%E9%80%9F%E6%8C%87%E5%8D%97/
+** TODO [#B] 学习用 hugo搭建博客
+SCHEDULED: <2025-11-07 Fri>
