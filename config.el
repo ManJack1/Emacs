@@ -82,12 +82,12 @@
 (cond
  ;; macOS
  ((eq system-type 'darwin)
-  (set-frame-parameter (selected-frame) 'alpha '(100 . 100))
-  (add-to-list 'default-frame-alist '(alpha . (100 . 100))))
+  (set-frame-parameter (selected-frame) 'alpha '(95 . 95))
+  (add-to-list 'default-frame-alist '(alpha . (95 . 95))))
  ;; Linux
  ((eq system-type 'gnu/linux)
-  (set-frame-parameter (selected-frame) 'alpha '(100 . 100)) ; 活动窗口 90%，非活动窗口 85%
-  (add-to-list 'default-frame-alist '(alpha . (100 . 100)))))
+  (set-frame-parameter (selected-frame) 'alpha '(95 . 95)) ; 活动窗口 90%，非活动窗口 85%
+  (add-to-list 'default-frame-alist '(alpha . (95 . 95)))))
 
 (defun toggle-copilot-mode ()
   "Toggle copilot-mode on or off."

@@ -247,12 +247,12 @@
 (cond
  ;; macOS
  ((eq system-type 'darwin)
-  (set-frame-parameter (selected-frame) 'alpha '(100 . 100))
-  (add-to-list 'default-frame-alist '(alpha . (100 . 100))))
+  (set-frame-parameter (selected-frame) 'alpha '(95 . 95))
+  (add-to-list 'default-frame-alist '(alpha . (95 . 95))))
  ;; Linux
  ((eq system-type 'gnu/linux)
-  (set-frame-parameter (selected-frame) 'alpha '(100 . 100)) ; 活动窗口 90%，非活动窗口 85%
-  (add-to-list 'default-frame-alist '(alpha . (100 . 100)))))
+  (set-frame-parameter (selected-frame) 'alpha '(95 . 95)) ; 活动窗口 90%，非活动窗口 85%
+  (add-to-list 'default-frame-alist '(alpha . (95 . 95)))))
 #+end_src
 
 
@@ -1231,16 +1231,16 @@ super-save 提供智能自动保存功能，在切换窗口、buffer 或空闲�
 - 静默模式，不显示保存消息
 - 禁用默认的自动保存机制
 
-** 终端工具
+* 终端工具
 
-*** eat
-**** 介绍
+** eat
+*** 介绍
 eat (Emulate A Terminal) 是一个现代化的终端模拟器，比 term.el 和 ansi-term 更快更完整。完全在 Emacs Lisp 中实现，支持完整的 ANSI 转义序列、真彩色、鼠标操作等。与 eshell 完美集成。
 
-**** 相关链接
+*** 相关链接
 - Codeberg: https://codeberg.org/akib/emacs-eat
 
-**** 配置
+*** 配置
 #+begin_src emacs-lisp
 (use-package eat
   :straight (eat :type git
@@ -1271,20 +1271,20 @@ eat (Emulate A Terminal) 是一个现代化的终端模拟器，比 term.el 和 
               (local-set-key (kbd "C-S-v") 'eat-yank))))
 #+end_src
 
-**** 使用方法
+*** 使用方法
 - =M-x eat= : 打开新的终端
 - =M-x eshell= : 打开 eshell (自动启用 eat)
 - 支持完整的终端功能，包括 vim、htop 等程序
 - 在 eshell 中提供更好的命令行体验
 
-*** vterm
-**** 介绍
+** vterm
+*** 介绍
 vterm 是基于 libvterm 的高性能终端模拟器，比 term.el 和 ansi-term 更快更完整。需要编译 C 模块，提供接近原生终端的体验。
 
-**** 相关链接
+*** 相关链接
 - GitHub: https://github.com/akermu/emacs-libvterm
 
-**** 配置
+*** 配置
 #+begin_src emacs-lisp
 (use-package vterm
   :straight t
@@ -1292,19 +1292,19 @@ vterm 是基于 libvterm 的高性能终端模拟器，比 term.el 和 ansi-term
   (setq vterm-max-scrollback 10000))
 #+end_src
 
-**** 使用方法
+*** 使用方法
 - =M-x vterm= : 打开 vterm 终端
 - 最大滚动回溯行数设置为 10000
 - 支持完整的 ANSI 转义序列和真彩色
 
-*** transient
-**** 介绍
+** transient
+*** 介绍
 transient 是一个用于创建临时弹出菜单的框架，类似 Magit 的菜单系统。许多现代 Emacs 包依赖它来提供交互式命令界面。
 
-**** 相关链接
+*** 相关链接
 - GitHub: https://github.com/magit/transient
 
-**** 配置
+*** 配置
 #+begin_src emacs-lisp
 (use-package transient
   :straight t
