@@ -1268,7 +1268,7 @@
     "* TODO %?\nSCHEDULED: %t\n%i\n")
 
     ("l" "Plan" entry
-    (file+headline "~/.emacs.d/org/notes.org" "a PLAN")
+    (file+headline "~/.emacs.d/org/plan.org" "a PLAN")
     "* plan %?\nCREATED: %U\n%i\n")
 
     ("b" "Buy" entry

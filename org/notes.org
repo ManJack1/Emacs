@@ -1,0 +1,3 @@
+* a PLAN
+** plan 学习linux以及 shell语言
+CREATED: [2025-11-11 Tue 18:15]

@@ -2414,7 +2414,7 @@ org-mode 是 Emacs 的杀手级功能，用于笔记、待办事项、文档编�
     "* TODO %?\nSCHEDULED: %t\n%i\n")
 
     ("l" "Plan" entry
-    (file+headline "~/.emacs.d/org/notes.org" "a PLAN")
+    (file+headline "~/.emacs.d/org/plan.org" "a PLAN")
     "* plan %?\nCREATED: %U\n%i\n")
 
     ("b" "Buy" entry

@@ -7,3 +7,5 @@ SCHEDULED: <2025-11-07 Fri>
 + 学习地址：https://jansky520.github.io/p/org%E5%BF%AB%E9%80%9F%E6%8C%87%E5%8D%97/
 ** TODO [#B] 学习用 hugo搭建博客
 SCHEDULED: <2025-11-07 Fri>
+** TODO 完成 chap4的英语笔记
+SCHEDULED: <2025-11-11 Tue>
