@@ -1,0 +1,8 @@
+
+# -*- mode: snippet -*-
+# name: src-elisp
+# key: elisp
+# --
+#+begin_src emacs-lisp :wrap ep
+$1
+#+end_src
