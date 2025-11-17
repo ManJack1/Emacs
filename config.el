@@ -182,19 +182,42 @@
   (define-key yas-minor-mode-map (kbd "TAB") nil)
   (define-key yas-minor-mode-map (kbd "<tab>") nil))
 
-;; 定义智能 Shift-TAB：仅 YASnippet 反向跳转
-(defun smart-shift-tab ()
-  "Shift-TAB：仅用于 YASnippet 反向跳转"
+;; Tabout 功能：跳出括号、引号等（仅当前行）
+(defun my-tabout ()
+  "跳出括号、引号、尖括号等配对符号（仅当前行）"
   (interactive)
-  (when (and (bound-and-true-p yas-minor-mode)
-             (yas-active-snippets))
-    (yas-prev-field)))
+  (re-search-forward "[])}\"'>]" (line-end-position) t))
+
+;; Tabout 反向功能：跳到前面的左括号、引号等（仅当前行）
+(defun my-tabout-backward ()
+  "反向跳到括号、引号、尖括号等配对符号的开始（仅当前行）"
+  (interactive)
+  (when (re-search-backward "[[({\"'<]" (line-beginning-position) t)
+    (forward-char 1)
+    t))
+
+;; 定义智能 Shift-TAB：YASnippet 反向跳转 + 反向 tabout
+(defun smart-shift-tab ()
+  "Shift-TAB：优先 YASnippet 反向跳转，其次反向 tabout"
+  (interactive)
+  (cond
+   ;; 1. 如果有激活的 snippet，反向跳转字段
+   ((and (bound-and-true-p yas-minor-mode)
+         (yas-active-snippets))
+    (yas-prev-field))
+   
+   ;; 2. 反向 tabout：跳到前面的左括号内
+   ((my-tabout-backward))
+   
+   ;; 3. 否则执行默认行为
+   (t
+    (indent-for-tab-command))))
 
 ;; 绑定 Shift-TAB
 (global-set-key (kbd "<backtab>") 'smart-shift-tab)
 
 (defun smart-tab ()
-  "智能 TAB 键：优先 org 表格，其次展开/跳转 YASnippet，再次 Copilot，最后正常 TAB。"
+  "智能 TAB 键：优先 org 表格，其次展开/跳转 YASnippet，再次 Copilot，然后 tabout，最后正常 TAB。"
   (interactive)
   (cond
    ;; 1. 如果在 org-mode 表格中，使用 org 表格的 TAB 功能
@@ -219,7 +242,10 @@
          (copilot--overlay-visible))
     (copilot-accept-completion))
    
-   ;; 5. 否则执行正常的 TAB 缩进
+   ;; 5. Tabout：跳出括号、引号等
+   ((my-tabout))
+   
+   ;; 6. 否则执行正常的 TAB 缩进
    (t
     (indent-for-tab-command))))
 
@@ -230,8 +256,8 @@
 
 ;; 设置编程字体
 (set-face-attribute 'default nil
-                    :font "Iosevka Nerd Font"
-                    :height 155)
+                    :font "Maple Mono NF"
+                    :height 140)
 
 ;; Set Chinese font for Han script
 (set-fontset-font t 'han "Noto Serif CJK SC")
