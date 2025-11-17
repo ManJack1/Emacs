@@ -958,7 +958,7 @@
    :states 'normal
    "u" 'undo-only
    "C-r" 'undo-fu-only-redo
-   "s" 'avy-goto-char
+   "s" 'avy-goto-char-timer
    "S" 'avy-goto-word-1
    "B" 'blamer-show-commit-info
    "K" 'lsp-ui-doc-glance

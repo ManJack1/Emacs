@@ -2087,7 +2087,7 @@ avy 提供基于字符的快速跳转功能，类似 Vim 的 EasyMotion。输入
    :states 'normal
    "u" 'undo-only
    "C-r" 'undo-fu-only-redo
-   "s" 'avy-goto-char
+   "s" 'avy-goto-char-timer
    "S" 'avy-goto-word-1
    "B" 'blamer-show-commit-info
    "K" 'lsp-ui-doc-glance
