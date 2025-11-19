@@ -813,7 +813,7 @@
 
   (use-package expand-region
   :straight t
-  :bind ("C-=" . er/expand-region))
+  :bind ("C-SPC" . er/expand-region))
 
   (use-package evil-fringe-mark
     :after evil

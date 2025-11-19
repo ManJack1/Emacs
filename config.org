@@ -1723,7 +1723,7 @@ expand-region 提供智能的区域扩展功能，根据语法结构逐步扩大
 #+begin_src emacs-lisp
   (use-package expand-region
   :straight t
-  :bind ("C-=" . er/expand-region))
+  :bind ("C-SPC" . er/expand-region))
 #+end_src
 
 *** 使用方法
@@ -2498,7 +2498,7 @@ AUCTeX 是 Emacs 中功能强大的 LaTeX 编辑环境，提供语法高亮、�
 *** 使用方法
 - =C-c C-c= : 编译 LaTeX 文档
 - =C-c C-v= : 预览生成的 PDF
-- =C-c = : 插入数学符号
+- =C-c= : 插入数学符号
 - =M-n/M-p= : 在 LaTeX 环境间导航
 
 ** math-preview
