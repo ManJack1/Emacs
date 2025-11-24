@@ -399,9 +399,9 @@
 (use-package doom-themes
   :straight t
   :init
-  (setq doom-themes-enable-bold t
-        doom-themes-enable-italic t)
-  (load-theme 'doom-one t)
+  ;; (setq doom-themes-enable-bold t
+  ;;       doom-themes-enable-italic t)
+  ;; (load-theme 'doom-one t)
 
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
@@ -1328,10 +1328,6 @@
 (use-package math-preview
   :straight (:host gitlab :repo "matsievskiysv/math-preview")
   :config
-  (when (eq system-type 'gnu/linux)
-    (setq math-preview-command 
-          (expand-file-name "~/.npm-global/bin/math-preview")))
-  
   (setq math-preview-svg-postprocess-functions '())
   
   ;; 块级公式居中对齐
@@ -1742,11 +1738,6 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   :init
   (when (eq system-type 'darwin)
     (setq lsp-nix-nil-server-path "/Users/luoyaohui/.nix-profile/bin/nil"))
-  
-  (when (eq system-type 'gnu/linux)
-    (setq lsp-clients-clangd-executable "/etc/profiles/per-user/manjack/bin/clangd")
-    (setq lsp-nix-nil-server-path "nil"))
-  
   :config
   (setq lsp-prefer-flymake nil)
   (setq lsp-enable-on-type-formatting nil)
@@ -2129,3 +2120,7 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   
   :hook
   (markdown-mode . nb/markdown-unhighlight))
+
+(require 'doom-themes)
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+(load-theme 'doom-everforest t)

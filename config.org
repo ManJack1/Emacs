@@ -755,9 +755,9 @@ doom-themes 是一个丰富的主题集合，包含 25+ 个精心设计的高对
 (use-package doom-themes
   :straight t
   :init
-  (setq doom-themes-enable-bold t
-        doom-themes-enable-italic t)
-  (load-theme 'doom-one t)
+  ;; (setq doom-themes-enable-bold t
+  ;;       doom-themes-enable-italic t)
+  ;; (load-theme 'doom-one t)
 
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
@@ -2513,10 +2513,6 @@ math-preview 是一个 Emacs 插件，用于实时预览 LaTeX 数学公式。�
 (use-package math-preview
   :straight (:host gitlab :repo "matsievskiysv/math-preview")
   :config
-  (when (eq system-type 'gnu/linux)
-    (setq math-preview-command 
-          (expand-file-name "~/.npm-global/bin/math-preview")))
-  
   (setq math-preview-svg-postprocess-functions '())
   
   ;; 块级公式居中对齐
@@ -3153,11 +3149,6 @@ lsp-mode 是 Language Server Protocol 的 Emacs 实现，提供智能补全、�
   :init
   (when (eq system-type 'darwin)
     (setq lsp-nix-nil-server-path "/Users/luoyaohui/.nix-profile/bin/nil"))
-  
-  (when (eq system-type 'gnu/linux)
-    (setq lsp-clients-clangd-executable "/etc/profiles/per-user/manjack/bin/clangd")
-    (setq lsp-nix-nil-server-path "nil"))
-  
   :config
   (setq lsp-prefer-flymake nil)
   (setq lsp-enable-on-type-formatting nil)
@@ -3895,3 +3886,12 @@ rm -rf ~/.emacs.d/straight/
   (markdown-mode . nb/markdown-unhighlight))
 #+end_src
 
+
+
+
+
+#+begin_src emacs-lisp
+(require 'doom-themes)
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+(load-theme 'doom-everforest t)
+#+end_src
