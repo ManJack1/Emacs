@@ -399,6 +399,8 @@
 (use-package doom-themes
   :straight t
   :init
+  (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
+  (load-theme 'doom-everforest-soft t)
   ;; (setq doom-themes-enable-bold t
   ;;       doom-themes-enable-italic t)
   ;; (load-theme 'doom-one t)
@@ -628,20 +630,28 @@
                          "*.info"))
   :custom
   (eat-term-name "xterm-256color")
+  :init 
+  ;; 设置默认 shell 为 zsh
+  (setq-default explicit-shell-file-name "/usr/bin/zsh")  ; 修改路径
+  (setq-default shell-file-name "/usr/bin/zsh")
+
   :config
   (server-start)
   (add-hook 'eshell-first-time-mode-hook #'eat-eshell-mode)
   
-  ;; Evil 模式配置
-  (evil-set-initial-state 'eat-mode 'emacs)  ; eat 中默认用 emacs 状态
   
-  ;; 或者如果想在 eat 中用 normal 模式
+  ;; Evil 模式配置
+  (evil-set-initial-state 'eat-mode 'emacs)
+  
+  ;; eat-mode-hook 配置
   (add-hook 'eat-mode-hook
             (lambda ()
-              ;; 在 insert 状态下可以正常输入
+              ;; 取消行号显示
+              (display-line-numbers-mode -1)
+              
+              ;; Evil 模式键绑定
               (evil-local-set-key 'normal (kbd "p") 'eat-yank)
               (evil-local-set-key 'normal (kbd "P") 'eat-yank)
-              ;; Ctrl+Shift+V 也能粘贴
               (local-set-key (kbd "C-S-v") 'eat-yank))))
 
 (use-package vterm
@@ -2120,7 +2130,3 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   
   :hook
   (markdown-mode . nb/markdown-unhighlight))
-
-(require 'doom-themes)
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
-(load-theme 'doom-everforest t)
