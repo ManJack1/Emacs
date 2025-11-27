@@ -89,6 +89,16 @@
 
 本节包含所有自定义的实用函数，用于增强 Emacs 的功能和便利性。
 
+** Toggle Deer
+#+begin_src emacs-lisp :wrap ep
+(defun my-toggle-deer ()
+  "Toggle deer mode on/off."
+  (interactive)
+  (if (derived-mode-p 'ranger-mode)
+      (ranger-close)
+    (deer)))
+#+end_src
+
 ** 打开 PDF 文件的函数
 *** open-in-sioyek
 #+begin_src emacs-lisp
@@ -756,7 +766,7 @@ doom-themes 是一个丰富的主题集合，包含 25+ 个精心设计的高对
   :straight t
   :init
   (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
-  (load-theme 'doom-everforest-soft t)
+  (load-theme 'doom-everforest t)
   ;; (setq doom-themes-enable-bold t
   ;;       doom-themes-enable-italic t)
   ;; (load-theme 'doom-one t)
@@ -873,7 +883,6 @@ centaur-tabs 提供类似浏览器的标签栏，支持标签分组、图标显�
       (if (>= count 2)
           (unless centaur-tabs-mode (centaur-tabs-mode 1))
         (when centaur-tabs-mode (centaur-tabs-mode -1)))))
-  
   ;; 监听 buffer 变化
   (add-hook 'buffer-list-update-hook 'my/update-tabs-visibility)
   
@@ -974,16 +983,17 @@ neotree 是一个侧边文件树浏览器，类似 VS Code 的资源管理器，
   :hook (after-init . (lambda ()
                         (global-set-key [f3] 'neotree-toggle)))
   :config
-  (setq neo-window-width 40)  ; 设置固定宽度为30列
-  (setq neo-smart-open t)  ; 自动展开到当前文件
+  (setq neo-window-width 40)
+  (setq neo-smart-open t)
   (setq neo-theme (if (display-graphic-p) 'nerd-icons 'arrow))
+  (setq neo-window-fixed-size nil)
   
-  ;; 禁止换行，截断长文件名
-  (setq neo-window-fixed-size nil)  ; 允许窗口宽度调整
   (add-hook 'neo-after-create-hook
             (lambda (&rest _)
-              (setq truncate-lines t)  ; 截断长行，不换行
-              (setq word-wrap nil))))  ; 禁用自动换行
+              (setq truncate-lines t)
+              (setq word-wrap nil)
+              (setq display-line-numbers nil)  ; 完全禁用行号显示
+              (display-line-numbers-mode -1))))  ; 确保关闭行号模式
 #+END_SRC
 
 *** 使用方法
@@ -2222,6 +2232,7 @@ avy 提供基于字符的快速跳转功能，类似 Vim 的 EasyMotion。输入
     
     ;; File tree (e)
     "e" 'neotree-toggle
+    "d" 'dirvish
     
     ;; Image (i)
     "i" '(:ignore t :which-key "image")
@@ -2329,9 +2340,29 @@ avy 提供基于字符的快速跳转功能，类似 Vim 的 EasyMotion。输入
    "a" 'neotree-create-node
    "d" 'neotree-delete-node
    "r" 'neotree-rename-node
+   "o" 'dired-jump
    "y" 'neotree-copy-node
    "RET" 'neotree-enter)))
+
+;; ==================== Dirvish 模式 ====================
+
+(with-eval-after-load 'dirvish
+  (general-define-key
+   :states 'normal
+   :keymaps 'dirvish-mode-map
+   "h" 'dired-up-directory
+   "l" 'dired-find-file
+   "j" 'dired-next-line
+   "k" 'dired-previous-line
+   "q" 'dirvish-quit
+   "Q" 'kill-current-buffer
+   "zh" 'dired-omit-mode
+   "TAB" 'dirvish-subtree-toggle
+   "gg" 'beginning-of-buffer
+   "G" 'end-of-buffer
+   "RET" 'dired-find-file))
 #+END_SRC
+
 
 
 
@@ -2420,25 +2451,25 @@ org-mode 是 Emacs 的杀手级功能，用于笔记、待办事项、文档编�
   (setq org-highlight-latex-and-related '(latex script entities))
   
   ;; 标题字体和颜色（doom-one 风格）
-  (set-face-attribute 'org-level-1 nil 
-                      :foreground "#51afef" 
-                      :height 1.0 
-                      :weight 'bold)
-  (set-face-attribute 'org-level-2 nil 
-                      :foreground "#c678dd" 
-                      :height 1.0)
-  (set-face-attribute 'org-level-3 nil 
-                      :foreground "#98be65" 
-                      :height 1.0)
-  (set-face-attribute 'org-level-4 nil 
-                      :foreground "#da8548" 
-                      :height 1.0)
-  (set-face-attribute 'org-level-5 nil 
-                      :foreground "#5699af" 
-                      :height 1.0)
-  (set-face-attribute 'org-level-6 nil 
-                      :foreground "#a9a1e1" 
-                      :height 1.0)
+  ;; (set-face-attribute 'org-level-1 nil 
+  ;;                     :foreground "#51afef" 
+  ;;                     :height 1.0 
+  ;;                     :weight 'bold)
+  ;; (set-face-attribute 'org-level-2 nil 
+  ;;                     :foreground "#c678dd" 
+  ;;                     :height 1.0)
+  ;; (set-face-attribute 'org-level-3 nil 
+  ;;                     :foreground "#98be65" 
+  ;;                     :height 1.0)
+  ;; (set-face-attribute 'org-level-4 nil 
+  ;;                     :foreground "#da8548" 
+  ;;                     :height 1.0)
+  ;; (set-face-attribute 'org-level-5 nil 
+  ;;                     :foreground "#5699af" 
+  ;;                     :height 1.0)
+  ;; (set-face-attribute 'org-level-6 nil 
+  ;;                     :foreground "#a9a1e1" 
+  ;;                     :height 1.0)
   
   ;; Agenda 视图设置
   (setq org-agenda-span 7
@@ -3201,6 +3232,8 @@ apheleia 是一个 Emacs 代码格式化工具，支持多种编程语言和格�
   ;; 启用调试
   (setq apheleia-log-only-errors nil)
   (setq apheleia-log-debug-info t)
+  ;; 增加超时时间(默认是 10 秒)
+  (setq apheleia-remote-algorithm 'cancel)
   
   ;; LSP 格式化函数
   (cl-defun my/apheleia-lsp-format
@@ -3234,18 +3267,19 @@ apheleia 是一个 Emacs 代码格式化工具，支持多种编程语言和格�
   ;; 注意：kdlfmt 使用命令列表格式
   (setf (alist-get 'kdlfmt apheleia-formatters)
       '("kdlfmt" "format" "--stdin"))
+  (setf (alist-get 'google-java-format apheleia-formatters)
+      '("google-java-format" "-"))  
   
   (setf (alist-get 'nixpkgs-fmt apheleia-formatters)
         '("nixpkgs-fmt"))
-  
+
   ;; 配置模式关联
   (setf (alist-get 'c-ts-mode apheleia-mode-alist) 'clang-format)
   (setf (alist-get 'c++-ts-mode apheleia-mode-alist) 'clang-format)
   (setf (alist-get 'python-ts-mode apheleia-mode-alist) 'black)
   (setf (alist-get 'go-mode apheleia-mode-alist) 'gofmt)
   (setf (alist-get 'nix-ts-mode apheleia-mode-alist) 'nixpkgs-fmt)
-  (setf (alist-get 'kdl-mode apheleia-mode-alist) 'kdlfmt)
-  (setf (alist-get 'java-ts-mode apheleia-mode-alist) 'lsp))
+  (setf (alist-get 'kdl-mode apheleia-mode-alist) 'kdlfmt))
 #+end_src
 
 *** 使用方法
@@ -3405,10 +3439,18 @@ lsp-pyright 为 Python 提供基于 Pyright 的 LSP 支持。Pyright 是微软�
 *** 配置
 #+BEGIN_SRC emacs-lisp
 (use-package lsp-java
-  :straight t
-  :after lsp-mode
-  :hook (java-ts-mode . lsp))
+  :hook (java-mode . lsp-deferred)
+  :config
+  ;; 使用系统的 jdtls
+  (setq lsp-java-jdt-ls-prefer-native-command t)
+  (setq lsp-java-jdt-ls-command "jdtls")
+  (setq lsp-java-server-install-dir "/usr/share/java/jdtls/")
+  (setq lsp-java-jdt-download-url nil)
+  ;; ===== 禁用 LSP 的格式化，使用 google-java-format =====
+  (setq lsp-java-format-enabled nil)  ; 关键：禁用 LSP 格式化
+  (setq lsp-java-format-on-type-enabled nil))
 #+END_SRC
+
 
 *** 使用方法
 - 首次打开 Java 项目会自动下载 language server
@@ -3897,3 +3939,44 @@ rm -rf ~/.emacs.d/straight/
   (markdown-mode . nb/markdown-unhighlight))
 #+end_src
 
+#+begin_src emacs-lisp 
+;; 方案1: Dirvish (全功能)
+(use-package dirvish
+  :init
+  (dirvish-override-dired-mode)
+  
+  :config
+  (setq dired-truncate-lines t)
+  
+  ;; 调整窗口宽度,给更多空间
+  (setq dirvish-default-layout '(0.25 0.25 0.5))  ; 左:0 中:30% 右:70%
+  ;; 或者
+  (setq dirvish-preview-dispatchers nil)  ; 关闭预览,给父窗口更多空间
+  
+  (setq dirvish-attributes
+        '(nerd-icons file-size collapse subtree-state vc-state git-msg)))
+
+
+(use-package dired-narrow
+  :bind (:map dired-mode-map ("/" . dired-narrow)))
+
+(use-package dired-subtree
+  :bind (:map dired-mode-map ("TAB" . dired-subtree-toggle)))
+
+(use-package dired
+  :straight nil
+  :config
+  ;; 截断长文件名
+  (setq dired-truncate-lines t)
+  
+  ;; 其他实用设置
+  (setq dired-listing-switches "-alh"      ; 人类可读的文件大小
+        dired-dwim-target t                 ; 智能猜测复制目标
+        dired-kill-when-opening-new-dired-buffer t)  ; 打开新目录时关闭旧 buffer
+  
+  :hook
+  (dired-mode . (lambda ()
+                  (setq truncate-lines t)
+                  (hl-line-mode 1))))  ; 高亮当前行
+
+#+end_src

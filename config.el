@@ -1,3 +1,10 @@
+(defun my-toggle-deer ()
+  "Toggle deer mode on/off."
+  (interactive)
+  (if (derived-mode-p 'ranger-mode)
+      (ranger-close)
+    (deer)))
+
 (defun open-in-sioyek ()
   "Open the PDF file of the current buffer in Sioyek."
   (interactive)
@@ -400,7 +407,7 @@
   :straight t
   :init
   (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
-  (load-theme 'doom-everforest-soft t)
+  (load-theme 'doom-everforest t)
   ;; (setq doom-themes-enable-bold t
   ;;       doom-themes-enable-italic t)
   ;; (load-theme 'doom-one t)
@@ -459,7 +466,6 @@
       (if (>= count 2)
           (unless centaur-tabs-mode (centaur-tabs-mode 1))
         (when centaur-tabs-mode (centaur-tabs-mode -1)))))
-  
   ;; 监听 buffer 变化
   (add-hook 'buffer-list-update-hook 'my/update-tabs-visibility)
   
@@ -497,16 +503,17 @@
   :hook (after-init . (lambda ()
                         (global-set-key [f3] 'neotree-toggle)))
   :config
-  (setq neo-window-width 40)  ; 设置固定宽度为30列
-  (setq neo-smart-open t)  ; 自动展开到当前文件
+  (setq neo-window-width 40)
+  (setq neo-smart-open t)
   (setq neo-theme (if (display-graphic-p) 'nerd-icons 'arrow))
+  (setq neo-window-fixed-size nil)
   
-  ;; 禁止换行，截断长文件名
-  (setq neo-window-fixed-size nil)  ; 允许窗口宽度调整
   (add-hook 'neo-after-create-hook
             (lambda (&rest _)
-              (setq truncate-lines t)  ; 截断长行，不换行
-              (setq word-wrap nil))))  ; 禁用自动换行
+              (setq truncate-lines t)
+              (setq word-wrap nil)
+              (setq display-line-numbers nil)  ; 完全禁用行号显示
+              (display-line-numbers-mode -1))))  ; 确保关闭行号模式
 
       ;; 编辑体验优化
       (auto-save-visited-mode 1)           ; 自动保存
@@ -1089,6 +1096,7 @@
     
     ;; File tree (e)
     "e" 'neotree-toggle
+    "d" 'dirvish
     
     ;; Image (i)
     "i" '(:ignore t :which-key "image")
@@ -1196,8 +1204,27 @@
    "a" 'neotree-create-node
    "d" 'neotree-delete-node
    "r" 'neotree-rename-node
+   "o" 'dired-jump
    "y" 'neotree-copy-node
    "RET" 'neotree-enter)))
+
+;; ==================== Dirvish 模式 ====================
+
+(with-eval-after-load 'dirvish
+  (general-define-key
+   :states 'normal
+   :keymaps 'dirvish-mode-map
+   "h" 'dired-up-directory
+   "l" 'dired-find-file
+   "j" 'dired-next-line
+   "k" 'dired-previous-line
+   "q" 'dirvish-quit
+   "Q" 'kill-current-buffer
+   "zh" 'dired-omit-mode
+   "TAB" 'dirvish-subtree-toggle
+   "gg" 'beginning-of-buffer
+   "G" 'end-of-buffer
+   "RET" 'dired-find-file))
 
 (use-package org
   :straight t
@@ -1270,25 +1297,25 @@
   (setq org-highlight-latex-and-related '(latex script entities))
   
   ;; 标题字体和颜色（doom-one 风格）
-  (set-face-attribute 'org-level-1 nil 
-                      :foreground "#51afef" 
-                      :height 1.0 
-                      :weight 'bold)
-  (set-face-attribute 'org-level-2 nil 
-                      :foreground "#c678dd" 
-                      :height 1.0)
-  (set-face-attribute 'org-level-3 nil 
-                      :foreground "#98be65" 
-                      :height 1.0)
-  (set-face-attribute 'org-level-4 nil 
-                      :foreground "#da8548" 
-                      :height 1.0)
-  (set-face-attribute 'org-level-5 nil 
-                      :foreground "#5699af" 
-                      :height 1.0)
-  (set-face-attribute 'org-level-6 nil 
-                      :foreground "#a9a1e1" 
-                      :height 1.0)
+  ;; (set-face-attribute 'org-level-1 nil 
+  ;;                     :foreground "#51afef" 
+  ;;                     :height 1.0 
+  ;;                     :weight 'bold)
+  ;; (set-face-attribute 'org-level-2 nil 
+  ;;                     :foreground "#c678dd" 
+  ;;                     :height 1.0)
+  ;; (set-face-attribute 'org-level-3 nil 
+  ;;                     :foreground "#98be65" 
+  ;;                     :height 1.0)
+  ;; (set-face-attribute 'org-level-4 nil 
+  ;;                     :foreground "#da8548" 
+  ;;                     :height 1.0)
+  ;; (set-face-attribute 'org-level-5 nil 
+  ;;                     :foreground "#5699af" 
+  ;;                     :height 1.0)
+  ;; (set-face-attribute 'org-level-6 nil 
+  ;;                     :foreground "#a9a1e1" 
+  ;;                     :height 1.0)
   
   ;; Agenda 视图设置
   (setq org-agenda-span 7
@@ -1761,6 +1788,8 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   ;; 启用调试
   (setq apheleia-log-only-errors nil)
   (setq apheleia-log-debug-info t)
+  ;; 增加超时时间(默认是 10 秒)
+  (setq apheleia-remote-algorithm 'cancel)
   
   ;; LSP 格式化函数
   (cl-defun my/apheleia-lsp-format
@@ -1794,18 +1823,19 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   ;; 注意：kdlfmt 使用命令列表格式
   (setf (alist-get 'kdlfmt apheleia-formatters)
       '("kdlfmt" "format" "--stdin"))
+  (setf (alist-get 'google-java-format apheleia-formatters)
+      '("google-java-format" "-"))  
   
   (setf (alist-get 'nixpkgs-fmt apheleia-formatters)
         '("nixpkgs-fmt"))
-  
+
   ;; 配置模式关联
   (setf (alist-get 'c-ts-mode apheleia-mode-alist) 'clang-format)
   (setf (alist-get 'c++-ts-mode apheleia-mode-alist) 'clang-format)
   (setf (alist-get 'python-ts-mode apheleia-mode-alist) 'black)
   (setf (alist-get 'go-mode apheleia-mode-alist) 'gofmt)
   (setf (alist-get 'nix-ts-mode apheleia-mode-alist) 'nixpkgs-fmt)
-  (setf (alist-get 'kdl-mode apheleia-mode-alist) 'kdlfmt)
-  (setf (alist-get 'java-ts-mode apheleia-mode-alist) 'lsp))
+  (setf (alist-get 'kdl-mode apheleia-mode-alist) 'kdlfmt))
 
   (use-package lsp-ui
     :straight t
@@ -1852,9 +1882,16 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
                           (lsp))))  ; or lsp-deferred
 
 (use-package lsp-java
-  :straight t
-  :after lsp-mode
-  :hook (java-ts-mode . lsp))
+  :hook (java-mode . lsp-deferred)
+  :config
+  ;; 使用系统的 jdtls
+  (setq lsp-java-jdt-ls-prefer-native-command t)
+  (setq lsp-java-jdt-ls-command "jdtls")
+  (setq lsp-java-server-install-dir "/usr/share/java/jdtls/")
+  (setq lsp-java-jdt-download-url nil)
+  ;; ===== 禁用 LSP 的格式化，使用 google-java-format =====
+  (setq lsp-java-format-enabled nil)  ; 关键：禁用 LSP 格式化
+  (setq lsp-java-format-on-type-enabled nil))
 
 (use-package treesit-auto
   :straight t
@@ -2130,3 +2167,42 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   
   :hook
   (markdown-mode . nb/markdown-unhighlight))
+
+;; 方案1: Dirvish (全功能)
+(use-package dirvish
+  :init
+  (dirvish-override-dired-mode)
+  
+  :config
+  (setq dired-truncate-lines t)
+  
+  ;; 调整窗口宽度,给更多空间
+  (setq dirvish-default-layout '(0.25 0.25 0.5))  ; 左:0 中:30% 右:70%
+  ;; 或者
+  (setq dirvish-preview-dispatchers nil)  ; 关闭预览,给父窗口更多空间
+  
+  (setq dirvish-attributes
+        '(nerd-icons file-size collapse subtree-state vc-state git-msg)))
+
+
+(use-package dired-narrow
+  :bind (:map dired-mode-map ("/" . dired-narrow)))
+
+(use-package dired-subtree
+  :bind (:map dired-mode-map ("TAB" . dired-subtree-toggle)))
+
+(use-package dired
+  :straight nil
+  :config
+  ;; 截断长文件名
+  (setq dired-truncate-lines t)
+  
+  ;; 其他实用设置
+  (setq dired-listing-switches "-alh"      ; 人类可读的文件大小
+        dired-dwim-target t                 ; 智能猜测复制目标
+        dired-kill-when-opening-new-dired-buffer t)  ; 打开新目录时关闭旧 buffer
+  
+  :hook
+  (dired-mode . (lambda ()
+                  (setq truncate-lines t)
+                  (hl-line-mode 1))))  ; 高亮当前行

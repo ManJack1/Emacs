@@ -70,7 +70,9 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   '("f8fe19541070981e7b7ce08ce0f8047e050e27565eaa78fd5e21b1f522663021"
+   '("2406fd86407eb1125525c0dbb12523180a90e68823f179ec1b5865b824d55341"
+     "d04582fe35da097fc6f88866f6b5f80ca089666985f02a14bf948d2b27ea2819"
+     "f8fe19541070981e7b7ce08ce0f8047e050e27565eaa78fd5e21b1f522663021"
      "b7a09eb77a1e9b98cafba8ef1bd58871f91958538f6671b22976ea38c2580755"
      "f1e8339b04aef8f145dd4782d03499d9d716fdc0361319411ac2efc603249326"
      "5c7720c63b729140ed88cf35413f36c728ab7c70f8cd8422d9ee1cedeb618de5"
@@ -101,3 +103,4 @@
  '(org-level-4 ((t (:height 1.2))))
  '(org-level-5 ((t (:height 1.1))))
  '(org-level-6 ((t (:height 1.0)))))
+(put 'dired-find-alternate-file 'disabled nil)
