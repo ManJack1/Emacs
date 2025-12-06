@@ -516,7 +516,7 @@
               (display-line-numbers-mode -1))))  ; 确保关闭行号模式
 
       ;; 编辑体验优化
-      (auto-save-visited-mode 1)           ; 自动保存
+      (auto-save-visited-mode 0)           ; 自动保存
       (show-paren-mode 1)                  ; 高亮匹配括号
       (global-auto-revert-mode 1)          ; 自动重新加载外部修改的文件
       (delete-selection-mode 1)            ; 选中文字后输入会替换
@@ -1852,6 +1852,12 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
     (lsp-ui-peek-always-show t)
     (lsp-ui-peek-show-directory t))
 
+
+;; 4. Java 模式专用优化
+(add-hook 'java-ts-mode-hook
+          (lambda ()
+            (setq-local apheleia-mode nil)))
+
   (use-package sideline
   :straight t
   :hook (flymake-mode . sideline-mode)
@@ -1884,14 +1890,19 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
 (use-package lsp-java
   :hook (java-mode . lsp-deferred)
   :config
-  ;; 使用系统的 jdtls
-  (setq lsp-java-jdt-ls-prefer-native-command t)
-  (setq lsp-java-jdt-ls-command "jdtls")
-  (setq lsp-java-server-install-dir "/usr/share/java/jdtls/")
-  (setq lsp-java-jdt-download-url nil)
-  ;; ===== 禁用 LSP 的格式化，使用 google-java-format =====
-  (setq lsp-java-format-enabled nil)  ; 关键：禁用 LSP 格式化
-  (setq lsp-java-format-on-type-enabled nil))
+(setq lsp-java-vmargs
+        '("-noverify"
+          "-Xmx4G"
+          "-Xms1G"
+          "-XX:+UseG1GC"
+          "-XX:+UseStringDeduplication"
+          "-XX:MaxMetaspaceSize=512m"
+          "-XX:+ParallelRefProcEnabled"
+          "-XX:+DisableExplicitGC")))
+
+;; to enable the lenses
+(add-hook 'lsp-mode-hook #'lsp-lens-mode)
+(add-hook 'java-mode-hook #'lsp-java-boot-lens-mode)
 
 (use-package treesit-auto
   :straight t
