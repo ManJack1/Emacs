@@ -1,3 +1,4 @@
+
 #+TITLE: Emacs 配置文档
 #+AUTHOR: ManJack
 #+DATE: \today
@@ -2106,7 +2107,7 @@ avy 提供基于字符的快速跳转功能，类似 Vim 的 EasyMotion。输入
 * 键位绑定
 
 自定义的键位绑定配置，主要基于 Evil 模式。
-** Evil 键位配置
+* Evil 键位配置
 #+BEGIN_SRC emacs-lisp
 (use-package general
   :straight t
@@ -3185,7 +3186,7 @@ lsp-mode 是 Language Server Protocol 的 Emacs 实现，提供智能补全、�
          (c++-ts-mode . lsp)
          (python-ts-mode . lsp)
          (nix-ts-mode . lsp)
-         (java-ts-mode . lsp)
+         ;; (java-ts-mode . lsp)
          (go-mode . lsp))
   :commands lsp
   :init
@@ -3199,6 +3200,26 @@ lsp-mode 是 Language Server Protocol 的 Emacs 实现，提供智能补全、�
 #+END_SRC
 
 
+
+
+** eglot
+
+#+begin_src emacs-lisp 
+(use-package eglot
+  :hook (java-ts-mode . eglot-ensure)
+  :config
+  ;; 添加 jdtls 配置
+  (add-to-list 'eglot-server-programs
+               '(java-ts-mode . ("jdtls"))))
+
+;; 只在 java-ts-mode 下绑定键位
+(general-define-key
+ :states 'normal
+ :keymaps 'java-ts-mode-map
+ :prefix "SPC c"
+ "r" #'eglot-rename
+ "a" #'eglot-code-actions)
+#+end_src
 
 *** 使用方法
 - =g d= : 跳转到定义

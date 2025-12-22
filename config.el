@@ -1769,7 +1769,7 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
          (c++-ts-mode . lsp)
          (python-ts-mode . lsp)
          (nix-ts-mode . lsp)
-         (java-ts-mode . lsp)
+         ;; (java-ts-mode . lsp)
          (go-mode . lsp))
   :commands lsp
   :init
@@ -1779,6 +1779,21 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   (setq lsp-prefer-flymake nil)
   (setq lsp-enable-on-type-formatting nil)
   (setq lsp-format-on-save nil))
+
+(use-package eglot
+  :hook (java-ts-mode . eglot-ensure)
+  :config
+  ;; 添加 jdtls 配置
+  (add-to-list 'eglot-server-programs
+               '(java-ts-mode . ("jdtls"))))
+
+;; 只在 java-ts-mode 下绑定键位
+(general-define-key
+ :states 'normal
+ :keymaps 'java-ts-mode-map
+ :prefix "SPC c"
+ "r" #'eglot-rename
+ "a" #'eglot-code-actions)
 
 (use-package apheleia
   :straight t
