@@ -910,6 +910,9 @@
 (use-package consult
   :straight t
   :config
+  ;; 用 consult 替换默认的 xref 显示
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref)
   ;; === 正常 buffer ===
   (defvar my/consult--source-normal-buffer
     (list :name     "Buffers"  ; 分隔线样式
@@ -1794,6 +1797,10 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
  :prefix "SPC c"
  "r" #'eglot-rename
  "a" #'eglot-code-actions)
+
+(use-package consult-eglot
+  :straight t
+  :after (consult eglot))
 
 (use-package apheleia
   :straight t

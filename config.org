@@ -1979,6 +1979,9 @@ consult 是一个强大的补全和导航工具，提供文件查找、buffer �
 (use-package consult
   :straight t
   :config
+  ;; 用 consult 替换默认的 xref 显示
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref)
   ;; === 正常 buffer ===
   (defvar my/consult--source-normal-buffer
     (list :name     "Buffers"  ; 分隔线样式
@@ -3219,7 +3222,12 @@ lsp-mode 是 Language Server Protocol 的 Emacs 实现，提供智能补全、�
  :prefix "SPC c"
  "r" #'eglot-rename
  "a" #'eglot-code-actions)
+
+(use-package consult-eglot
+  :straight t
+  :after (consult eglot))
 #+end_src
+
 
 *** 使用方法
 - =g d= : 跳转到定义
