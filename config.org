@@ -3497,9 +3497,7 @@ sideline 在代码行的右侧显示额外信息，如错误、警告、文档�
 *** 配置
 #+begin_src emacs-lisp
   (use-package sideline
-  :hook (flymake-mode . sideline-mode)
-  :custom
-  (sideline-backends-right '(sideline-flymake)))
+  :hook (flymake-mode . sideline-mode))
 #+end_src
 
 *** 使用方法

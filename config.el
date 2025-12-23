@@ -1954,9 +1954,7 @@ See the varibale `my/warning-suppress-message-regexps'."
             (setq-local apheleia-mode nil)))
 
   (use-package sideline
-  :hook (flymake-mode . sideline-mode)
-  :custom
-  (sideline-backends-right '(sideline-flymake)))
+  :hook (flymake-mode . sideline-mode))
 
 ;; eldoc-box
 (use-package eldoc-box
