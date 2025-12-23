@@ -290,6 +290,52 @@
   ;; 启动配置
   (setq inhibit-startup-message t)      ; 关闭启动画面
 
+(use-package dirvish
+  :init
+  (dirvish-override-dired-mode)
+  
+  :config
+  (setq dired-truncate-lines t)
+  
+  ;; 调整窗口宽度,给更多空间
+  (setq dirvish-default-layout '(0.25 0.25 0.5))  ; 左:0 中:30% 右:70%
+  ;; 或者
+  (setq dirvish-preview-dispatchers nil)  ; 关闭预览,给父窗口更多空间
+  
+  (setq dirvish-attributes
+        '(nerd-icons file-size collapse subtree-state vc-state git-msg)))
+
+
+(use-package dired-narrow
+  :bind (:map dired-mode-map ("/" . dired-narrow)))
+
+(use-package dired-subtree
+  :bind (:map dired-mode-map ("TAB" . dired-subtree-toggle)))
+
+(use-package dired
+  :straight nil
+  :config
+  ;; 截断长文件名
+  (setq dired-truncate-lines t)
+  
+  ;; 其他实用设置
+  (setq dired-listing-switches "-alh"      ; 人类可读的文件大小
+        dired-dwim-target t                 ; 智能猜测复制目标
+        dired-kill-when-opening-new-dired-buffer t)  ; 打开新目录时关闭旧 buffer
+  
+  :hook
+  (dired-mode . (lambda ()
+                  (setq truncate-lines t)
+                  (hl-line-mode 1))))  ; 高亮当前行
+
+(use-package ultra-scroll
+  ;:vc (:url "https://github.com/jdtsmith/ultra-scroll") ; if desired (emacs>=v30)
+  :init
+  (setq scroll-conservatively 3 ; or whatever value you prefer, since v0.4
+        scroll-margin 0)        ; important: scroll-margin>0 not yet supported
+  :config
+  (ultra-scroll-mode 1))
+
 (use-package dashboard
   :demand t
   :after (centaur-tabs nerd-icons evil)
@@ -397,6 +443,57 @@
   (org-agenda-files (list (expand-file-name "~/.emacs.d/org")))
   (org-agenda-start-on-weekday nil)
   (org-agenda-span 7))
+
+(use-package markdown-mode
+  :commands (gfm-mode markdown-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :custom
+  (markdown-header-scaling t)
+  (markdown-hide-urls t)
+  (markdown-fontify-code-blocks-natively t)
+  :custom-face
+  (markdown-header-delimiter-face ((t (:foreground "#616161" :height 0.9))))
+  (markdown-header-face-1 ((t (:height 1.6 :foreground "#A3BE8C" :weight extra-bold :inherit markdown-header-face))))
+  (markdown-header-face-2 ((t (:height 1.4 :foreground "#EBCB8B" :weight extra-bold :inherit markdown-header-face))))
+  (markdown-header-face-3 ((t (:height 1.2 :foreground "#D08770" :weight extra-bold :inherit markdown-header-face))))
+  (markdown-header-face-4 ((t (:height 1.15 :foreground "#BF616A" :weight bold :inherit markdown-header-face))))
+  (markdown-header-face-5 ((t (:height 1.1 :foreground "#b48ead" :weight bold :inherit markdown-header-face))))
+  (markdown-header-face-6 ((t (:height 1.05 :foreground "#5e81ac" :weight semi-bold :inherit markdown-header-face))))
+  :config
+  (defvar nb/current-line '(0 . 0)
+    "(start . end) of current line in current buffer")
+  (make-variable-buffer-local 'nb/current-line)
+  
+  (defun nb/unhide-current-line (limit)
+    "Font-lock function"
+    (let ((start (max (point) (car nb/current-line)))
+          (end (min limit (cdr nb/current-line))))
+      (when (< start end)
+        (remove-text-properties start end
+                                '(invisible t display "" composition ""))
+        (goto-char limit)
+        t)))
+  
+  (defun nb/refontify-on-linemove ()
+    "Post-command-hook"
+    (let* ((start (line-beginning-position))
+           (end (line-beginning-position 2))
+           (needs-update (not (equal start (car nb/current-line)))))
+      (setq nb/current-line (cons start end))
+      (when needs-update
+        (font-lock-fontify-block 3))))
+  
+  (defun nb/markdown-unhighlight ()
+    "Enable markdown concealling"
+    (interactive)
+    (markdown-toggle-markup-hiding 'toggle)
+    (font-lock-add-keywords nil '((nb/unhide-current-line)) t)
+    (add-hook 'post-command-hook #'nb/refontify-on-linemove nil t))
+  
+  :hook
+  (markdown-mode . nb/markdown-unhighlight))
 
 (use-package colorful-mode
   :custom
@@ -1861,12 +1958,58 @@ See the varibale `my/warning-suppress-message-regexps'."
   :custom
   (sideline-backends-right '(sideline-flymake)))
 
-  (use-package sideline-flymake
-  :after sideline flymake)
+;; eldoc-box
+(use-package eldoc-box
+  :config
+  (setq eldoc-box-only-multi-line t
+        eldoc-box-clear-with-C-g t
+        eldoc-box-max-pixel-width 800
+        eldoc-box-max-pixel-height 800)
+  
+  (general-define-key
+   :states 'normal
+   :keymaps 'eglot-mode-map
+   :prefix "SPC c"
+   "h" #'eldoc-box-help-at-point
+   "k" #'eldoc-box-scroll-up
+   "j" #'eldoc-box-scroll-down))
 
   (use-package flymake
   :straight nil
   :hook (prog-mode . flymake-mode))
+
+(use-package flyover
+  :hook ((flycheck-mode . flyover-mode)
+         (flymake-mode . flyover-mode))
+  :custom
+  ;; Checker settings
+  (flyover-checkers '(flycheck flymake))
+  (flyover-levels '(error warning info))
+
+  ;; Appearance
+  (flyover-use-theme-colors t)
+  (flyover-background-lightness 45)
+  (flyover-percent-darker 40)
+  (flyover-text-tint 'lighter)
+  (flyover-text-tint-percent 50)
+
+  ;; Icons
+  (flyover-info-icon "")
+  (flyover-warning-icon "")
+  (flyover-error-icon "")
+
+  ;; Display settings
+  (flyover-hide-checker-name t)
+  (flyover-show-virtual-line t)
+  (flyover-virtual-line-type 'curved-dotted-arrow)
+  (flyover-line-position-offset 1)
+
+  ;; Message wrapping
+  (flyover-wrap-messages t)
+  (flyover-max-line-length 80)
+
+  ;; Performance
+  (flyover-debounce-interval 0.2))
 
 (use-package kdl-mode
   :straight t)
@@ -1960,6 +2103,25 @@ See the varibale `my/warning-suppress-message-regexps'."
   :bind ("C-c C-'" . claude-code-ide-menu)
   :config
   (claude-code-ide-emacs-tools-setup))
+
+(use-package pomidor
+  :bind (("<f12>" . pomidor))
+  :init
+  ;; 设置番茄钟时长
+  (setq pomidor-seconds (* 55 60))          ; 25分钟工作时间
+  (setq pomidor-break-seconds (* 5 60))     ; 5分钟短休息
+  (setq pomidor-long-break-seconds (* 20 60)) ; 20分钟长休息
+  (setq pomidor-breaks-before-long 3)       ; 4个短休息后进入长休息
+  
+  ;; 使用 emacs state,保持原始按键
+  (with-eval-after-load 'evil
+    (evil-set-initial-state 'pomidor-mode 'emacs))
+  
+  :hook (pomidor-mode . (lambda ()
+                          (display-line-numbers-mode -1)
+                          (setq left-fringe-width 0 right-fringe-width 0)
+                          (setq left-margin-width 2 right-margin-width 0)
+                          (set-window-buffer nil (current-buffer)))))
 
 ;; ──────────────────────────────────────────────────────────────────────
 ;; 1. general + 定义 global-definer（必须最先）
@@ -2117,161 +2279,3 @@ See the varibale `my/warning-suppress-message-regexps'."
 (use-package symbol-overlay
   :config
   (define-key symbol-overlay-map (kbd "h") 'nil))
-
-(use-package markdown-mode
-  :commands (gfm-mode markdown-mode)
-  :mode (("README\\.md\\'" . gfm-mode)
-         ("\\.md\\'" . markdown-mode)
-         ("\\.markdown\\'" . markdown-mode))
-  :custom
-  (markdown-header-scaling t)
-  (markdown-hide-urls t)
-  (markdown-fontify-code-blocks-natively t)
-  :custom-face
-  (markdown-header-delimiter-face ((t (:foreground "#616161" :height 0.9))))
-  (markdown-header-face-1 ((t (:height 1.6 :foreground "#A3BE8C" :weight extra-bold :inherit markdown-header-face))))
-  (markdown-header-face-2 ((t (:height 1.4 :foreground "#EBCB8B" :weight extra-bold :inherit markdown-header-face))))
-  (markdown-header-face-3 ((t (:height 1.2 :foreground "#D08770" :weight extra-bold :inherit markdown-header-face))))
-  (markdown-header-face-4 ((t (:height 1.15 :foreground "#BF616A" :weight bold :inherit markdown-header-face))))
-  (markdown-header-face-5 ((t (:height 1.1 :foreground "#b48ead" :weight bold :inherit markdown-header-face))))
-  (markdown-header-face-6 ((t (:height 1.05 :foreground "#5e81ac" :weight semi-bold :inherit markdown-header-face))))
-  :config
-  (defvar nb/current-line '(0 . 0)
-    "(start . end) of current line in current buffer")
-  (make-variable-buffer-local 'nb/current-line)
-  
-  (defun nb/unhide-current-line (limit)
-    "Font-lock function"
-    (let ((start (max (point) (car nb/current-line)))
-          (end (min limit (cdr nb/current-line))))
-      (when (< start end)
-        (remove-text-properties start end
-                                '(invisible t display "" composition ""))
-        (goto-char limit)
-        t)))
-  
-  (defun nb/refontify-on-linemove ()
-    "Post-command-hook"
-    (let* ((start (line-beginning-position))
-           (end (line-beginning-position 2))
-           (needs-update (not (equal start (car nb/current-line)))))
-      (setq nb/current-line (cons start end))
-      (when needs-update
-        (font-lock-fontify-block 3))))
-  
-  (defun nb/markdown-unhighlight ()
-    "Enable markdown concealling"
-    (interactive)
-    (markdown-toggle-markup-hiding 'toggle)
-    (font-lock-add-keywords nil '((nb/unhide-current-line)) t)
-    (add-hook 'post-command-hook #'nb/refontify-on-linemove nil t))
-  
-  :hook
-  (markdown-mode . nb/markdown-unhighlight))
-
-;; 方案1: Dirvish (全功能)
-(use-package dirvish
-  :init
-  (dirvish-override-dired-mode)
-  
-  :config
-  (setq dired-truncate-lines t)
-  
-  ;; 调整窗口宽度,给更多空间
-  (setq dirvish-default-layout '(0.25 0.25 0.5))  ; 左:0 中:30% 右:70%
-  ;; 或者
-  (setq dirvish-preview-dispatchers nil)  ; 关闭预览,给父窗口更多空间
-  
-  (setq dirvish-attributes
-        '(nerd-icons file-size collapse subtree-state vc-state git-msg)))
-
-
-(use-package dired-narrow
-  :bind (:map dired-mode-map ("/" . dired-narrow)))
-
-(use-package dired-subtree
-  :bind (:map dired-mode-map ("TAB" . dired-subtree-toggle)))
-
-(use-package dired
-  :straight nil
-  :config
-  ;; 截断长文件名
-  (setq dired-truncate-lines t)
-  
-  ;; 其他实用设置
-  (setq dired-listing-switches "-alh"      ; 人类可读的文件大小
-        dired-dwim-target t                 ; 智能猜测复制目标
-        dired-kill-when-opening-new-dired-buffer t)  ; 打开新目录时关闭旧 buffer
-  
-  :hook
-  (dired-mode . (lambda ()
-                  (setq truncate-lines t)
-                  (hl-line-mode 1))))  ; 高亮当前行
-
-(use-package flyover
-  :hook ((flycheck-mode . flyover-mode)
-         (flymake-mode . flyover-mode))
-  :custom
-  ;; Checker settings
-  (flyover-checkers '(flycheck flymake))
-  (flyover-levels '(error warning info))
-
-  ;; Appearance
-  (flyover-use-theme-colors t)
-  (flyover-background-lightness 45)
-  (flyover-percent-darker 40)
-  (flyover-text-tint 'lighter)
-  (flyover-text-tint-percent 50)
-
-  ;; Icons
-  (flyover-info-icon "")
-  (flyover-warning-icon "")
-  (flyover-error-icon "")
-
-  ;; Display settings
-  (flyover-hide-checker-name t)
-  (flyover-show-virtual-line t)
-  (flyover-virtual-line-type 'curved-dotted-arrow)
-  (flyover-line-position-offset 1)
-
-  ;; Message wrapping
-  (flyover-wrap-messages t)
-  (flyover-max-line-length 80)
-
-  ;; Performance
-  (flyover-debounce-interval 0.2))
-
-;; eldoc-box
-(use-package eldoc-box
-  :config
-  (setq eldoc-box-only-multi-line t
-        eldoc-box-clear-with-C-g t
-        eldoc-box-max-pixel-width 800
-        eldoc-box-max-pixel-height 800)
-  
-  (general-define-key
-   :states 'normal
-   :keymaps 'eglot-mode-map
-   :prefix "SPC c"
-   "h" #'eldoc-box-help-at-point
-   "k" #'eldoc-box-scroll-up
-   "j" #'eldoc-box-scroll-down))
-
-(use-package pomidor
-  :bind (("<f12>" . pomidor))
-  :init
-  ;; 设置番茄钟时长
-  (setq pomidor-seconds (* 55 60))          ; 25分钟工作时间
-  (setq pomidor-break-seconds (* 5 60))     ; 5分钟短休息
-  (setq pomidor-long-break-seconds (* 20 60)) ; 20分钟长休息
-  (setq pomidor-breaks-before-long 3)       ; 4个短休息后进入长休息
-  
-  ;; 使用 emacs state,保持原始按键
-  (with-eval-after-load 'evil
-    (evil-set-initial-state 'pomidor-mode 'emacs))
-  
-  :hook (pomidor-mode . (lambda ()
-                          (display-line-numbers-mode -1)
-                          (setq left-fringe-width 0 right-fringe-width 0)
-                          (setq left-margin-width 2 right-margin-width 0)
-                          (set-window-buffer nil (current-buffer)))))
