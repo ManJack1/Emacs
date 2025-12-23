@@ -5,6 +5,12 @@
       (ranger-close)
     (deer)))
 
+(when-let ((zsh-path (executable-find "zsh")))
+  (setq explicit-shell-file-name zsh-path)
+  (setq shell-file-name zsh-path)
+  (setq-default explicit-shell-file-name zsh-path)
+  (setq-default shell-file-name zsh-path))
+
 (defun open-in-sioyek ()
   "Open the PDF file of the current buffer in Sioyek."
   (interactive)
@@ -580,6 +586,9 @@
 
 (use-package diff-hl
   :init
+  ;; 在 diff-hl 初始化前再次确保 shell 路径正确
+  (when-let ((zsh-path (executable-find "zsh")))
+    (setq shell-file-name zsh-path))
   (diff-hl-flydiff-mode)
   (global-diff-hl-mode))
 
@@ -623,10 +632,6 @@
                          "*.info"))
   :custom
   (eat-term-name "xterm-256color")
-  :init 
-  ;; 设置默认 shell 为 zsh
-  (setq-default explicit-shell-file-name "/usr/bin/zsh")  ; 修改路径
-  (setq-default shell-file-name "/usr/bin/zsh")
 
   :config
   (server-start)
@@ -1734,9 +1739,27 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   (when (eq system-type 'darwin)
     (setq lsp-nix-nil-server-path "/Users/luoyaohui/.nix-profile/bin/nil"))
   :config
+  (add-to-list 'lsp-disabled-clients 'semgrep-ls)
   (setq lsp-prefer-flymake nil)
   (setq lsp-enable-on-type-formatting nil)
   (setq lsp-format-on-save nil))
+
+(defcustom my/warning-suppress-message-regexps '(".*semgrep/rulesRefreshed.*")
+  "List of warning messages to suppress.
+See also `warning-suppress-log-types'."
+  :type '(repeat string)
+  :group 'my-configuration)
+
+(defun my/display-warning-advise (type message &optional level buffer-name)
+  "Allow filtering Emacs warning messages using regexp.
+See the varibale `my/warning-suppress-message-regexps'."
+  (catch 'exit
+    (dolist (regexp my/warning-suppress-message-regexps)
+      (when (string-match-p regexp message)
+        (throw 'exit nil)))
+    (throw 'exit t)))
+
+(add-function :before-while (symbol-function 'display-warning) #'my/display-warning-advise)
 
 (use-package eglot
   :hook (java-ts-mode . eglot-ensure)
