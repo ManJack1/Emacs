@@ -2273,3 +2273,19 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
 
   ;; Performance
   (flyover-debounce-interval 0.2))
+
+;; eldoc-box
+(use-package eldoc-box
+  :config
+  (setq eldoc-box-only-multi-line t
+        eldoc-box-clear-with-C-g t
+        eldoc-box-max-pixel-width 800
+        eldoc-box-max-pixel-height 800)
+  
+  (general-define-key
+   :states 'normal
+   :keymaps 'eglot-mode-map
+   :prefix "SPC c"
+   "h" #'eldoc-box-help-at-point
+   "k" #'eldoc-box-scroll-up
+   "j" #'eldoc-box-scroll-down))

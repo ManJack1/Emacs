@@ -4058,3 +4058,22 @@ rm -rf ~/.emacs.d/straight/
   (flyover-debounce-interval 0.2))
 #+end_src
 
+
+#+begin_src emacs-lisp :wrap ep
+;; eldoc-box
+(use-package eldoc-box
+  :config
+  (setq eldoc-box-only-multi-line t
+        eldoc-box-clear-with-C-g t
+        eldoc-box-max-pixel-width 800
+        eldoc-box-max-pixel-height 800)
+  
+  (general-define-key
+   :states 'normal
+   :keymaps 'eglot-mode-map
+   :prefix "SPC c"
+   "h" #'eldoc-box-help-at-point
+   "k" #'eldoc-box-scroll-up
+   "j" #'eldoc-box-scroll-down))
+#+end_src
+
