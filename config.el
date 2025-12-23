@@ -1031,6 +1031,7 @@
     "ot" 'org-todo
     "oa" 'org-agenda
     "oc" 'org-capture
+    "oT" 'org-tags-view
     
     ;; File (f)
     "f" '(:ignore t :which-key "file")
@@ -1205,7 +1206,7 @@
   
   ;; TODO 配置
 (setq org-todo-keywords
-      '((sequence "TODO(t)" "DOING(i)" "WAITING(w)" "Buy(b)" "plan(p)"
+      '((sequence "TODO(t)" "DOING(i)" "WAITING(w)" "Buy(b)" "Plan(p)" "Book(k)"
                   "|" "DONE(d)" "CANCELLED(c)")))
 
 (setq org-todo-keyword-faces
@@ -1215,7 +1216,8 @@
         ("DONE" . (:foreground "#98be65" :weight bold))
         ("CANCELLED" . (:foreground "#5B6268" :weight bold))
         ("Buy" . (:foreground "#51afef" :weight bold))   ; 蓝色，表示行动或采购任务
-        ("plan" . (:foreground "#c678dd" :weight bold)))) ; 紫色，表示规划/学习
+        ("Book" . (:foreground "#51afef" :weight bold))   ; 蓝色，表示行动或采购任务
+        ("Plan" . (:foreground "#c678dd" :weight bold)))) ; 紫色，表示规划/学习
 
   (require 'org-checklist)
   ;; need repeat task and properties
@@ -1289,15 +1291,19 @@
  (setq org-capture-templates
  '(("t" "Todo" entry
     (file+headline "~/.emacs.d/org/todo.org" "  TASK")
-    "* TODO %?\nSCHEDULED: %t\n%i\n")
+    "** TODO %?\nSCHEDULED: %t\n%i\n")
 
-    ("l" "Plan" entry
+    ("p" "Plan" entry
     (file+headline "~/.emacs.d/org/plan.org" "a PLAN")
-    "* plan %?\nCREATED: %U\n%i\n")
+    "** Plan %?\nCREATED: %U\n%i\n")
+
+    ("k" "Book" entry
+    (file+headline "~/.emacs.d/org/book.org" "  BOOK")
+    "** Book ?\nCREATED: %U\n%i\n")
 
     ("b" "Buy" entry
     (file+headline "~/.emacs.d/org/buy.org" "  SHOP")
-    "* Buy %?\nCREATED: %U\n%i\n"))))
+    "** Buy %?\nCREATED: %U\n%i\n"))))
 
 (use-package org-fancy-priorities
   :hook
@@ -2227,3 +2233,22 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
    "h" #'eldoc-box-help-at-point
    "k" #'eldoc-box-scroll-up
    "j" #'eldoc-box-scroll-down))
+
+(use-package pomidor
+  :bind (("<f12>" . pomidor))
+  :init
+  ;; 设置番茄钟时长
+  (setq pomidor-seconds (* 55 60))          ; 25分钟工作时间
+  (setq pomidor-break-seconds (* 5 60))     ; 5分钟短休息
+  (setq pomidor-long-break-seconds (* 20 60)) ; 20分钟长休息
+  (setq pomidor-breaks-before-long 3)       ; 4个短休息后进入长休息
+  
+  ;; 使用 emacs state,保持原始按键
+  (with-eval-after-load 'evil
+    (evil-set-initial-state 'pomidor-mode 'emacs))
+  
+  :hook (pomidor-mode . (lambda ()
+                          (display-line-numbers-mode -1)
+                          (setq left-fringe-width 0 right-fringe-width 0)
+                          (setq left-margin-width 2 right-margin-width 0)
+                          (set-window-buffer nil (current-buffer)))))

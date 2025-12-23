@@ -1,13 +1,11 @@
 *   TASK
-** TODO [#B] 学习 makefile以及做完 Makefile 的笔记
+** TODO [#B] 学习 makefile以及做完 Makefile 的笔记 :cs:
 DEADLINE: <2025-12-06 Sat> SCHEDULED: <2025-11-07 Fri>
 +[[https://makefiletutorial.com/][web]] 
-** TODO [#B] 学习 org的基本知识
+** TODO [#B] 学习 org的基本知识 :emacs:
 SCHEDULED: <2025-11-07 Fri>
 + 学习地址：https://jansky520.github.io/p/org%E5%BF%AB%E9%80%9F%E6%8C%87%E5%8D%97/
-** TODO [#B] 学习用 hugo搭建博客
+** TODO [#B] 学习用 hugo搭建博客 :emacs:
 SCHEDULED: <2025-11-07 Fri>
-** TODO 完成 chap4的英语笔记
+** TODO 完成 chap4的英语笔记 :English:
 SCHEDULED: <2025-11-11 Tue>
-** TODO 
-SCHEDULED: <2025-12-06 Sat>
