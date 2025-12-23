@@ -91,7 +91,11 @@
 本节包含所有自定义的实用函数，用于增强 Emacs 的功能和便利性。
 
 ** Toggle Deer
-#+begin_src emacs-lisp :wrap ep
+*** 介绍
+快速切换 deer 文件浏览模式的开关函数。
+
+*** 配置
+#+begin_src emacs-lisp
 (defun my-toggle-deer ()
   "Toggle deer mode on/off."
   (interactive)
@@ -100,8 +104,14 @@
     (deer)))
 #+end_src
 
+*** 使用方法
+- 调用 =my-toggle-deer= 切换 deer 模式
+
 ** 打开 PDF 文件的函数
-*** open-in-sioyek
+*** 介绍
+使用外部 Sioyek PDF 阅读器打开当前 buffer 中的 PDF 文件。
+
+*** 配置
 #+begin_src emacs-lisp
 (defun open-in-sioyek ()
   "Open the PDF file of the current buffer in Sioyek."
@@ -113,13 +123,15 @@
 #+end_src
 
 *** 使用方法
-- 作用: 在 Sioyek 中打开当前 PDF 文件
+- 在 PDF buffer 中调用 =open-in-sioyek=
+- 会在 Sioyek 阅读器中打开当前 PDF 文件
 
 
 ** 窗口调整函数
-
-*** my-window-resize
+*** 介绍
 使用 h/j/k/l 键连续调整窗口大小的交互式函数。
+
+*** 配置
 #+begin_src emacs-lisp
 (defun my-window-resize ()
   "窗口调整模式，连按 h/j/k/l"
@@ -142,9 +154,10 @@
 - 其他键退出调整模式
 
 ** 终端切换函数
-*** toggle-eat
+*** 介绍
 快速切换到 eat 终端并在再次调用时返回之前的缓冲区。
 
+*** 配置
 #+begin_src emacs-lisp
 (defun toggle-eat ()
   "Toggle between eat terminal and previous buffer. Create eat terminal if not exists."
@@ -169,9 +182,11 @@
 - 首次按下切换到终端，再次按下返回原缓冲区
 
 
-** pdf渲染颜色
-*** pdf-toggle-theme
-将 PDFTools 的配色固定为 doom-one 主题风格。
+** PDF 渲染颜色
+*** 介绍
+将 PDFTools 的配色固定为 doom-one 主题风格，提供更好的阅读体验。
+
+*** 配置
 #+begin_src emacs-lisp
 ;; PDFTools 固定使用 doom-one 配色
 (with-eval-after-load 'pdf-view
@@ -199,9 +214,10 @@
 
   
 ** 主题自动切换函数
-*** load-modus-theme-based-on-time
+*** 介绍
 根据当前时间自动切换 Modus 主题的深色和浅色模式。
 
+*** 配置
 #+begin_src emacs-lisp
 (defun my/auto-switch-modus-theme ()
   "根据时间自动切换 Modus 主题"
@@ -221,9 +237,10 @@
 
 
 ** Org 数学预览函数
-*** org-math-preview-on-save
-在保存 Org 文件时自动预览数学公式（排除 config.org）。
+*** 介绍
+在保存和打开 Org 文件时自动预览数学公式，排除 config.org 以避免性能问题。
 
+*** 配置
 #+begin_src emacs-lisp
 (defun my/org-math-preview-on-save ()
   "在保存 Org 文件时自动执行 math-preview-all，排除 config.org."
@@ -249,9 +266,10 @@
 
 
 ** 透明度设置函数
-*** set-transparency
-根据不同操作系统设置窗口透明度。
+*** 介绍
+根据不同操作系统设置窗口透明度，提供跨平台支持。
 
+*** 配置
 #+begin_src emacs-lisp
 ;; 全局透明度设置
 ;; 0 = 完全透明，100 = 不透明
@@ -275,9 +293,10 @@
 
 
 ** Copilot 模式切换函数
-*** toggle-copilot-mode
-快速启用或禁用 Copilot 补全。
+*** 介绍
+快速启用或禁用 Copilot AI 代码补全功能。
 
+*** 配置
 #+begin_src emacs-lisp
 (defun toggle-copilot-mode ()
   "Toggle copilot-mode on or off."
@@ -296,9 +315,10 @@
 
 
 ** Org LaTeX 预览快捷键
-*** org-latex-preview-keys
-为 Org 模式添加数学公式预览和清除的快捷键。
+*** 介绍
+为 Org 模式添加数学公式预览和清除的便捷快捷键。
 
+*** 配置
 #+begin_src emacs-lisp
 ;; 添加到配置中
 (with-eval-after-load 'org
@@ -318,9 +338,10 @@
 
 
 ** 自动 Tangle 配置函数
-*** auto-tangle-config
-保存 config.org 时自动执行 org-babel-tangle 生成 config.el。
+*** 介绍
+保存 config.org 时自动执行 org-babel-tangle 生成 config.el，提高配置管理效率。
 
+*** 配置
 #+begin_src emacs-lisp
 (defun my/auto-tangle-config ()
   "自动在保存 config.org 时执行 org-babel-tangle。"
@@ -340,9 +361,10 @@
 
 
 ** 文件路径复制函数
-*** copy-path
-复制当前文件的完整路径或文件名到剪贴板。
+*** 介绍
+提供复制当前文件完整路径或文件名到剪贴板的便捷函数。
 
+*** 配置
 #+begin_src emacs-lisp
   (defun copy-file-path ()
   "Copy current file absolute path to clipboard."
@@ -371,9 +393,10 @@
 - =M-x copy-file-name= : 仅复制文件名
 
 ** LSP UI 侧边栏切换函数
-*** toggle-lsp-ui
-切换 lsp-ui-imenu 侧边栏的显示和隐藏。
+*** 介绍
+切换 lsp-ui-imenu 侧边栏的显示和隐藏，方便查看代码结构。
 
+*** 配置
 #+begin_src emacs-lisp
   ;; LSP imenu 切换函数
   (defun my/toggle-lsp-ui-imenu ()
@@ -390,9 +413,11 @@
 
 
 ** LSP 参数导航函数
-这些函数基于 tree-sitter 实现函数参数间的快速跳转。
+*** 介绍
+基于 tree-sitter 实现函数参数间的快速跳转功能。
 
-*** lsp-goto-prev-param
+*** 配置
+**** lsp-goto-prev-param
 #+begin_src emacs-lisp
 ;; 参数导航（基于 treesitter）
 (defun lsp-goto-next-param ()
@@ -405,9 +430,7 @@
 #+end_src
 
 
-*** lsp-goto-next-param
-跳转到下一个函数参数。
-
+**** lsp-goto-next-param
 #+begin_src emacs-lisp
 (defun lsp-goto-prev-param ()
   "跳转到前一个参数"
@@ -426,9 +449,10 @@
  
 
 ** 智能 Tab 键函数
-*** smart-tab
-智能 TAB 键实现，优先级：YASnippet > Copilot > 普通缩进。
+*** 介绍
+智能 TAB 键实现，根据上下文自动选择行为：YASnippet 展开/跳转 > Copilot 补全 > Tabout > 普通缩进。
 
+*** 配置
 #+begin_src emacs-lisp
 ;; 清空所有 Shift-TAB 绑定
 (with-eval-after-load 'company
@@ -546,12 +570,12 @@ straight.el 是一个功能强大的现代化包管理器，从 Git 仓库直接
 - 文档: https://github.com/radian-software/straight.el/blob/develop/README.md
 
 *** 使用方法
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   ;; straight.el 已在 init.el 中初始化
   ;; 这里配置 use-package 的默认行为
 
   (setq use-package-always-defer t)  ; 延迟加载，提高启动速度
-#+END_SRC
+#+end_src
 
 *** 常用命令
 - =M-x straight-pull-all= : 更新所有包
@@ -576,7 +600,7 @@ use-package 是一个声明式包配置宏，简化包的安装、配置和延�
 ** 基础设置
 
 *** 字体配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 ;; 设置编程字体
 (set-face-attribute 'default nil
                     :font "Maple Mono NF"
@@ -584,11 +608,11 @@ use-package 是一个声明式包配置宏，简化包的安装、配置和延�
 
 ;; Set Chinese font for Han script
 (set-fontset-font t 'han "Noto Serif CJK SC")
-#+END_SRC
+#+end_src
 
 
 *** UI 元素配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   ;; 关闭不必要的 UI 元素
   (tool-bar-mode -1)        ; 关闭工具栏
   (scroll-bar-mode -1)      ; 关闭滚动条
@@ -605,7 +629,7 @@ use-package 是一个声明式包配置宏，简化包的安装、配置和延�
   (setq inhibit-startup-message t)      ; 关闭启动画面
 
 
-#+END_SRC
+#+end_src
 
 ** dashboard
 :PROPERTIES:
@@ -614,7 +638,6 @@ use-package 是一个声明式包配置宏，简化包的安装、配置和延�
 
 #+begin_src emacs-lisp
 (use-package dashboard
-  :straight t
   :demand t
   :after (centaur-tabs nerd-icons evil)
   
@@ -736,7 +759,6 @@ colorful-mode 在代码中直接显示颜色值的实际颜色，支持 HEX、RG
 *** 配置
 #+begin_src emacs-lisp
 (use-package colorful-mode
-  :straight t
   :custom
   (colorful-use-prefix t)
   (colorful-only-strings nil)   ;; 全局显示颜色，不仅限字符串
@@ -762,9 +784,8 @@ doom-themes 是一个丰富的主题集合，包含 25+ 个精心设计的高对
 - 主题预览: https://github.com/doomemacs/themes/tree/screenshots
 
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package doom-themes
-  :straight t
   :init
   (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
   (load-theme 'doom-everforest t)
@@ -780,7 +801,7 @@ doom-themes 是一个丰富的主题集合，包含 25+ 个精心设计的高对
   (doom-themes-treemacs-config)
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
-#+END_SRC
+#+end_src
 
 
 *** 使用方法
@@ -822,13 +843,13 @@ Modus 是 Emacs 内置的高对比度主题集，由 Protesilaos Stavrou 开发�
 - GitHub: https://github.com/tarsius/keycast
 
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package keycast
     :straight t
     :init
     (add-to-list 'global-mode-string '("" keycast-mode-line))
     (keycast-mode-line-mode t))
-#+END_SRC
+#+end_src
 
 ** doom-modeline
 *** 介绍
@@ -839,14 +860,13 @@ doom-modeline 是一个现代化的状态栏（mode-line），显示 Git 分支�
 - 文档: https://github.com/seagle0128/doom-modeline/blob/master/README.md
 
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package doom-modeline
-  :straight t
   :hook (after-init . doom-modeline-mode)
   :config
   (setq doom-modeline-height 25         ; 状态栏高度
         doom-modeline-bar-width 3))     ; 左侧条宽度
-#+END_SRC
+#+end_src
 
 *** 使用方法
 状态栏会自动显示当前缓冲区信息，无需手动操作。
@@ -859,9 +879,8 @@ centaur-tabs 提供类似浏览器的标签栏，支持标签分组、图标显�
 - GitHub: https://github.com/ema2159/centaur-tabs
 
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package centaur-tabs
-  :straight t
   :demand t
   :config
   ;; 基础配置
@@ -889,7 +908,7 @@ centaur-tabs 提供类似浏览器的标签栏，支持标签分组、图标显�
   
   ;; 初始检查
   (run-with-idle-timer 0.5 nil 'my/update-tabs-visibility))
-#+END_SRC
+#+end_src
 
 *** 使用方法
 - 切换标签: =H= (前一个), =L= (后一个) - 需在 Evil 模式下
@@ -903,9 +922,8 @@ indent-bars 在代码中显示缩进参考线，支持 tree-sitter，帮助识�
 - GitHub: https://github.com/jdtsmith/indent-bars
 
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package indent-bars
-  :straight t
   :custom
   (indent-bars-no-descend-lists t)                    ; 列表不显示额外缩进线
   (indent-bars-treesit-support t)                     ; 启用 tree-sitter 支持
@@ -914,7 +932,7 @@ indent-bars 在代码中显示缩进参考线，支持 tree-sitter，帮助识�
                                        for_statement if_statement 
                                        with_statement while_statement)))
   :hook ((kdl-mode nix-ts-mode java-ts-mode python-ts-mode yaml-mode c++-ts-mode) . indent-bars-mode))
-#+END_SRC
+#+end_src
 
 *** 使用方法
 在支持的模式下自动启用，无需手动操作。
@@ -927,11 +945,10 @@ all-the-icons 提供 1000+ 个图标，用于美化文件浏览器、dired、mod
 - GitHub: https://github.com/domtronn/all-the-icons.el
 
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package all-the-icons
-  :straight t
   :if (display-graphic-p))
-#+END_SRC
+#+end_src
 
 *** 使用方法
 - 首次使用需安装字体: =M-x all-the-icons-install-fonts=
@@ -944,12 +961,11 @@ nerd-icons 是 all-the-icons 的现代化版本，支持最新的 Nerd Fonts 图
 - GitHub: https://github.com/rainstormstudio/nerd-icons.el
 
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package nerd-icons
-  :straight t
   :defer t
   :if (display-graphic-p))
-#+END_SRC
+#+end_src
 
 *** 使用方法
 - 安装字体: =M-x nerd-icons-install-fonts=
@@ -962,13 +978,12 @@ nerd-icons 是 all-the-icons 的现代化版本，支持最新的 Nerd Fonts 图
 - GitHub: https://github.com/rainstormstudio/nerd-icons-completion
 
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package nerd-icons-completion
-  :straight t
   :after marginalia
   :hook (after-init . nerd-icons-completion-mode)
   :hook (marginalia-mode . nerd-icons-completion-marginalia-setup))
-#+END_SRC
+#+end_src
 
 ** neotree
 *** 介绍
@@ -978,9 +993,8 @@ neotree 是一个侧边文件树浏览器，类似 VS Code 的资源管理器，
 - GitHub: https://github.com/jaypei/emacs-neotree
 
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package neotree
-  :straight t
   :hook (after-init . (lambda ()
                         (global-set-key [f3] 'neotree-toggle)))
   :config
@@ -995,7 +1009,7 @@ neotree 是一个侧边文件树浏览器，类似 VS Code 的资源管理器，
               (setq word-wrap nil)
               (setq display-line-numbers nil)  ; 完全禁用行号显示
               (display-line-numbers-mode -1))))  ; 确保关闭行号模式
-#+END_SRC
+#+end_src
 
 *** 使用方法
 - 打开/关闭: =F3= 或 =SPC e=
@@ -1013,7 +1027,7 @@ neotree 是一个侧边文件树浏览器，类似 VS Code 的资源管理器，
 提升文本编辑体验，包括 Vim 模拟、自动补全、代码片段等。
 
 ** 基础编辑设置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
       ;; 编辑体验优化
       (auto-save-visited-mode 0)           ; 自动保存
       (show-paren-mode 1)                  ; 高亮匹配括号
@@ -1030,7 +1044,7 @@ neotree 是一个侧边文件树浏览器，类似 VS Code 的资源管理器，
       ;; 关闭备份文件
       (setq make-backup-files nil)         ; 不创建 ~ 备份文件
       (setq auto-save-default nil)         ; 不创建 # 自动保存文件
-#+END_SRC
+#+end_src
 
 
 ** sis-change-input-method
@@ -1043,7 +1057,6 @@ sis (Smart Input Source) 智能输入法管理工具，自动在不同模式和�
 *** 配置
 #+begin_src emacs-lisp
 (use-package sis
-  :straight t
   :init
   ;; macOS 配置
   (when (eq system-type 'darwin)
@@ -1116,7 +1129,6 @@ beacon 在光标移动时高亮显示光标位置，方便快速定位。特别�
 *** 配置
 #+begin_src emacs-lisp
 (use-package beacon
-  :straight t
   :init
   (beacon-mode 1))
 #+end_src
@@ -1136,6 +1148,7 @@ Magit 是 Emacs 中最强大的 Git 客户端，提供完整的 Git 功能界面
 *** 配置
 #+begin_src emacs-lisp
 (use-package magit
+  :commands (magit-status magit-dispatch)  ;; 明确指定触发命令
   :config
   ;; 可选配置
   (setq magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
@@ -1193,7 +1206,6 @@ diff-hl 在编辑器边缘（fringe）显示 Git 差异标记，实时显示文�
 *** 配置
 #+begin_src emacs-lisp
 (use-package diff-hl
-  :straight t
   :init
   (diff-hl-flydiff-mode)
   (global-diff-hl-mode))
@@ -1217,7 +1229,6 @@ pdf-tools 是 Emacs 的强大 PDF 阅读器，提供比 DocView 更好的性能�
 *** 配置
 #+begin_src emacs-lisp
 (use-package pdf-tools
-  :straight t
   :mode ("\\.pdf\\'" . pdf-view-mode)
   :init
   (setq pdf-view-display-size 'fit-page
@@ -1260,7 +1271,6 @@ super-save 提供智能自动保存功能，在切换窗口、buffer 或空闲�
 *** 配置
 #+begin_src emacs-lisp
 (use-package super-save
-  :straight t
   :hook (after-init . super-save-mode)
   :config
   (setq super-save-auto-save-when-idle t
@@ -1338,7 +1348,6 @@ vterm 是基于 libvterm 的高性能终端模拟器，比 term.el 和 ansi-term
 *** 配置
 #+begin_src emacs-lisp
 (use-package vterm
-  :straight t
   :config
   (setq vterm-max-scrollback 10000))
 #+end_src
@@ -1358,8 +1367,7 @@ transient 是一个用于创建临时弹出菜单的框架，类似 Magit 的菜
 *** 配置
 #+begin_src emacs-lisp
 (use-package transient
-  :straight t
-  :demand t)
+  :defer t)  ;; 延迟加载，magit 等包会自动触发
 #+end_src
 
 ** which-key
@@ -1372,7 +1380,6 @@ which-key 在你按下一个前缀键（如 =SPC=、=C-x= 等）后，自动显�
 *** 配置
 #+begin_src emacs-lisp
   (use-package which-key
-  :straight t
   :hook (after-init . which-key-mode)
   :config
   ;; setting-tag
@@ -1380,7 +1387,7 @@ which-key 在你按下一个前缀键（如 =SPC=、=C-x= 等）后，自动显�
   (which-key-add-key-based-replacements "SPC b" "buffer")
   (which-key-add-key-based-replacements "SPC c" "lsp")
   (which-key-add-key-based-replacements "SPC f" "Find-file")
-  (which-key-add-key-based-replacements "SPC s" "seach")
+  (which-key-add-key-based-replacements "SPC s" "search")
   (which-key-add-key-based-replacements "SPC g" "git")
   (which-key-add-key-based-replacements "SPC m" "mark")
   (which-key-add-key-based-replacements "SPC o" "org")
@@ -1409,7 +1416,7 @@ evil 是 Emacs 的 Vim 模拟层，提供完整的 Vim 模式系统（normal、i
 - 文档: https://evil.readthedocs.io/
 
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package evil
     :straight t
     :demand t
@@ -1422,7 +1429,7 @@ evil 是 Emacs 的 Vim 模拟层，提供完整的 Vim 模式系统（normal、i
     ;; 允许 RET 在 org-mode 中跟随链接
     (with-eval-after-load 'evil-maps
       (define-key evil-motion-state-map (kbd "RET") nil)))
-#+END_SRC
+#+end_src
 
 *** 使用方法
 - =i= : 进入插入模式
@@ -1443,7 +1450,6 @@ evil-collection 是一个 Evil 模式的扩展包，为 Emacs 的各种内置模
 *** 配置
 #+begin_src emacs-lisp
 (use-package evil-collection
-  :straight t
   :after evil
   :init
   (evil-collection-init))
@@ -1462,7 +1468,6 @@ evil-matchit 允许在 Evil 模式下快速跳转到匹配的标签或括号，�
 *** 配置
 #+begin_src emacs-lisp
 (use-package evil-matchit
-  :straight t
   :config
   (global-evil-matchit-mode 1)
   )
@@ -1480,12 +1485,9 @@ evil-anzu 集成了 anzu.el 的搜索增强功能到 Evil 模式中，提供更�
 *** 配置
 #+begin_src emacs-lisp
 (use-package evil-anzu
-  :straight t
   :after evil
   :diminish
-  :demand t
-  :init
-  (global-anzu-mode t))
+  :hook (evil-mode . global-anzu-mode))  ;; evil 加载后启用，无需 :demand
 #+end_src
 
 *** 使用方法
@@ -1502,7 +1504,6 @@ evil-commentary 为 Evil 模式提供快速注释/反注释功能，类似 Vim �
 *** 配置
 #+begin_src emacs-lisp
 (use-package evil-commentary
-  :straight t
   :after evil
   :init
   (evil-commentary-mode))
@@ -1522,7 +1523,7 @@ company (Complete Anything) 是一个模块化的自动补全框架，支持多�
 - 手册: https://company-mode.github.io/
 
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
    (use-package company
      :straight t
      :hook (after-init . global-company-mode)
@@ -1559,7 +1560,7 @@ company (Complete Anything) 是一个模块化的自动补全框架，支持多�
                  ;; ("<tab>" . company-complete-selection)
                  ("RET" . company-complete-selection)))
 
-#+END_SRC
+#+end_src
 
 *** 使用方法
 - 输入时自动触发补全
@@ -1576,13 +1577,12 @@ yasnippet 是一个代码片段系统，支持数千个预定义片段（如 HTM
 - 片段集合: https://github.com/AndreaCrotti/yasnippet-snippets
 
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package yasnippet
-  :straight t
   :hook (prog-mode . yas-minor-mode)
   :config
   (yas-global-mode 1))
-#+END_SRC
+#+end_src
 
 *** 使用方法
 - 输入片段缩写后按 =TAB= 展开
@@ -1592,7 +1592,6 @@ yasnippet 是一个代码片段系统，支持数千个预定义片段（如 HTM
 
   #+begin_src emacs-lisp
 (use-package yasnippet-snippets
-  :straight t
   :after yasnippet)
   #+end_src
 
@@ -1638,7 +1637,6 @@ undo-fu-session 提供简单可靠的 undo 历史持久化功能。与 undohist 
 *** 配置
 #+begin_src emacs-lisp
 (use-package undo-fu-session
-  :straight t
   :after undo-fu
   :hook (after-init . global-undo-fu-session-mode)
   :config
@@ -1672,7 +1670,6 @@ vundo 提供可视化的撤销树浏览器，让你能看到完整的编辑历�
 *** 配置
 #+begin_src emacs-lisp
 (use-package vundo
-  :straight t
   :commands (vundo)
   :config
   (setq vundo-compact-display t))
@@ -1694,7 +1691,6 @@ smartparens 提供智能的括号配对、自动补全和导航功能。自动�
 *** 配置
 #+begin_src emacs-lisp
 (use-package smartparens
-  :straight t
   :hook (after-init . smartparens-global-mode)  ; 全局启用
   :config
   (require 'smartparens-config)
@@ -1720,7 +1716,6 @@ evil-surround 是 Vim surround.vim 的 Emacs 移植，用于快速添加、修�
 *** 配置
 #+begin_src emacs-lisp
 (use-package evil-surround
-  :straight t
   :after evil
   :config
   ;; 启用全局 evil-surround 模式
@@ -1744,7 +1739,6 @@ expand-region 提供智能的区域扩展功能，根据语法结构逐步扩大
 *** 配置
 #+begin_src emacs-lisp
   (use-package expand-region
-  :straight t
   :bind ("C-SPC" . er/expand-region))
 #+end_src
 
@@ -1800,16 +1794,15 @@ vertico 是一个极简、高性能的垂直补全 UI，基于 Emacs 内置补�
 - GitHub: https://github.com/minad/vertico
 
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package vertico
-  :straight t
   :hook (after-init . vertico-mode)
   :custom
   (vertico-scroll-margin 0)  ; 滚动边距
   (vertico-count 20)         ; 显示 20 个候选项
   (vertico-resize t)         ; 自动调整大小
   (vertico-cycle t))         ; 循环导航
-#+END_SRC
+#+end_src
 
 *** 使用方法
 - =M-x= : 命令补全
@@ -1822,16 +1815,16 @@ vertico 是一个极简、高性能的垂直补全 UI，基于 Emacs 内置补�
 保存 minibuffer 历史记录，让补全系统能按历史频率排序结果。
 
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package savehist
   :straight nil  ; 内置包
   :init
   (savehist-mode))
-#+END_SRC
+#+end_src
 
 ** emacs (minibuffer 配置)
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package emacs
   :straight nil
   :custom
@@ -1841,7 +1834,7 @@ vertico 是一个极简、高性能的垂直补全 UI，基于 Emacs 内置补�
    #'command-completion-default-include-p) ; 只显示可用命令
   (minibuffer-prompt-properties
    '(read-only t cursor-intangible t face minibuffer-prompt)))
-#+END_SRC
+#+end_src
 
 ** orderless
 *** 介绍
@@ -1851,15 +1844,14 @@ orderless 提供无序、灵活的补全风格，支持空格分隔的多词匹�
 - GitHub: https://github.com/oantolin/orderless
 
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package orderless
-  :straight t
   :custom
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles partial-completion))))
   (completion-category-defaults nil)
   (completion-pcm-leading-wildcard t))
-#+END_SRC
+#+end_src
 
 *** 使用方法
 - 在任何补全界面输入空格分隔的关键词即可模糊匹配
@@ -1872,12 +1864,11 @@ orderless 提供无序、灵活的补全风格，支持空格分隔的多词匹�
 - GitHub: https://github.com/minad/marginalia
 
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package marginalia
-  :straight t
   :init
   (marginalia-mode t))
-#+END_SRC
+#+end_src
 
   
 ** hl-todo
@@ -1890,7 +1881,6 @@ hl-todo 高亮代码中的 TODO、FIXME、NOTE 等关键词，帮助你快速识
 *** 配置
 #+begin_src emacs-lisp
 (use-package hl-todo
-  :straight t
   :hook (prog-mode . hl-todo-mode)
   :custom
   (hl-todo-highlight-punctuation ":"))
@@ -1911,7 +1901,6 @@ consult-todo 集成 hl-todo 与 consult，提供快速搜索和导航项目中�
 *** 配置
 #+begin_src emacs-lisp
   (use-package consult-todo
-  :straight t
   :commands (consult-todo consult-todo-project))
 #+end_src
 
@@ -1928,16 +1917,15 @@ embark 提供上下文动作菜单，对选中的文本、文件或符号执行�
 - GitHub: https://github.com/oantolin/embark
 
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package embark
-  :straight t
   :bind
   (("C-;" . embark-act)
    ;; ("C-;" . embark-dwim)
    ("C-h B" . embark-bindings))
   :config
   (setq prefix-help-command 'embark-prefix-help-command))
-#+END_SRC
+#+end_src
 
 
 
@@ -1955,7 +1943,6 @@ wgrep 允许你直接在 grep/rgrep/ag 的搜索结果中编辑文本，编辑�
 *** 配置
 #+begin_src emacs-lisp
 (use-package wgrep
-  :straight t
   :config
   (setq wgrep-change-readonly-file t)
   (setq wgrep-enable-key "e"))
@@ -1977,7 +1964,6 @@ consult 是一个强大的补全和导航工具，提供文件查找、buffer �
 
 #+begin_src emacs-lisp
 (use-package consult
-  :straight t
   :config
   ;; 用 consult 替换默认的 xref 显示
   (setq xref-show-xrefs-function #'consult-xref
@@ -2036,12 +2022,11 @@ consult 是一个强大的补全和导航工具，提供文件查找、buffer �
 embark 与 consult 的集成包，提供更好的协同体验。
 
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package embark-consult
-  :straight t
   :after (embark consult)
   :hook (embark-collect-mode . consult-preview-at-point-mode))
-#+END_SRC
+#+end_src
 
 
 ** windmove
@@ -2049,10 +2034,10 @@ embark 与 consult 的集成包，提供更好的协同体验。
 使用方向键或快捷键在窗口间快速切换焦点。
 
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package windmove
   :straight nil)  ; 内置包
-#+END_SRC
+#+end_src
 
 *** 使用方法
 - =C-h/j/k/l= : Vim 风格的窗口切换（需配置键绑定）
@@ -2094,7 +2079,6 @@ avy 提供基于字符的快速跳转功能，类似 Vim 的 EasyMotion。输入
 *** 配置
 #+begin_src emacs-lisp
 (use-package avy
-  :straight t
   :commands (avy-goto-char avy-goto-char-2 avy-goto-word-1 avy-goto-line)
   :config
   (setq avy-style 'at-full)
@@ -2111,9 +2095,8 @@ avy 提供基于字符的快速跳转功能，类似 Vim 的 EasyMotion。输入
 
 自定义的键位绑定配置，主要基于 Evil 模式。
 * Evil 键位配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package general
-  :straight t
   :config
   
   ;; ==================== 创建 Definer ====================
@@ -2365,7 +2348,7 @@ avy 提供基于字符的快速跳转功能，类似 Vim 的 EasyMotion。输入
    "gg" 'beginning-of-buffer
    "G" 'end-of-buffer
    "RET" 'dired-find-file))
-#+END_SRC
+#+end_src
 
 
 
@@ -2383,9 +2366,8 @@ org-mode 是 Emacs 的杀手级功能，用于笔记、待办事项、文档编�
 - 手册: https://orgmode.org/manual/
 
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package org
-  :straight t
   :mode ("\\.org\\'" . org-mode)
   :bind (("C-c a" . org-agenda)
          ("C-c c" . org-capture)
@@ -2495,7 +2477,7 @@ org-mode 是 Emacs 的杀手级功能，用于笔记、待办事项、文档编�
     ("b" "Buy" entry
     (file+headline "~/.emacs.d/org/buy.org" "  SHOP")
     "* Buy %?\nCREATED: %U\n%i\n"))))
-#+END_SRC
+#+end_src
 
 ** org-fancy-priorities
 *** 介绍
@@ -2505,7 +2487,6 @@ org-fancy-priorities 用于在 org-mode 中使用自定义符号显示任务优�
 *** 配置 
 #+begin_src emacs-lisp
 (use-package org-fancy-priorities
-  :straight t
   :hook
   (org-mode . org-fancy-priorities-mode)
   :config
@@ -2525,7 +2506,6 @@ AUCTeX 是 Emacs 中功能强大的 LaTeX 编辑环境，提供语法高亮、�
 *** 配置
 #+begin_src emacs-lisp
 (use-package auctex
-  :straight t
   :defer t
   :config
   ;; 自动保存时重新生成文档
@@ -2715,7 +2695,6 @@ org-sliced-images 为 org-mode 提供平滑的图片滚动体验，通过将图�
 *** 配置
 #+begin_src emacs-lisp
 (use-package org-sliced-images
-  :straight t
   :after org
   :config
   ;; 启用全局模式
@@ -2745,9 +2724,8 @@ org-sliced-images 为 org-mode 提供平滑的图片滚动体验，通过将图�
 - GitHub: https://github.com/integral-dw/org-superstar-mode
 
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package org-superstar
-  :straight t
   :after org
   :hook (org-mode . org-superstar-mode)
   :config
@@ -2763,7 +2741,7 @@ org-sliced-images 为 org-mode 提供平滑的图片滚动体验，通过将图�
   (setq org-superstar-item-indent-offset 2)
   (setq org-superstar-remove-leading-stars t)
   (setq org-superstar-use-with-org-bullets t))
-#+END_SRC
+#+end_src
 
 
 
@@ -2808,9 +2786,8 @@ AUCTeX 是 Emacs 中最强大的 LaTeX 编辑环境，提供语法高亮、自�
 - GitHub: https://github.com/emacs-auctex/auctex
 
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package auctex
-  :straight t
   :mode (("\\.tex\\'" . LaTeX-mode)
          ("\\.ltx\\'" . LaTeX-mode)
          ("\\.cls\\'" . LaTeX-mode))
@@ -2822,7 +2799,7 @@ AUCTeX 是 Emacs 中最强大的 LaTeX 编辑环境，提供语法高亮、自�
   (require 'texmathp)
   (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
   (add-hook 'LaTeX-mode-hook 'turn-on-reftex))
-#+END_SRC
+#+end_src
 
 *** 使用方法
 - =C-c C-c= : 编译文档
@@ -2832,7 +2809,7 @@ AUCTeX 是 Emacs 中最强大的 LaTeX 编辑环境，提供语法高亮、自�
 
 ** org-latex 导出配置
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (setq org-latex-compiler "xelatex")
 (setq org-latex-pdf-process
       '("xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
@@ -2857,7 +2834,7 @@ AUCTeX 是 Emacs 中最强大的 LaTeX 编辑环境，提供语法高亮、自�
         ("framerule" "2pt")
         ("rulecolor" "boxblue")
         ("baselinestretch" "1.2")))
-#+END_SRC
+#+end_src
 ** org-plus-contrib
 *** 介绍
 org-contrib 是 Org-mode 的贡献模块集合，包含一些由社区和维护者贡献的额外功能和扩展，这些功能没有被纳入 Org-mode 的核心。
@@ -2883,7 +2860,6 @@ org-plus-contrib：org + org-contrib 的组合（现已弃用）
 
 #+begin_src emacs-lisp
 (use-package org-contrib
-  :straight t
   :after org)
 #+end_src
 
@@ -2898,7 +2874,6 @@ org-download 简化在 org-mode 中插入图片的流程，支持从剪贴板、
 *** 配置
 #+begin_src emacs-lisp
 (use-package org-download
-  :straight t
   :after org
   :hook (org-mode . org-download-enable)
   :config
@@ -3006,7 +2981,6 @@ laas 为 LaTeX 和 Org 模式提供自动激活的代码片段系统，无需按
 *** 配置
 #+begin_src emacs-lisp
 (use-package laas
-  :straight t
   :hook ((LaTeX-mode . laas-mode) (org-mode . laas-mode))
   :config
   (aas-set-snippets 'laas-mode
@@ -3182,9 +3156,8 @@ lsp-mode 是 Language Server Protocol 的 Emacs 实现，提供智能补全、�
 - 官网: https://emacs-lsp.github.io/lsp-mode/
 
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package lsp-mode
-  :straight t
   :hook ((c-ts-mode . lsp)
          (c++-ts-mode . lsp)
          (python-ts-mode . lsp)
@@ -3200,7 +3173,7 @@ lsp-mode 是 Language Server Protocol 的 Emacs 实现，提供智能补全、�
   (setq lsp-enable-on-type-formatting nil)
   (setq lsp-format-on-save nil))
 
-#+END_SRC
+#+end_src
 
 
 
@@ -3224,7 +3197,6 @@ lsp-mode 是 Language Server Protocol 的 Emacs 实现，提供智能补全、�
  "a" #'eglot-code-actions)
 
 (use-package consult-eglot
-  :straight t
   :after (consult eglot))
 #+end_src
 
@@ -3254,7 +3226,6 @@ apheleia 是一个 Emacs 代码格式化工具，支持多种编程语言和格�
 *** 配置
 #+begin_src emacs-lisp
 (use-package apheleia
-  :straight t
   :init
   (apheleia-global-mode +1)
   :config
@@ -3324,7 +3295,7 @@ lsp-ui 为 lsp-mode 提供 UI 增强，包括悬浮文档、侧边信息、代�
 - GitHub: https://github.com/emacs-lsp/lsp-ui
 
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
   (use-package lsp-ui
     :straight t
     :hook (lsp-mode . lsp-ui-mode)
@@ -3345,7 +3316,7 @@ lsp-ui 为 lsp-mode 提供 UI 增强，包括悬浮文档、侧边信息、代�
 (add-hook 'java-ts-mode-hook
           (lambda ()
             (setq-local apheleia-mode nil)))
-#+END_SRC
+#+end_src
 
 *** 使用方法
 - 光标悬停显示文档
@@ -3366,7 +3337,6 @@ sideline 在代码行的右侧显示额外信息，如错误、警告、文档�
 *** 配置
 #+begin_src emacs-lisp
   (use-package sideline
-  :straight t
   :hook (flymake-mode . sideline-mode)
   :custom
   (sideline-backends-right '(sideline-flymake)))
@@ -3388,7 +3358,6 @@ sideline-flymake 是 sideline 的 flymake 后端，将 flymake 的诊断信息�
 *** 配置
 #+begin_src emacs-lisp
   (use-package sideline-flymake
-  :straight t
   :after sideline flymake)
 #+end_src
 
@@ -3435,7 +3404,6 @@ lsp-kdl 为 KDL（Kotlin Data Language）提供 LSP 支持，基于 tree-sitter 
 ** lsp-nix
 #+begin_src emacs-lisp
 (use-package nix-ts-mode
-  :straight t
   :mode "\\.nix\\'"
   :hook (nix-ts-mode . lsp))
 #+end_src
@@ -3452,7 +3420,6 @@ lsp-pyright 为 Python 提供基于 Pyright 的 LSP 支持。Pyright 是微软�
 *** 配置
 #+begin_src emacs-lisp
   (use-package lsp-pyright
-  :straight t
   :custom (lsp-pyright-langserver-command "pyright") ;; or basedpyright
   :hook (python-ts-mode . (lambda ()
                           (require 'lsp-pyright)
@@ -3472,7 +3439,7 @@ lsp-pyright 为 Python 提供基于 Pyright 的 LSP 支持。Pyright 是微软�
 - GitHub: https://github.com/emacs-lsp/lsp-java
 
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package lsp-java
   :hook (java-mode . lsp-deferred)
   :config
@@ -3489,7 +3456,7 @@ lsp-pyright 为 Python 提供基于 Pyright 的 LSP 支持。Pyright 是微软�
 ;; to enable the lenses
 (add-hook 'lsp-mode-hook #'lsp-lens-mode)
 (add-hook 'java-mode-hook #'lsp-java-boot-lens-mode)
-#+END_SRC
+#+end_src
 
 
 *** 使用方法
@@ -3506,13 +3473,12 @@ treesit-auto 自动管理 tree-sitter 语法解析器，无需手动配置。tre
 - Tree-sitter: https://tree-sitter.github.io/
 
 *** 配置
-#+BEGIN_SRC emacs-lisp
+#+begin_src emacs-lisp
 (use-package treesit-auto
-  :straight t
   :hook (after-init . global-treesit-auto-mode)
   :config
   (setq treesit-auto-install 'prompt))  ; 提示安装语法
-#+END_SRC
+#+end_src
 
 *** 使用方法
 - 打开支持的文件时自动启用 tree-sitter
@@ -3580,7 +3546,6 @@ gptel 是 Emacs 的通用 LLM 客户端，支持 ChatGPT、Claude、Gemini 等�
 *** 配置
 #+begin_src emacs-lisp
 (use-package gptel
-  :straight t
    :config
 ;; OPTIONAL configuration
 ;; (setq gptel-default-mode 'org-mode)
@@ -3623,7 +3588,6 @@ gptel-commit 集成 gptel 和 magit，使用 AI 自动生成符合规范的 Git 
 *** 配置
 #+begin_src emacs-lisp
 (use-package gptel-commit
-  :straight t
   :after (gptel magit)
   :custom
   (gptel-commit-stream t))
@@ -3705,17 +3669,17 @@ claude-code-ide 将 Claude AI 集成到 Emacs 中，提供智能代码补全、�
 3. 查看日志: 切换到 =*straight-process*= 缓冲区
 
 *** 如果启动时出错
-#+BEGIN_SRC bash
+#+begin_src bash
 # 使用 debug 模式启动
 emacs --debug-init
-#+END_SRC
+#+end_src
 
 *** 重置配置
-#+BEGIN_SRC bash
+#+begin_src bash
 # 删除 straight 目录重新开始
 rm -rf ~/.emacs.d/straight/
 # 重启 Emacs
-#+END_SRC
+#+end_src
 
 ** 配置文件位置
 - 主配置: =~/.emacs.d/config.org=
@@ -3768,7 +3732,6 @@ rm -rf ~/.emacs.d/straight/
 ;; 1. general + 定义 global-definer（必须最先）
 ;; ──────────────────────────────────────────────────────────────────────
 (use-package general
-  :straight t
   :demand t
   :config
   (general-create-definer global-definer
@@ -4024,7 +3987,6 @@ rm -rf ~/.emacs.d/straight/
 
 #+begin_src emacs-lisp :wrap ep
 (use-package flyover
-  :straight t
   :hook ((flycheck-mode . flyover-mode)
          (flymake-mode . flyover-mode))
   :custom
@@ -4076,4 +4038,5 @@ rm -rf ~/.emacs.d/straight/
    "k" #'eldoc-box-scroll-up
    "j" #'eldoc-box-scroll-down))
 #+end_src
+
 

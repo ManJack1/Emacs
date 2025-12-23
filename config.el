@@ -285,7 +285,6 @@
   (setq inhibit-startup-message t)      ; 关闭启动画面
 
 (use-package dashboard
-  :straight t
   :demand t
   :after (centaur-tabs nerd-icons evil)
   
@@ -394,7 +393,6 @@
   (org-agenda-span 7))
 
 (use-package colorful-mode
-  :straight t
   :custom
   (colorful-use-prefix t)
   (colorful-only-strings nil)   ;; 全局显示颜色，不仅限字符串
@@ -404,7 +402,6 @@
   (add-hook 'after-change-major-mode-hook #'colorful-mode))
 
 (use-package doom-themes
-  :straight t
   :init
   (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/")
   (load-theme 'doom-everforest t)
@@ -436,14 +433,12 @@
     (keycast-mode-line-mode t))
 
 (use-package doom-modeline
-  :straight t
   :hook (after-init . doom-modeline-mode)
   :config
   (setq doom-modeline-height 25         ; 状态栏高度
         doom-modeline-bar-width 3))     ; 左侧条宽度
 
 (use-package centaur-tabs
-  :straight t
   :demand t
   :config
   ;; 基础配置
@@ -473,7 +468,6 @@
   (run-with-idle-timer 0.5 nil 'my/update-tabs-visibility))
 
 (use-package indent-bars
-  :straight t
   :custom
   (indent-bars-no-descend-lists t)                    ; 列表不显示额外缩进线
   (indent-bars-treesit-support t)                     ; 启用 tree-sitter 支持
@@ -484,22 +478,18 @@
   :hook ((kdl-mode nix-ts-mode java-ts-mode python-ts-mode yaml-mode c++-ts-mode) . indent-bars-mode))
 
 (use-package all-the-icons
-  :straight t
   :if (display-graphic-p))
 
 (use-package nerd-icons
-  :straight t
   :defer t
   :if (display-graphic-p))
 
 (use-package nerd-icons-completion
-  :straight t
   :after marginalia
   :hook (after-init . nerd-icons-completion-mode)
   :hook (marginalia-mode . nerd-icons-completion-marginalia-setup))
 
 (use-package neotree
-  :straight t
   :hook (after-init . (lambda ()
                         (global-set-key [f3] 'neotree-toggle)))
   :config
@@ -533,7 +523,6 @@
       (setq auto-save-default nil)         ; 不创建 # 自动保存文件
 
 (use-package sis
-  :straight t
   :init
   ;; macOS 配置
   (when (eq system-type 'darwin)
@@ -565,11 +554,11 @@
   (setq save-place-file (expand-file-name "saveplace" user-emacs-directory)))                           ;; 启用 saveplace
 
 (use-package beacon
-  :straight t
   :init
   (beacon-mode 1))
 
 (use-package magit
+  :commands (magit-status magit-dispatch)  ;; 明确指定触发命令
   :config
   ;; 可选配置
   (setq magit-display-buffer-function #'magit-display-buffer-same-window-except-diff-v1))
@@ -590,13 +579,11 @@
   (global-blamer-mode 0))
 
 (use-package diff-hl
-  :straight t
   :init
   (diff-hl-flydiff-mode)
   (global-diff-hl-mode))
 
 (use-package pdf-tools
-  :straight t
   :mode ("\\.pdf\\'" . pdf-view-mode)
   :init
   (setq pdf-view-display-size 'fit-page
@@ -618,7 +605,6 @@
               (pdf-view-fit-page-to-window))))
 
 (use-package super-save
-  :straight t
   :hook (after-init . super-save-mode)
   :config
   (setq super-save-auto-save-when-idle t
@@ -662,16 +648,13 @@
               (local-set-key (kbd "C-S-v") 'eat-yank))))
 
 (use-package vterm
-  :straight t
   :config
   (setq vterm-max-scrollback 10000))
 
 (use-package transient
-  :straight t
-  :demand t)
+  :defer t)  ;; 延迟加载，magit 等包会自动触发
 
   (use-package which-key
-  :straight t
   :hook (after-init . which-key-mode)
   :config
   ;; setting-tag
@@ -679,7 +662,7 @@
   (which-key-add-key-based-replacements "SPC b" "buffer")
   (which-key-add-key-based-replacements "SPC c" "lsp")
   (which-key-add-key-based-replacements "SPC f" "Find-file")
-  (which-key-add-key-based-replacements "SPC s" "seach")
+  (which-key-add-key-based-replacements "SPC s" "search")
   (which-key-add-key-based-replacements "SPC g" "git")
   (which-key-add-key-based-replacements "SPC m" "mark")
   (which-key-add-key-based-replacements "SPC o" "org")
@@ -707,27 +690,21 @@
       (define-key evil-motion-state-map (kbd "RET") nil)))
 
 (use-package evil-collection
-  :straight t
   :after evil
   :init
   (evil-collection-init))
 
 (use-package evil-matchit
-  :straight t
   :config
   (global-evil-matchit-mode 1)
   )
 
 (use-package evil-anzu
-  :straight t
   :after evil
   :diminish
-  :demand t
-  :init
-  (global-anzu-mode t))
+  :hook (evil-mode . global-anzu-mode))  ;; evil 加载后启用，无需 :demand
 
 (use-package evil-commentary
-  :straight t
   :after evil
   :init
   (evil-commentary-mode))
@@ -769,13 +746,11 @@
                  ("RET" . company-complete-selection)))
 
 (use-package yasnippet
-  :straight t
   :hook (prog-mode . yas-minor-mode)
   :config
   (yas-global-mode 1))
 
 (use-package yasnippet-snippets
-  :straight t
   :after yasnippet)
 
   (use-package undo-fu
@@ -793,7 +768,6 @@
     (setq undo-outer-limit 1006632960)) ; 960mb
 
 (use-package undo-fu-session
-  :straight t
   :after undo-fu
   :hook (after-init . global-undo-fu-session-mode)
   :config
@@ -809,27 +783,23 @@
   (setq undo-fu-session-linear nil))
 
 (use-package vundo
-  :straight t
   :commands (vundo)
   :config
   (setq vundo-compact-display t))
 
 (use-package smartparens
-  :straight t
   :hook (after-init . smartparens-global-mode)  ; 全局启用
   :config
   (require 'smartparens-config)
   (setq sp-autoskip-closing-pair 'always))
 
 (use-package evil-surround
-  :straight t
   :after evil
   :config
   ;; 启用全局 evil-surround 模式
   (global-evil-surround-mode 1))
 
   (use-package expand-region
-  :straight t
   :bind ("C-SPC" . er/expand-region))
 
   (use-package evil-fringe-mark
@@ -845,7 +815,6 @@
     (global-evil-fringe-mark-mode))
 
 (use-package vertico
-  :straight t
   :hook (after-init . vertico-mode)
   :custom
   (vertico-scroll-margin 0)  ; 滚动边距
@@ -869,7 +838,6 @@
    '(read-only t cursor-intangible t face minibuffer-prompt)))
 
 (use-package orderless
-  :straight t
   :custom
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles partial-completion))))
@@ -877,22 +845,18 @@
   (completion-pcm-leading-wildcard t))
 
 (use-package marginalia
-  :straight t
   :init
   (marginalia-mode t))
 
 (use-package hl-todo
-  :straight t
   :hook (prog-mode . hl-todo-mode)
   :custom
   (hl-todo-highlight-punctuation ":"))
 
   (use-package consult-todo
-  :straight t
   :commands (consult-todo consult-todo-project))
 
 (use-package embark
-  :straight t
   :bind
   (("C-;" . embark-act)
    ;; ("C-;" . embark-dwim)
@@ -901,14 +865,12 @@
   (setq prefix-help-command 'embark-prefix-help-command))
 
 (use-package wgrep
-  :straight t
   :config
   (setq wgrep-change-readonly-file t)
   (setq wgrep-enable-key "e"))
 (add-hook 'grep-mode-hook 'wgrep-setup)
 
 (use-package consult
-  :straight t
   :config
   ;; 用 consult 替换默认的 xref 显示
   (setq xref-show-xrefs-function #'consult-xref
@@ -955,7 +917,6 @@
           consult--source-bookmark)))
 
 (use-package embark-consult
-  :straight t
   :after (embark consult)
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
@@ -969,14 +930,12 @@
     (setq projectile-completion-system 'default))
 
 (use-package avy
-  :straight t
   :commands (avy-goto-char avy-goto-char-2 avy-goto-word-1 avy-goto-line)
   :config
   (setq avy-style 'at-full)
   (setq avy-all-windows t))
 
 (use-package general
-  :straight t
   :config
   
   ;; ==================== 创建 Definer ====================
@@ -1230,7 +1189,6 @@
    "RET" 'dired-find-file))
 
 (use-package org
-  :straight t
   :mode ("\\.org\\'" . org-mode)
   :bind (("C-c a" . org-agenda)
          ("C-c c" . org-capture)
@@ -1342,14 +1300,12 @@
     "* Buy %?\nCREATED: %U\n%i\n"))))
 
 (use-package org-fancy-priorities
-  :straight t
   :hook
   (org-mode . org-fancy-priorities-mode)
   :config
   (setq org-fancy-priorities-list '("󰯬 " "󰯯 " "󰯲 ")))
 
 (use-package auctex
-  :straight t
   :defer t
   :config
   ;; 自动保存时重新生成文档
@@ -1499,7 +1455,6 @@
   (advice-add 'org--make-preview-overlay :after #'my/org-latex-preview-setup))
 
 (use-package org-sliced-images
-  :straight t
   :after org
   :config
   ;; 启用全局模式
@@ -1513,7 +1468,6 @@
   (setq org-sliced-images-consume-dummies t))
 
 (use-package org-superstar
-  :straight t
   :after org
   :hook (org-mode . org-superstar-mode)
   :config
@@ -1547,7 +1501,6 @@
  ;; (setq org-bars-color-options nil))
 
 (use-package auctex
-  :straight t
   :mode (("\\.tex\\'" . LaTeX-mode)
          ("\\.ltx\\'" . LaTeX-mode)
          ("\\.cls\\'" . LaTeX-mode))
@@ -1586,11 +1539,9 @@
         ("baselinestretch" "1.2")))
 
 (use-package org-contrib
-  :straight t
   :after org)
 
 (use-package org-download
-  :straight t
   :after org
   :hook (org-mode . org-download-enable)
   :config
@@ -1648,7 +1599,6 @@
   (add-hook 'helpful-mode-hook 'visual-line-mode))
 
 (use-package laas
-  :straight t
   :hook ((LaTeX-mode . laas-mode) (org-mode . laas-mode))
   :config
   (aas-set-snippets 'laas-mode
@@ -1767,7 +1717,6 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
                             (yas-expand-snippet "\\[\n $1 \n\\] $0"))))
 
 (use-package lsp-mode
-  :straight t
   :hook ((c-ts-mode . lsp)
          (c++-ts-mode . lsp)
          (python-ts-mode . lsp)
@@ -1799,11 +1748,9 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
  "a" #'eglot-code-actions)
 
 (use-package consult-eglot
-  :straight t
   :after (consult eglot))
 
 (use-package apheleia
-  :straight t
   :init
   (apheleia-global-mode +1)
   :config
@@ -1881,13 +1828,11 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
             (setq-local apheleia-mode nil)))
 
   (use-package sideline
-  :straight t
   :hook (flymake-mode . sideline-mode)
   :custom
   (sideline-backends-right '(sideline-flymake)))
 
   (use-package sideline-flymake
-  :straight t
   :after sideline flymake)
 
   (use-package flymake
@@ -1898,12 +1843,10 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
   :straight t)
 
 (use-package nix-ts-mode
-  :straight t
   :mode "\\.nix\\'"
   :hook (nix-ts-mode . lsp))
 
   (use-package lsp-pyright
-  :straight t
   :custom (lsp-pyright-langserver-command "pyright") ;; or basedpyright
   :hook (python-ts-mode . (lambda ()
                           (require 'lsp-pyright)
@@ -1927,7 +1870,6 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
 (add-hook 'java-mode-hook #'lsp-java-boot-lens-mode)
 
 (use-package treesit-auto
-  :straight t
   :hook (after-init . global-treesit-auto-mode)
   :config
   (setq treesit-auto-install 'prompt))  ; 提示安装语法
@@ -1947,7 +1889,6 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
 ;;     (ai-code-magit-setup-transients)))
 
 (use-package gptel
-  :straight t
    :config
 ;; OPTIONAL configuration
 ;; (setq gptel-default-mode 'org-mode)
@@ -1967,7 +1908,6 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
          :args ("stdio"))))
 
 (use-package gptel-commit
-  :straight t
   :after (gptel magit)
   :custom
   (gptel-commit-stream t))
@@ -1996,7 +1936,6 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
 ;; 1. general + 定义 global-definer（必须最先）
 ;; ──────────────────────────────────────────────────────────────────────
 (use-package general
-  :straight t
   :demand t
   :config
   (general-create-definer global-definer
@@ -2241,7 +2180,6 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
                   (hl-line-mode 1))))  ; 高亮当前行
 
 (use-package flyover
-  :straight t
   :hook ((flycheck-mode . flyover-mode)
          (flymake-mode . flyover-mode))
   :custom
