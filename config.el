@@ -1939,7 +1939,7 @@ See the varibale `my/warning-suppress-message-regexps'."
     (lsp-ui-sideline-enable t)
     (lsp-ui-doc-position 'at-point)      ; 在光标位置显示
     (lsp-ui-sideline-show-code-actions t)
-    (lsp-ui-sideline-show-diagnostics t)
+    (lsp-ui-sideline-show-diagnostics 0)
     (lsp-ui-sideline-show-hover t)
     (lsp-ui-sideline-ignore-duplicate t)
     (lsp-diagnostics-provider :flymake)  ; 确保用 flymake

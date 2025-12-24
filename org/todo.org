@@ -13,4 +13,5 @@ SCHEDULED: <2025-11-11 Tue>
 SCHEDULED: <2025-12-23 Tue>
 ** TODO [#B] 对日本蜡烛图做笔记                                      :stock:
 SCHEDULED: <2025-12-23 Tue>
+第5到第六章记录笔记
 
