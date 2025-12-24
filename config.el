@@ -542,7 +542,11 @@
         doom-modeline-bar-width 3))     ; 左侧条宽度
 
 (use-package centaur-tabs
-  :demand t
+  :init
+  ;; 🔑 关键：daemon 模式兼容性修复
+  (if (daemonp)
+      (add-hook 'server-after-make-frame-hook 'centaur-tabs-mode)
+    (add-hook 'after-init-hook 'centaur-tabs-mode))
   :config
   ;; 基础配置
   (setq centaur-tabs-set-bar 'left
@@ -1139,6 +1143,7 @@
     "f" '(:ignore t :which-key "file")
     "ff" 'find-file
     "fg" 'consult-fd
+    "fz" 'consult-dir
     "ft" 'centaur-tabs-switch-group
     "fd" 'project-find-dir
     "fp" 'project-find-file
@@ -2277,3 +2282,40 @@ See the varibale `my/warning-suppress-message-regexps'."
 (use-package symbol-overlay
   :config
   (define-key symbol-overlay-map (kbd "h") 'nil))
+
+(defun my/setup-frame (frame)
+  (with-selected-frame frame
+    (set-face-attribute 'default nil
+                        :font "Maple Mono NF"
+                        :height 140)
+
+    ;; Set Chinese font for Han script
+    (set-fontset-font t 'han "Noto Serif CJK SC")
+    (load-theme 'doom-everforest t)))
+
+(if (daemonp)
+    (add-hook 'after-make-frame-functions #'my/setup-frame)
+  (my/setup-frame (selected-frame)))
+
+(use-package consult-dir
+  :defer t
+  :bind ((:map vertico-map
+          ("C-x C-d" . consult-dir)))
+  :config
+  (setq consult-dir-default-command #'consult-dir-dired)
+
+  (defun consult-dir--zoxide-dirs ()
+    "Return list of zoxide dirs."
+    (split-string (shell-command-to-string "zoxide query -l") "\n" t))
+
+  (defvar consult-dir--source-zoxide
+    `(:name "zoxide"
+      :narrow ?z
+      :category file
+      :face consult-file
+      :history file-name-history
+      :enabled ,(lambda () (executable-find "zoxide"))
+      :items ,#'consult-dir--zoxide-dirs)
+    "zoxide directory source for `consult-dir'.")
+
+  (add-to-list 'consult-dir-sources 'consult-dir--source-zoxide t))

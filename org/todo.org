@@ -2,16 +2,33 @@
 ** TODO [#B] 学习 makefile以及做完 Makefile 的笔记 :cs:
 DEADLINE: <2025-12-06 Sat> SCHEDULED: <2025-11-07 Fri>
 +[[https://makefiletutorial.com/][web]] 
+
 ** TODO [#B] 学习 org的基本知识 :emacs:
 SCHEDULED: <2025-11-07 Fri>
 + 学习地址：https://jansky520.github.io/p/org%E5%BF%AB%E9%80%9F%E6%8C%87%E5%8D%97/
+
 ** TODO [#B] 学习用 hugo搭建博客 :emacs:
 SCHEDULED: <2025-11-07 Fri>
-** TODO [#B] 完成 chap4的英语笔记                                  :English:
-SCHEDULED: <2025-11-11 Tue>
-** TODO [#B] 完成 elisp 第一章练习                                      :cs:
-SCHEDULED: <2025-12-23 Tue>
-** TODO [#B] 对日本蜡烛图做笔记                                      :stock:
-SCHEDULED: <2025-12-23 Tue>
-第5到第六章记录笔记
 
+** TODO [#B] 完成chap4的英语笔记                                  :English:
+SCHEDULED: <2025-11-11 Tue>
+
+** TODO [#B] 完成elisp第一章练习                                      :cs:
+SCHEDULED: <2025-12-23 Tue>
+
+** TODO [#B] 日本蜡烛图做笔记 [0/0]                                    :stock:
+SCHEDULED: <2025-12-23 Tue>
+- [ ]第5到第六章记录笔记
+
+** TODO [#A] 学习elisp
+SCHEDULED: <2025-12-24 Wed>
+
+** TODO [#A] 学习日本蜡烛图
+SCHEDULED: <2025-12-24 Wed>
+
+** TODO [#A] 学习英语
+SCHEDULED: <2025-12-24 Wed>
+
+** TODO [#A] 读书
+SCHEDULED: <2025-12-24 Wed>
+- [ ] 自在的心
