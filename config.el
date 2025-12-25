@@ -2319,3 +2319,11 @@ See the varibale `my/warning-suppress-message-regexps'."
     "zoxide directory source for `consult-dir'.")
 
   (add-to-list 'consult-dir-sources 'consult-dir--source-zoxide t))
+
+(use-package grease
+  :straight (grease :type git :host github :repo "mwac-dev/grease.el")
+  :commands (grease-open grease-toggle grease-here)
+  :init
+  (setq grease-sort-method 'type
+        grease-show-hidden nil
+        grease-preview-window-width 0.4))
