@@ -2067,7 +2067,7 @@ See the varibale `my/warning-suppress-message-regexps'."
 (use-package gptel
    :config
 ;; OPTIONAL configuration
-;; (setq gptel-default-mode 'org-mode)
+(setq gptel-default-mode 'org-mode)
 (setq gptel-model 'gpt-4o
       gptel-backend (gptel-make-gh-copilot "Copilot"))
 

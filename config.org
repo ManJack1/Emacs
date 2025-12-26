@@ -3767,7 +3767,7 @@ gptel 是 Emacs 的通用 LLM 客户端，支持 ChatGPT、Claude、Gemini 等�
 (use-package gptel
    :config
 ;; OPTIONAL configuration
-;; (setq gptel-default-mode 'org-mode)
+(setq gptel-default-mode 'org-mode)
 (setq gptel-model 'gpt-4o
       gptel-backend (gptel-make-gh-copilot "Copilot"))
 

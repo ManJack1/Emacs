@@ -20,7 +20,7 @@ SCHEDULED: <2025-12-23 Tue>
 SCHEDULED: <2025-12-23 Tue>
 - [ ]第5到第六章记录笔记
 
-** TODO [#A] 学习elisp
+** TODO [#A] 学习elisp、CS61b
 SCHEDULED: <2025-12-24 Wed>
 
 ** TODO [#A] 学习日本蜡烛图
