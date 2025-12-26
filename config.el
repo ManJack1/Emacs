@@ -2346,3 +2346,10 @@ See the varibale `my/warning-suppress-message-regexps'."
   ;; 只搜索 denote 目录中的文本文件
   (setq consult-notes-denote-files-function 
         (lambda () (denote-directory-files nil t t))))
+(use-package grease
+  :straight (grease :type git :host github :repo "mwac-dev/grease.el")
+  :commands (grease-open grease-toggle grease-here)
+  :init
+  (setq grease-sort-method 'type
+        grease-show-hidden nil
+        grease-preview-window-width 0.4))
