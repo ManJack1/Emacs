@@ -1143,6 +1143,7 @@
     "f" '(:ignore t :which-key "file")
     "ff" 'find-file
     "fg" 'consult-fd
+    "fn" 'consult-notes
     "fz" 'consult-dir
     "ft" 'centaur-tabs-switch-group
     "fd" 'project-find-dir
@@ -2319,3 +2320,29 @@ See the varibale `my/warning-suppress-message-regexps'."
     "zoxide directory source for `consult-dir'.")
 
   (add-to-list 'consult-dir-sources 'consult-dir--source-zoxide t))
+
+(use-package denote
+  :config
+  ;; Your Denote configuration here
+  (setq denote-directory (expand-file-name "~/workspace/notes/")))
+
+(use-package consult-notes
+  :straight (:type git
+             :host github
+             :repo "mclear-tools/consult-notes")
+  :commands (consult-notes
+             consult-notes-search-in-all-notes
+             consult-notes-org-roam-find-node
+             consult-notes-org-roam-find-node-relation)
+  :config
+  ;; 设置笔记目录
+  (setq consult-notes-file-dir-sources 
+        '(("Notes" ?n "~/workspace/notes/")))
+  
+  ;; 如果使用 denote
+  (when (locate-library "denote")
+    (consult-notes-denote-mode))
+  
+  ;; 只搜索 denote 目录中的文本文件
+  (setq consult-notes-denote-files-function 
+        (lambda () (denote-directory-files nil t t))))

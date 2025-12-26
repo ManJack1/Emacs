@@ -2339,6 +2339,7 @@ avy 提供基于字符的快速跳转功能，类似 Vim 的 EasyMotion。输入
     "f" '(:ignore t :which-key "file")
     "ff" 'find-file
     "fg" 'consult-fd
+    "fn" 'consult-notes
     "fz" 'consult-dir
     "ft" 'centaur-tabs-switch-group
     "fd" 'project-find-dir
@@ -4180,3 +4181,35 @@ CLOCK: [2025-12-23 Tue 12:49]
 
   (add-to-list 'consult-dir-sources 'consult-dir--source-zoxide t))
 #+end_src
+
+#+begin_src emacs-lisp :wrap ep
+(use-package denote
+  :config
+  ;; Your Denote configuration here
+  (setq denote-directory (expand-file-name "~/workspace/notes/")))
+#+end_src
+
+
+#+begin_src emacs-lisp :wrap ep
+(use-package consult-notes
+  :straight (:type git
+             :host github
+             :repo "mclear-tools/consult-notes")
+  :commands (consult-notes
+             consult-notes-search-in-all-notes
+             consult-notes-org-roam-find-node
+             consult-notes-org-roam-find-node-relation)
+  :config
+  ;; 设置笔记目录
+  (setq consult-notes-file-dir-sources 
+        '(("Notes" ?n "~/workspace/notes/")))
+  
+  ;; 如果使用 denote
+  (when (locate-library "denote")
+    (consult-notes-denote-mode))
+  
+  ;; 只搜索 denote 目录中的文本文件
+  (setq consult-notes-denote-files-function 
+        (lambda () (denote-directory-files nil t t))))
+#+end_src
+
