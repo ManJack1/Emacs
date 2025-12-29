@@ -20,15 +20,18 @@ SCHEDULED: <2025-12-23 Tue>
 SCHEDULED: <2025-12-23 Tue>
 - [ ]第5到第六章记录笔记
 
-** TODO [#A] 学习elisp、CS61b
+** TODO [#A] 学习elisp、CS61b、linux                                      :cs:
 SCHEDULED: <2025-12-24 Wed>
 
 ** TODO [#A] 学习日本蜡烛图
 SCHEDULED: <2025-12-24 Wed>
+- [ ] 学习第六章
+- [ ] 第六种笔记
 
 ** TODO [#A] 学习英语
 SCHEDULED: <2025-12-24 Wed>
 
 ** TODO [#A] 读书
 SCHEDULED: <2025-12-24 Wed>
-- [ ] 自在的心
+- 自在的心
+  - [ ] 第一章
