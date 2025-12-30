@@ -1627,6 +1627,18 @@
   (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
   (add-hook 'LaTeX-mode-hook 'turn-on-reftex))
 
+(with-eval-after-load 'ox-latex
+  (add-to-list 'org-latex-classes
+               '("cs_org"
+                 "\\documentclass{cs_org}
+[NO-DEFAULT-PACKAGES]
+[PACKAGES]
+[EXTRA]"
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))
+  
+
 (setq org-latex-compiler "xelatex")
 (setq org-latex-pdf-process
       '("xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
@@ -1635,6 +1647,10 @@
 
 ;; 使用 minted
 (setq org-latex-listings 'minted)
+(setq org-latex-minted-options
+      '(("breaklines" "true")
+        ("breakanywhere" "true")
+        ("fontsize" "\\small")))
 
 ;; 语言映射
 (with-eval-after-load 'ox-latex
