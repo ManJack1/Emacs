@@ -608,8 +608,8 @@ use-package 是一个声明式包配置宏，简化包的安装、配置和延�
 #+begin_src emacs-lisp
 ;; 设置编程字体
 (set-face-attribute 'default nil
-                    :font "Maple Mono NF"
-                    :height 140)
+                    :font "Iosevka Nerd Font"
+                    :height 150)
 
 ;; Set Chinese font for Han script
 (set-fontset-font t 'han "Noto Serif CJK SC")
@@ -3996,7 +3996,7 @@ rm -rf ~/.emacs.d/straight/
 
 *** TODO 完善类似 org-frog 的功能，让其支持更多的环境。当\[ \]中间有换行的时候不好触发
 
-*** DONE math-preivew 的bug,当 font-height 设置大160时，预览会偏移
+*** DONE math-preivew 的bug,当 font-height 设置大150时，预览会偏移
 :LOGBOOK:
 CLOCK: [2025-12-23 Tue 12:49]
 :END:
@@ -4165,8 +4165,8 @@ CLOCK: [2025-12-23 Tue 12:49]
 (defun my/setup-frame (frame)
   (with-selected-frame frame
     (set-face-attribute 'default nil
-                        :font "Maple Mono NF"
-                        :height 140)
+                        :font "Iosevka Nerd Font"
+                        :height 150)
 
     ;; Set Chinese font for Han script
     (set-fontset-font t 'han "Noto Serif CJK SC")

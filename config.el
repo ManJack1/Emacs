@@ -269,8 +269,8 @@
 
 ;; 设置编程字体
 (set-face-attribute 'default nil
-                    :font "Maple Mono NF"
-                    :height 140)
+                    :font "Iosevka Nerd Font"
+                    :height 150)
 
 ;; Set Chinese font for Han script
 (set-fontset-font t 'han "Noto Serif CJK SC")
@@ -2307,8 +2307,8 @@ See the varibale `my/warning-suppress-message-regexps'."
 (defun my/setup-frame (frame)
   (with-selected-frame frame
     (set-face-attribute 'default nil
-                        :font "Maple Mono NF"
-                        :height 140)
+                        :font "Iosevka Nerd Font"
+                        :height 150)
 
     ;; Set Chinese font for Han script
     (set-fontset-font t 'han "Noto Serif CJK SC")
