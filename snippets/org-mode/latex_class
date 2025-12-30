@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: latex_class
+# key: class
+# --
+#+LATEX_CLASS: $1

@@ -2959,6 +2959,10 @@ AUCTeX 是 Emacs 中最强大的 LaTeX 编辑环境，提供语法高亮、自�
 ** org-latex 导出配置
 *** 配置
 #+begin_src emacs-lisp
+(setenv "TEXINPUTS" 
+        (concat (expand-file-name "~/.emacs.d/latex/") ":"
+                (getenv "TEXINPUTS")))
+
 (with-eval-after-load 'ox-latex
   (add-to-list 'org-latex-classes
                '("cs_org"

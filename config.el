@@ -1627,6 +1627,10 @@
   (add-hook 'LaTeX-mode-hook 'LaTeX-math-mode)
   (add-hook 'LaTeX-mode-hook 'turn-on-reftex))
 
+(setenv "TEXINPUTS" 
+        (concat (expand-file-name "~/.emacs.d/latex/") ":"
+                (getenv "TEXINPUTS")))
+
 (with-eval-after-load 'ox-latex
   (add-to-list 'org-latex-classes
                '("cs_org"
