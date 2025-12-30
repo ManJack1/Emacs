@@ -2372,5 +2372,5 @@ See the varibale `my/warning-suppress-message-regexps'."
   :commands (grease-open grease-toggle grease-here)
   :init
   (setq grease-sort-method 'type
-        grease-show-hidden nil))
+        grease-show-hidden nil
         grease-preview-window-width 0.4))

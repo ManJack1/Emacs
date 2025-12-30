@@ -4237,7 +4237,7 @@ CLOCK: [2025-12-23 Tue 12:49]
   :commands (grease-open grease-toggle grease-here)
   :init
   (setq grease-sort-method 'type
-        grease-show-hidden nil))
+        grease-show-hidden nil
         grease-preview-window-width 0.4))
 #+end_src
 
