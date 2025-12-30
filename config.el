@@ -2088,7 +2088,7 @@ See the varibale `my/warning-suppress-message-regexps'."
    :config
 ;; OPTIONAL configuration
 (setq gptel-default-mode 'org-mode)
-(setq gptel-model 'gpt-4o
+(setq gptel-model 'gpt-5.2
       gptel-backend (gptel-make-gh-copilot "Copilot"))
 
 (gptel-make-gh-copilot "Copilot"))
@@ -2355,21 +2355,22 @@ See the varibale `my/warning-suppress-message-regexps'."
              consult-notes-org-roam-find-node
              consult-notes-org-roam-find-node-relation)
   :config
-  ;; 设置笔记目录
-  (setq consult-notes-file-dir-sources 
+  ;; 笔记目录
+  (setq consult-notes-file-dir-sources
         '(("Notes" ?n "~/workspace/notes/")))
-  
-  ;; 如果使用 denote
+
+  ;; 如果安装了 denote，则启用 integrate
   (when (locate-library "denote")
-    (consult-notes-denote-mode))
-  
-  ;; 只搜索 denote 目录中的文本文件
-  (setq consult-notes-denote-files-function 
-        (lambda () (denote-directory-files nil t t))))
+    (consult-notes-denote-mode)
+    ;; 只搜索 denote 目录中的文本文件
+    (setq consult-notes-denote-files-function
+          (lambda ()
+            (denote-directory-files nil t t)))))
+
 (use-package grease
   :straight (grease :type git :host github :repo "mwac-dev/grease.el")
   :commands (grease-open grease-toggle grease-here)
   :init
   (setq grease-sort-method 'type
-        grease-show-hidden nil
+        grease-show-hidden nil))
         grease-preview-window-width 0.4))
