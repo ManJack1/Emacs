@@ -618,22 +618,21 @@ use-package 是一个声明式包配置宏，简化包的安装、配置和延�
 
 *** UI 元素配置
 #+begin_src emacs-lisp
-  ;; 关闭不必要的 UI 元素
-  (tool-bar-mode -1)        ; 关闭工具栏
-  (scroll-bar-mode -1)      ; 关闭滚动条
-  (menu-bar-mode -1)        ; 关闭菜单栏
+;; 精简并统一 UI 配置
+(setq inhibit-startup-message t          ; 关闭启动画面
+      imenu-auto-rescan t                ; Imenu 自动刷新
+      word-wrap t                        ; 启用单词换行
+      word-wrap-by-category t)           ; 按字符类别换行（CJK 更友好）
 
-  ;; 启用有用的 UI 功能
-  (global-display-line-numbers-mode 1)
-  (global-hl-line-mode 1)
+;; 关闭不必要的 UI 元素
+(tool-bar-mode -1)                       ; 关闭工具栏
+(scroll-bar-mode -1)                     ; 关闭滚动条
+(menu-bar-mode -1)                       ; 关闭菜单栏
 
-  (global-visual-line-mode t)
-  (setq word-wrap t)
-  (setq word-wrap-by-category t)
-  ;; 启动配置
-  (setq inhibit-startup-message t)      ; 关闭启动画面
-
-
+;; 启用常用的 UI 功能
+(global-display-line-numbers-mode 1)     ; 全局行号
+(global-hl-line-mode 1)                  ; 高亮当前行
+(global-visual-line-mode 1)              ; 软换行显示（不插入换行符）
 #+end_src
 
 ** dirvish
@@ -1610,8 +1609,7 @@ evil-matchit 允许在 Evil 模式下快速跳转到匹配的标签或括号，�
 #+begin_src emacs-lisp
 (use-package evil-matchit
   :config
-  (global-evil-matchit-mode 1)
-  )
+  (global-evil-matchit-mode 1))
 #+end_src
 
 *** 使用方法
@@ -2327,6 +2325,7 @@ avy 提供基于字符的快速跳转功能，类似 Vim 的 EasyMotion。输入
     "cf" 'lsp-format-buffer
     "ca" 'lsp-execute-code-action
     "cr" 'lsp-rename
+    "ch" 'eldoc-box-help-at-point
     "ci" 'describe-mode
     "cp" 'copy-file-path
 
@@ -2964,16 +2963,20 @@ AUCTeX 是 Emacs 中最强大的 LaTeX 编辑环境，提供语法高亮、自�
                 (getenv "TEXINPUTS")))
 
 (with-eval-after-load 'ox-latex
-  (add-to-list 'org-latex-classes
-               '("cs_org"
-                 "\\documentclass{cs_org}
+  (dolist (cls '(("cs-note_org" "\\documentclass{cs-note_org}
 [NO-DEFAULT-PACKAGES]
 [PACKAGES]
-[EXTRA]"
-                 ("\\section{%s}" . "\\section*{%s}")
-                 ("\\subsection{%s}" . "\\subsection*{%s}")
-                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))
-  
+[EXTRA]")
+                 ("note_org" "\\documentclass{note_org}
+[NO-DEFAULT-PACKAGES]
+[PACKAGES]
+[EXTRA]")))
+    (add-to-list 'org-latex-classes
+                 (append cls
+                         '(("\\section{%s}" . "\\section*{%s}")
+                           ("\\subsection{%s}" . "\\subsection*{%s}")
+                           ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))))
+
 
 (setq org-latex-compiler "xelatex")
 (setq org-latex-pdf-process
@@ -3074,7 +3077,7 @@ org-download 简化在 org-mode 中插入图片的流程，支持从剪贴板、
           (set-buffer-multibyte nil)
           (call-process "wl-paste" nil t nil "--type" "image/png")
           (write-region nil nil file nil 'silent))
-        (insert (format "#+DOWNLOADED: clipboard @ %s\n#+ATTR_ORG: :width 600\n[[file:./images/%s]]\n"
+        (insert (format "#+DOWNLOADED: clipboard @ %s\n #+CAPTION:  \n#+ATTR_LATEX: :width 0.6\\linewidth\n [[file:./images/%s]]\n"
                         (format-time-string "%Y-%m-%d %H:%M:%S") name))
         (org-display-inline-images t t)))))
 #+end_src
@@ -3264,7 +3267,7 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
                     :cond (lambda () (not (texmathp)))
                     "ii" (lambda () (interactive)
                             (yas-expand-snippet "\\\\( $1 \\\\) $0"))
-                    "dd" (lambda () (interactive)
+                    "dm" (lambda () (interactive)
                             (yas-expand-snippet "\\[\n $1 \n\\] $0"))))
 
 
@@ -3545,16 +3548,7 @@ eldoc-box 为 eldoc 提供弹出框显示，支持多行内容和滚动。相比
   :config
   (setq eldoc-box-only-multi-line t
         eldoc-box-clear-with-C-g t
-        eldoc-box-max-pixel-width 800
-        eldoc-box-max-pixel-height 800)
-  
-  (general-define-key
-   :states 'normal
-   :keymaps 'eglot-mode-map
-   :prefix "SPC c"
-   "h" #'eldoc-box-help-at-point
-   "k" #'eldoc-box-scroll-up
-   "j" #'eldoc-box-scroll-down))
+        eldoc-box-max-pixel-width 800))
 #+end_src
 
 *** 使用方法
@@ -3996,7 +3990,7 @@ rm -rf ~/.emacs.d/straight/
 
 *** TODO 完善类似 org-frog 的功能，让其支持更多的环境。当\[ \]中间有换行的时候不好触发
 
-*** DONE math-preivew 的bug,当 font-height 设置大150时，预览会偏移
+* DONE math-preivew 的bug,当 font-height 设置大150时，预览会偏移
 :LOGBOOK:
 CLOCK: [2025-12-23 Tue 12:49]
 :END:

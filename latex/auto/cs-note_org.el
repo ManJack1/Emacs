@@ -1,7 +1,7 @@
 ;; -*- lexical-binding: t; -*-
 
 (TeX-add-style-hook
- "cs_org"
+ "cs-note_org"
  (lambda ()
    (TeX-add-to-alist 'LaTeX-provided-class-options
                      '(("article" "12pt")))
@@ -62,7 +62,8 @@
     '("NOTE" "" "" "")
     '("WARNING" "" "" "")
     '("TIP" "" "" "")
-    '("EXAMPLE" "" "" ""))
+    '("EXAMPLE" "" "" "")
+    '("ep" "1" "[" ""))
    (LaTeX-add-tcolorbox-tcbuselibraries
     "listings,skins,breakable"))
  :latex)

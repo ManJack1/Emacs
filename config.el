@@ -275,20 +275,21 @@
 ;; Set Chinese font for Han script
 (set-fontset-font t 'han "Noto Serif CJK SC")
 
-  ;; 关闭不必要的 UI 元素
-  (tool-bar-mode -1)        ; 关闭工具栏
-  (scroll-bar-mode -1)      ; 关闭滚动条
-  (menu-bar-mode -1)        ; 关闭菜单栏
+;; 精简并统一 UI 配置
+(setq inhibit-startup-message t          ; 关闭启动画面
+      imenu-auto-rescan t                ; Imenu 自动刷新
+      word-wrap t                        ; 启用单词换行
+      word-wrap-by-category t)           ; 按字符类别换行（CJK 更友好）
 
-  ;; 启用有用的 UI 功能
-  (global-display-line-numbers-mode 1)
-  (global-hl-line-mode 1)
+;; 关闭不必要的 UI 元素
+(tool-bar-mode -1)                       ; 关闭工具栏
+(scroll-bar-mode -1)                     ; 关闭滚动条
+(menu-bar-mode -1)                       ; 关闭菜单栏
 
-  (global-visual-line-mode t)
-  (setq word-wrap t)
-  (setq word-wrap-by-category t)
-  ;; 启动配置
-  (setq inhibit-startup-message t)      ; 关闭启动画面
+;; 启用常用的 UI 功能
+(global-display-line-numbers-mode 1)     ; 全局行号
+(global-hl-line-mode 1)                  ; 高亮当前行
+(global-visual-line-mode 1)              ; 软换行显示（不插入换行符）
 
 (use-package dirvish
   :init
@@ -802,8 +803,7 @@
 
 (use-package evil-matchit
   :config
-  (global-evil-matchit-mode 1)
-  )
+  (global-evil-matchit-mode 1))
 
 (use-package evil-anzu
   :after evil
@@ -1131,6 +1131,7 @@
     "cf" 'lsp-format-buffer
     "ca" 'lsp-execute-code-action
     "cr" 'lsp-rename
+    "ch" 'eldoc-box-help-at-point
     "ci" 'describe-mode
     "cp" 'copy-file-path
 
@@ -1632,16 +1633,20 @@
                 (getenv "TEXINPUTS")))
 
 (with-eval-after-load 'ox-latex
-  (add-to-list 'org-latex-classes
-               '("cs_org"
-                 "\\documentclass{cs_org}
+  (dolist (cls '(("cs-note_org" "\\documentclass{cs-note_org}
 [NO-DEFAULT-PACKAGES]
 [PACKAGES]
-[EXTRA]"
-                 ("\\section{%s}" . "\\section*{%s}")
-                 ("\\subsection{%s}" . "\\subsection*{%s}")
-                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))
-  
+[EXTRA]")
+                 ("note_org" "\\documentclass{note_org}
+[NO-DEFAULT-PACKAGES]
+[PACKAGES]
+[EXTRA]")))
+    (add-to-list 'org-latex-classes
+                 (append cls
+                         '(("\\section{%s}" . "\\section*{%s}")
+                           ("\\subsection{%s}" . "\\subsection*{%s}")
+                           ("\\subsubsection{%s}" . "\\subsubsection*{%s}"))))))
+
 
 (setq org-latex-compiler "xelatex")
 (setq org-latex-pdf-process
@@ -1707,7 +1712,7 @@
           (set-buffer-multibyte nil)
           (call-process "wl-paste" nil t nil "--type" "image/png")
           (write-region nil nil file nil 'silent))
-        (insert (format "#+DOWNLOADED: clipboard @ %s\n#+ATTR_ORG: :width 600\n[[file:./images/%s]]\n"
+        (insert (format "#+DOWNLOADED: clipboard @ %s\n #+CAPTION:  \n#+ATTR_LATEX: :width 0.6\\linewidth\n [[file:./images/%s]]\n"
                         (format-time-string "%Y-%m-%d %H:%M:%S") name))
         (org-display-inline-images t t)))))
 
@@ -1847,7 +1852,7 @@ REPLACEMENT: 替换字符串，用 %s 表示匹配内容，支持 $1, $2, $0 跳
                     :cond (lambda () (not (texmathp)))
                     "ii" (lambda () (interactive)
                             (yas-expand-snippet "\\\\( $1 \\\\) $0"))
-                    "dd" (lambda () (interactive)
+                    "dm" (lambda () (interactive)
                             (yas-expand-snippet "\\[\n $1 \n\\] $0"))))
 
 (use-package lsp-mode
@@ -1987,16 +1992,7 @@ See the varibale `my/warning-suppress-message-regexps'."
   :config
   (setq eldoc-box-only-multi-line t
         eldoc-box-clear-with-C-g t
-        eldoc-box-max-pixel-width 800
-        eldoc-box-max-pixel-height 800)
-  
-  (general-define-key
-   :states 'normal
-   :keymaps 'eglot-mode-map
-   :prefix "SPC c"
-   "h" #'eldoc-box-help-at-point
-   "k" #'eldoc-box-scroll-up
-   "j" #'eldoc-box-scroll-down))
+        eldoc-box-max-pixel-width 800))
 
   (use-package flymake
   :straight nil

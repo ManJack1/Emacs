@@ -1,5 +1,5 @@
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesClass{cs_org}[2025/01/01 CS_ORG Org Template]
+\ProvidesClass{cs-note_org}[2025/01/01 CS_ORG Org Template]
 
 % =====================
 % 基础文档类
@@ -143,6 +143,15 @@
     fonttitle=\sffamily\bfseries,
     coltitle=boxpurple!90!black,
     colbacktitle=boxpurple!20!white
+}
+
+
+\newtcolorbox{ep}[1][]{%
+    enhanced,
+    colback=JungleGreen!10!Cerulean!15,
+    colframe=CornflowerBlue!60!Black,
+    title=\textbf{Example},
+    #1
 }
 
 % =====================

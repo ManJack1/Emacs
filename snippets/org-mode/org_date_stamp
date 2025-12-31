@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: org_date_stamp
+# key: odate
+# --
+`(format-time-string "<%Y-%m-%d %a>")`

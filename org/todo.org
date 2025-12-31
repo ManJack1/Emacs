@@ -7,34 +7,53 @@ DEADLINE: <2025-12-06 Sat> SCHEDULED: <2025-11-07 Fri>
 SCHEDULED: <2025-11-07 Fri>
 + 学习地址：https://jansky520.github.io/p/org%E5%BF%AB%E9%80%9F%E6%8C%87%E5%8D%97/
 
-** TODO [#B] 学习用 hugo搭建博客 :emacs:
+** TODO [#B] 学习用 hugo搭建博客                                       :emacs:
 SCHEDULED: <2025-11-07 Fri>
 
-** TODO [#B] 完成chap4的英语笔记                                  :English:
-SCHEDULED: <2025-11-11 Tue>
-
-** TODO [#B] 完成elisp第一章练习                                      :cs:
-SCHEDULED: <2025-12-23 Tue>
-
-** TODO [#B] 日本蜡烛图做笔记 [0/0]                                    :stock:
-SCHEDULED: <2025-12-23 Tue>
-- [ ]第5到第六章记录笔记
-
-** TODO [#A] 学习elisp、CS61b、linux                                      :cs:
+** TODO [#A] 学习elisp、CS61b、linux [0/2]                                :cs:
 SCHEDULED: <2025-12-24 Wed>
+- [ ] 完成arraylist的笔记以及作业
+- [ ] 完成elisp第一章练习
 
-** TODO [#A] 学习日本蜡烛图
+** TODO [#A] 学习日本蜡烛图 [0/2]                                      :stock:
 SCHEDULED: <2025-12-24 Wed>
 - [ ] 学习第六章
-- [ ] 第六种笔记
+- [ ] 第六章笔记
 
-** TODO [#A] 学习英语
+** TODO [#A] 学习英语                                                :English:
 SCHEDULED: <2025-12-24 Wed>
+- [ ] 完成第四种笔记
 
 ** TODO [#A] 读书
 SCHEDULED: <2025-12-24 Wed>
 - 自在的心
   - [ ] 第一章
 
-** TODO 了解emacs是怎么缩进的
+** TODO 了解emacs是怎么缩进的                                        :emacs:
 SCHEDULED: <2025-12-30 Tue>
+
+
+* dayliy routine
+
+** 健身
+
+** TODO English [0/1]                                              :English:
+SCHEDULED: <2026-01-01 Thu +1d>
+:PROPERTIES:
+:RESET_CHECK_BOXES: t
+:END:
+- [ ] 记单词
+
+** elisp                                                                :cs:
+
+** CS61B                                                                :cs:
+
+** CS61A                                                                :cs:
+
+** Linux                                                                :cs:
+
+** 操作系统
+
+** CS61C
+
+
